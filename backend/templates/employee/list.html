@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block modals %}
+<div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-[var(--text-color)]">Employees</h1>
+                <p class="text-sm text-[var(--text-light-color)] mt-1">Manage all employee records</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a href="{% url 'employee:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                    <i class="fas fa-plus mr-2"></i>Add Employee
+                </a>
+            </div>
+        </div>
+
+        <!-- Search/Filter Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Name Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Name</label>
+                    <input type="text" name="name" value="{{ request.GET.name|default:'' }}" placeholder="Search by name..." class="w-full h-10 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                </div>
+
+                <!-- QID No Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID No</label>
+                    <input type="text" name="qid_no" value="{{ request.GET.qid_no|default:'' }}" placeholder="Search by QID..." class="w-full h-10 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                </div>
+
+                <!-- HR File No Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">HR File No</label>
+                    <input type="text" name="hr_file_no" value="{{ request.GET.hr_file_no|default:'' }}" placeholder="Search by HR File..." class="w-full h-10 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                </div>
+
+                <!-- Gender Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Gender</label>
+                    <select name="gender" class="w-full h-10 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        <option value="">All Genders</option>
+                        <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Male</option>
+                        <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Female</option>
+                    </select>
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="md:col-span-2 lg:col-span-4 flex items-center gap-3 pt-2">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                    <a href="{% url 'employee:list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-times mr-2"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">HR File No</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">QID No</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Gender</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Nationality</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Joining Date</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--border-color)]">
+                        {% for employee in employees %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                {{ employee.hr_file_no }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10 bg-[var(--primary-color)] rounded-full flex items-center justify-center text-white font-medium">
+                                        {{ employee.first_name|slice:":1"|upper }}
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.full_name }}</p>
+                                        <p class="text-xs text-[var(--text-light-color)]">{{ employee.user.email|default:employee.user.username }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                {{ employee.qid_no }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                {% if employee.gender == 'M' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <i class="fas fa-mars mr-1"></i>Male
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                    <i class="fas fa-venus mr-1"></i>Female
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                {{ employee.nationality.name|default:'-' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                {{ employee.joining_date|date:"M d, Y" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{% url 'employee:detail' employee.pk %}" class="p-2 text-gray-500 hover:text-[var(--primary-color)] hover:bg-gray-100 rounded-lg transition-colors" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'employee:update' employee.pk %}" class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" onclick="confirmDelete('{{ employee.pk }}', '{{ employee.name }}')" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                        <i class="fas fa-users text-2xl text-gray-400"></i>
+                                    </div>
+                                    <p class="text-[var(--text-color)] font-medium">No employees found</p>
+                                    <p class="text-sm text-[var(--text-light-color)] mt-1">Get started by adding a new employee</p>
+                                    <a href="{% url 'employee:create' %}" class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                                        <i class="fas fa-plus mr-2"></i>Add Employee
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if employees %}
+            <div class="px-6 py-4 border-t border-[var(--border-color)] bg-[var(--table-header)]">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <p class="text-sm text-[var(--text-light-color)]">
+                        Showing <span class="font-medium text-[var(--text-color)]">{{ employees|length }}</span> results
+                    </p>
+                    {% if paginator_list %}
+                    <nav class="flex items-center gap-1">
+                        {% if paginator.has_previous %}
+                        <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                        <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                        {% endif %}
+
+                        {% for page in paginator_list %}
+                        <a href="?page={{ page }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-3 py-1.5 text-sm rounded-lg transition-colors {% if page == paginator.number %}bg-[var(--primary-color)] text-white{% else %}text-[var(--text-color)] hover:bg-gray-100{% endif %}">
+                            {{ page }}
+                        </a>
+                        {% endfor %}
+
+                        {% if paginator.has_next %}
+                        <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                        <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                        {% endif %}
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" onclick="closeDeleteModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-[var(--text-color)] mb-2">Delete Employee</h3>
+                <p class="text-sm text-[var(--text-light-color)] mb-6">
+                    Are you sure you want to delete <span id="employeeName" class="font-medium text-[var(--text-color)]"></span>? This action cannot be undone.
+                </p>
+                <div class="flex items-center justify-center gap-3">
+                    <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        Cancel
+                    </button>
+                    <a id="deleteLink" href="#" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete(pk, name) {
+        document.getElementById('employeeName').textContent = name;
+        document.getElementById('deleteLink').href = "{% url 'employee:delete' 0 %}".replace('0', pk);
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+</script>
+{% endblock %}

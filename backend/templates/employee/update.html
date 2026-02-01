@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block modals %}
+<div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-[var(--text-color)]">Update Employee</h1>
+            <p class="text-sm text-[var(--text-light-color)] mt-1">Update employee information for {{ employee.full_name }}.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Basic Information Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('basic-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Basic Information</span>
+                    <svg id="basic-info-icon" class="w-5 h-5 text-gray-500 transform rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="basic-info" class="px-6 pb-6 border-t border-[var(--border-color)]">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+
+
+                        <!-- HR File No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">HR File No <span class="text-red-500">*</span></label>
+                            <input type="text" name="employee-hr_file_no" value="{{ employee_form.hr_file_no.value|default:'' }}" placeholder="Enter HR File No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.hr_file_no.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.hr_file_no.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- QID No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID No <span class="text-red-500">*</span></label>
+                            <input type="text" name="employee-qid_no" value="{{ employee_form.qid_no.value|default:'' }}" placeholder="Enter QID No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.qid_no.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.qid_no.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- First Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="employee-first_name" value="{{ employee_form.first_name.value|default:'' }}" placeholder="Enter First Name" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.first_name.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.first_name.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Last Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Last Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="employee-last_name" value="{{ employee_form.last_name.value|default:'' }}" placeholder="Enter Last Name" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.last_name.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.last_name.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Nationality -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Nationality</label>
+                            <select name="employee-nationality" class="select2-items w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select Nationality</option>
+                                {% for nationality in nationalities %}
+                                <option value="{{ nationality.pk }}" {% if employee_form.nationality.value|stringformat:"s" == nationality.pk|stringformat:"s" %}selected{% endif %}>{{ nationality.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Gender -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Gender <span class="text-red-500">*</span></label>
+                            <select name="employee-gender" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select Gender</option>
+                                <option value="M" {% if employee_form.gender.value == 'M' %}selected{% endif %}>Male</option>
+                                <option value="F" {% if employee_form.gender.value == 'F' %}selected{% endif %}>Female</option>
+                            </select>
+                            {% if employee_form.gender.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.gender.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Joining Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Joining Date <span class="text-red-500">*</span></label>
+                            <input type="date" name="employee-joining_date" value="{% if employee_form.joining_date.value %}{{ employee_form.joining_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.joining_date.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.joining_date.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Remarks -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Remarks</label>
+                            <textarea name="employee-remarks" rows="3" placeholder="Enter remarks..." class="w-full px-3 py-2 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none resize-none">{{ employee_form.remarks.value|default:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Details Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('employment-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Employment Details</span>
+                    <svg id="employment-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="employment-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                        <!-- Employment Joining Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
+                            <input type="date" name="employment-joining_date" value="{% if employment_form.joining_date.value %}{{ employment_form.joining_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Work Status -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
+                            <select name="employment-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select Work Status</option>
+                                <option value="ACTIVE" {% if employment_form.work_status.value == 'ACTIVE' %}selected{% endif %}>Active</option>
+                                <option value="INACTIVE" {% if employment_form.work_status.value == 'INACTIVE' %}selected{% endif %}>Inactive</option>
+                                <option value="ON_LEAVE" {% if employment_form.work_status.value == 'ON_LEAVE' %}selected{% endif %}>On Leave</option>
+                                <option value="TERMINATED" {% if employment_form.work_status.value == 'TERMINATED' %}selected{% endif %}>Terminated</option>
+                            </select>
+                        </div>
+
+                        <!-- RP Expiry Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
+                            <input type="date" name="employment-rp_expiry_date" value="{% if employment_form.rp_expiry_date.value %}{{ employment_form.rp_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Work Permit No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
+                            <input type="text" name="employment-work_permit_no" value="{{ employment_form.work_permit_no.value|default:'' }}" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Work ID -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
+                            <input type="text" name="employment-work_id" value="{{ employment_form.work_id.value|default:'' }}" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- QID Renew Status -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
+                            <select name="employment-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select Status</option>
+                                <option value="NOT_DUE" {% if employment_form.qid_renew_status.value == 'NOT_DUE' %}selected{% endif %}>Not Due</option>
+                                <option value="PENDING" {% if employment_form.qid_renew_status.value == 'PENDING' %}selected{% endif %}>Pending</option>
+                                <option value="RENEWED" {% if employment_form.qid_renew_status.value == 'RENEWED' %}selected{% endif %}>Renewed</option>
+                            </select>
+                        </div>
+
+                        <!-- QID Lost Status -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
+                            <select name="employment-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select Status</option>
+                                <option value="YES" {% if employment_form.qid_lost_status.value == 'YES' %}selected{% endif %}>Yes</option>
+                                <option value="NO" {% if employment_form.qid_lost_status.value == 'NO' %}selected{% endif %}>No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Details Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('contact-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Contact Details</span>
+                    <svg id="contact-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="contact-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                        <!-- Phone No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Phone No</label>
+                            <input type="text" name="contact-phone_no" value="{{ contact_form.phone_no.value|default:'' }}" placeholder="Enter Phone No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Phone No Alt -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Phone No (Alt)</label>
+                            <input type="text" name="contact-phone_no_alt" value="{{ contact_form.phone_no_alt.value|default:'' }}" placeholder="Enter Alternate Phone No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Roommate Phone -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Roommate Phone</label>
+                            <input type="text" name="contact-roommate_phone" value="{{ contact_form.roommate_phone.value|default:'' }}" placeholder="Enter Roommate Phone" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Relative Qatar Phone -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Relative Qatar Phone</label>
+                            <input type="text" name="contact-relative_qatar_phone" value="{{ contact_form.relative_qatar_phone.value|default:'' }}" placeholder="Enter Relative Qatar Phone" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Home Phone -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Home Phone</label>
+                            <input type="text" name="contact-home_phone" value="{{ contact_form.home_phone.value|default:'' }}" placeholder="Enter Home Phone" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Home Phone Alt -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Home Phone (Alt)</label>
+                            <input type="text" name="contact-home_phone_alt" value="{{ contact_form.home_phone_alt.value|default:'' }}" placeholder="Enter Alternate Home Phone" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Home Email -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Home Email</label>
+                            <input type="email" name="contact-home_email" value="{{ contact_form.home_email.value|default:'' }}" placeholder="Enter Home Email" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('address-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Address</span>
+                    <svg id="address-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="address-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                        <!-- National Address -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">National Address</label>
+                            <textarea name="address-national_address" rows="3" placeholder="Enter National Address" class="w-full px-3 py-2 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none resize-none">{{ address_form.national_address.value|default:'' }}</textarea>
+                        </div>
+
+                        <!-- Room Address -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Room Address</label>
+                            <textarea name="address-room_address" rows="3" placeholder="Enter Room Address" class="w-full px-3 py-2 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none resize-none">{{ address_form.room_address.value|default:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passport Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('passport-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Passport</span>
+                    <svg id="passport-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="passport-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                        <!-- Passport No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport No</label>
+                            <input type="text" name="passport-passport_no" value="{{ passport_form.passport_no.value|default:'' }}" placeholder="Enter Passport No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Passport Expiry Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label>
+                            <input type="date" name="passport-passport_expiry_date" value="{% if passport_form.passport_expiry_date.value %}{{ passport_form.passport_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Passport Renewed -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Renewed</label>
+                            <div class="flex items-center h-11">
+                                <input type="checkbox" name="passport-passport_renewed" {% if passport_form.passport_renewed.value %}checked{% endif %} class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                                <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driving License Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('driving-license-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Driving License</span>
+                    <svg id="driving-license-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="driving-license-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                        <!-- License No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
+                            <input type="text" name="driving_license-license_no" value="{{ driving_license_form.license_no.value|default:'' }}" placeholder="Enter License No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- License Expiry Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label>
+                            <input type="date" name="driving_license-license_expiry_date" value="{% if driving_license_form.license_expiry_date.value %}{{ driving_license_form.license_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- License Renewed -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renewed</label>
+                            <div class="flex items-center h-11">
+                                <input type="checkbox" name="driving_license-license_renewed" {% if driving_license_form.license_renewed.value %}checked{% endif %} class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                                <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                            </div>
+                        </div>
+
+                        <!-- License Renew Status -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renew Status</label>
+                            <select name="driving_license-license_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select Status</option>
+                                <option value="YES" {% if driving_license_form.license_renew_status.value == 'YES' %}selected{% endif %}>Renewed</option>
+                                <option value="NO" {% if driving_license_form.license_renew_status.value == 'NO' %}selected{% endif %}>Not Renewed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Insurance Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('health-insurance-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Health & Insurance</span>
+                    <svg id="health-insurance-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="health-insurance-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                        <!-- Hamad Health Card -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Hamad Health Card</label>
+                            <div class="flex items-center h-11">
+                                <input type="checkbox" name="health_insurance-hamad_health_card" {% if health_insurance_form.hamad_health_card.value %}checked{% endif %} class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                                <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                            </div>
+                        </div>
+
+                        <!-- WM Insurance -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">WM Insurance</label>
+                            <select name="health_insurance-wm_insurance" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select</option>
+                                <option value="YES" {% if health_insurance_form.wm_insurance.value == 'YES' %}selected{% endif %}>Yes</option>
+                                <option value="NO" {% if health_insurance_form.wm_insurance.value == 'NO' %}selected{% endif %}>No</option>
+                            </select>
+                        </div>
+
+                        <!-- Family Health Card -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Family Health Card</label>
+                            <select name="health_insurance-family_health_card" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                <option value="">Select</option>
+                                <option value="YES" {% if health_insurance_form.family_health_card.value == 'YES' %}selected{% endif %}>Yes</option>
+                                <option value="NO" {% if health_insurance_form.family_health_card.value == 'NO' %}selected{% endif %}>No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <button type="button" onclick="toggleSection('vehicle-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
+                    <span class="text-base font-medium text-[var(--text-color)]">Vehicle</span>
+                    <svg id="vehicle-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="vehicle-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                        <!-- Vehicle No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Vehicle No</label>
+                            <input type="text" name="vehicle-vehicle_no" value="{{ vehicle_form.vehicle_no.value|default:'' }}" placeholder="Enter Vehicle No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+
+                        <!-- Istemara Expiry Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Istemara Expiry Date</label>
+                            <input type="date" name="vehicle-istemara_expiry_date" value="{% if vehicle_form.istemara_expiry_date.value %}{{ vehicle_form.istemara_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex items-center justify-end gap-4 pt-4">
+                <a href="{% url 'employee:list' %}" class="px-6 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                    <i class="fas fa-save mr-2"></i>Update Employee
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Toggle section visibility
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        const icon = document.getElementById(sectionId + '-icon');
+        
+        if (section.classList.contains('hidden')) {
+            section.classList.remove('hidden');
+            icon.classList.add('rotate-180');
+        } else {
+            section.classList.add('hidden');
+            icon.classList.remove('rotate-180');
+        }
+    }
+
+    // Initialize flatpickr for date fields
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr('.flatpickr-date', {
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+
+        // Initialize Select2
+        $('.select2-items').select2({
+            placeholder: 'Select an option',
+            allowClear: true
+        });
+    });
+</script>
+{% endblock %}

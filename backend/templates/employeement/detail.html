@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block modals %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center gap-4 mb-2">
+            <a href="{% url 'employeement:list' %}" 
+               class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Employment Details</h1>
+        </div>
+        <p class="text-gray-600 ml-12">View employment information for {{ employeement.employee.full_name }}</p>
+    </div>
+
+    <!-- Details Section -->
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Employee -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Employee</label>
+                <p class="text-base text-gray-900">{{ employeement.employee.full_name }}</p>
+            </div>
+
+            <!-- Work Permit No -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Work Permit No</label>
+                <p class="text-base text-gray-900">{{ employeement.work_permit_no }}</p>
+            </div>
+
+            <!-- Work ID -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Work ID</label>
+                <p class="text-base text-gray-900">{{ employeement.work_id }}</p>
+            </div>
+
+            <!-- Work Status -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Work Status</label>
+                <p class="text-base">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                        {% if employeement.work_status == 'ACTIVE' %}bg-green-100 text-green-800
+                        {% elif employeement.work_status == 'INACTIVE' %}bg-red-100 text-red-800
+                        {% elif employeement.work_status == 'ON_LEAVE' %}bg-yellow-100 text-yellow-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ employeement.get_work_status_display }}
+                    </span>
+                </p>
+            </div>
+
+            <!-- Joining Date -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Joining Date</label>
+                <p class="text-base text-gray-900">{{ employeement.joining_date|date:"M d, Y" }}</p>
+            </div>
+
+            <!-- RP Expiry Date -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">RP Expiry Date</label>
+                <p class="text-base text-gray-900">{{ employeement.rp_expiry_date|date:"M d, Y" }}</p>
+            </div>
+
+            <!-- QID Renew Status -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">QID Renew Status</label>
+                <p class="text-base text-gray-900">{{ employeement.get_qid_renew_status_display }}</p>
+            </div>
+
+            <!-- QID Lost Status -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">QID Lost Status</label>
+                <p class="text-base text-gray-900">{{ employeement.get_qid_lost_status_display }}</p>
+            </div>
+        </div>
+
+        <!-- Metadata Section -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <i class="fas fa-info-circle"></i>
+                <span>Record Information</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-600">Created By:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ employeement.created_by.get_full_name|default:employeement.created_by.username }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Created At:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ employeement.created_at|date:"M d, Y H:i" }}
+                    </span>
+                </div>
+                {% if employeement.updated_by %}
+                <div>
+                    <span class="text-gray-600">Updated By:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ employeement.updated_by.get_full_name|default:employeement.updated_by.username }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Updated At:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ employeement.updated_at|date:"M d, Y H:i" }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex gap-4">
+            <a href="{% url 'employee:update' employeement.employee.pk %}" 
+               class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-edit"></i>
+                <span>Edit Employment</span>
+            </a>
+            <a href="{% url 'employeement:list' %}" 
+               class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to List</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

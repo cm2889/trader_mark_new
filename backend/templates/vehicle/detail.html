@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block modals %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center gap-4 mb-2">
+            <a href="{% url 'vehicle:list' %}" 
+               class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Vehicle Details</h1>
+        </div>
+        <p class="text-gray-600 ml-12">View vehicle information for {{ vehicle.employee.full_name }}</p>
+    </div>
+
+    <!-- Details Section -->
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Employee -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Employee</label>
+                <p class="text-base text-gray-900">{{ vehicle.employee.full_name }}</p>
+            </div>
+
+            <!-- Vehicle No -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Vehicle No</label>
+                <p class="text-base text-gray-900">{{ vehicle.vehicle_no }}</p>
+            </div>
+
+            <!-- Istemara Expiry Date -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Istemara Expiry Date</label>
+                <p class="text-base text-gray-900">{{ vehicle.istemara_expiry_date|date:"M d, Y" }}</p>
+            </div>
+        </div>
+
+        <!-- Metadata Section -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <i class="fas fa-info-circle"></i>
+                <span>Record Information</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-600">Created By:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ vehicle.created_by.get_full_name|default:vehicle.created_by.username }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Created At:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ vehicle.created_at|date:"M d, Y H:i" }}
+                    </span>
+                </div>
+                {% if vehicle.updated_by %}
+                <div>
+                    <span class="text-gray-600">Updated By:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ vehicle.updated_by.get_full_name|default:vehicle.updated_by.username }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Updated At:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ vehicle.updated_at|date:"M d, Y H:i" }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex gap-4">
+            <a href="{% url 'employee:update' vehicle.employee.pk %}" 
+               class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-edit"></i>
+                <span>Edit Vehicle</span>
+            </a>
+            <a href="{% url 'vehicle:list' %}" 
+               class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to List</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

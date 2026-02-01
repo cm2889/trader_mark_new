@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block modals %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center gap-4 mb-2">
+            <a href="{% url 'address:list' %}" 
+               class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Address Details</h1>
+        </div>
+        <p class="text-gray-600 ml-12">View address information for {{ address.employee.full_name }}</p>
+    </div>
+
+    <!-- Details Section -->
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <div class="grid grid-cols-1 gap-6">
+            <!-- Employee -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Employee</label>
+                <p class="text-base text-gray-900">{{ address.employee.full_name }}</p>
+            </div>
+
+            <!-- National Address -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">National Address</label>
+                <p class="text-base text-gray-900 whitespace-pre-line">{{ address.national_address|default:"—" }}</p>
+            </div>
+
+            <!-- Room Address -->
+            <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Room Address</label>
+                <p class="text-base text-gray-900 whitespace-pre-line">{{ address.room_address|default:"—" }}</p>
+            </div>
+        </div>
+
+        <!-- Metadata Section -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <i class="fas fa-info-circle"></i>
+                <span>Record Information</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-600">Created By:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ address.created_by.get_full_name|default:address.created_by.username }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Created At:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ address.created_at|date:"M d, Y H:i" }}
+                    </span>
+                </div>
+                {% if address.updated_by %}
+                <div>
+                    <span class="text-gray-600">Updated By:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ address.updated_by.get_full_name|default:address.updated_by.username }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Updated At:</span>
+                    <span class="ml-2 font-medium text-gray-800">
+                        {{ address.updated_at|date:"M d, Y H:i" }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex gap-4">
+            <a href="{% url 'employee:update' address.employee.pk %}" 
+               class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-edit"></i>
+                <span>Edit Address</span>
+            </a>
+            <a href="{% url 'address:list' %}" 
+               class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to List</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

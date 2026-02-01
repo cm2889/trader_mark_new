@@ -1,0 +1,320 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ site_setting.site_title|default:'Employee Management System' }}</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    boxShadow: {
+                        card: '0 24px 40px -20px rgba(2,6,23,.12)',
+                        cardHover: '0 32px 60px -24px rgba(2,6,23,.18)',
+                    }
+                }
+            }
+            // input white background fix
+            @layer base {
+                input, textarea, select { @apply bg - white; color - scheme: light; }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        html,
+        body {
+            font-family: Inter, system-ui, ui-sans-serif
+        }
+
+        /* Select2 with Tailwind CSS */
+        .select2-container {
+            width: 100% !important;
+            margin-top: .25rem;
+            /* mt-1 */
+        }
+
+        /* === Tailwind look for single select (h-11 rounded-lg etc., no shadow) === */
+        .select2-container .select2-selection--single {
+            height: 2.75rem;
+            /* h-11 */
+            background: var(--bg-color);
+            /* bg-[var(--bg-color)] */
+            border: 1px solid var(--border-color);
+            /* ring-1 ring-[var(--border-color)] */
+            border-radius: .5rem;
+            /* rounded-lg */
+            outline: none;
+            /* outline-none */
+            -webkit-appearance: none;
+            /* appearance-none */
+            appearance: none;
+        }
+
+        /* Text & padding (px-3 pr-10 text-sm) */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 2.75rem;
+            padding: 0 2.5rem 0 .75rem;
+            /* right = 2.5rem (pr-10), left = .75rem (px-3) */
+            font-size: .875rem;
+            /* text-sm */
+            color: var(--text-color);
+        }
+
+        /* Placeholder */
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: var(--text-light-color);
+        }
+
+        /* Arrow placement (respect the pr-10 space) */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 2.75rem;
+            /* match h-11 */
+            right: .625rem;
+            /* keep a little gap inside pr-10 */
+            width: 1.25rem;
+            /* stable click target */
+        }
+
+        /* Dropdown panel */
+        .select2-dropdown {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: .5rem;
+            /* match rounded-lg */
+            overflow: hidden;
+        }
+    </style>
+
+    <!-- Your variables file -->
+    {% comment %}
+    <link rel="stylesheet" href="/static/site/css/variables.css"> {% endcomment %}
+    <style>
+        :root {
+            --primary-color: {{ design.primary_color|default:'#4354A3' }};
+            --bg-color: {{ design.bg_color|default:'#EEF3F8' }};
+            --hover-color: {{ design.hover_color|default:'#4354A3' }};
+            --border-color: {{design.border_color|default:'#E5E7EB' }};
+            --shadow-color: {{ design.shadow_color|default:'#DDE0FF' }};
+            --control-shadow: 0 0 10px 0 {{ design.control_shadow_color|default:'#00000040' }};
+            --text-color: {{ design.text_color|default:'#22242A' }};
+            --text-light-color: {{ design.text_light_color|default:'#868686' }};
+            --button-text-color: {{ design.button_text_color|default:'#ffffff' }};
+            --button-bg-color: {{ design.button_bg_color|default:'#4354A3' }};
+            --discount-bg-color: {{ design.discount_bg_color|default:'#F80000' }};
+            --active-color: {{ design.active_color|default:'#4354A3' }};
+            --inactive-color: {{ design.inactive_color|default:'#EF4444' }};
+            --footer-bg-color: {{ design.footer_bg_color|default:'#22242A' }};
+            --footer-text-color: {{ design.footer_text_color|default:'#ffffff' }};
+            --table-header: #F9FAFB;
+            --white-color: #FFFFFF;
+        }
+    </style>
+</head>
+
+
+<body class="antialiased bg-[var(--bg-color)] text-[var(--text-color)]">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg fixed left-0 top-0 h-full overflow-y-auto">
+            <!-- Logo/Header -->
+            <div class="p-6 border-b border-[var(--border-color)]">
+                <h1 class="text-xl font-bold text-[var(--primary-color)]">
+                    <i class="fas fa-building mr-2"></i>Trader Mark
+                </h1>
+                <p class="text-xs text-[var(--text-light-color)] mt-1">Employee Management</p>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="p-4 space-y-2">
+                <!-- Dashboard -->
+                <a href="/backend/" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--text-color)] hover:bg-[var(--bg-color)] transition-colors">
+                    <i class="fas fa-home w-5"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+
+                <!-- Nationality Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-flag w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Nationalities</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                    <div class="ml-8 mt-1 space-y-1">
+                        <a href="{% url 'nationality:list' %}" class="block px-3 py-2 text-sm text-[var(--text-color)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-color)] rounded-lg transition-colors">
+                            All Nationalities
+                        </a>
+                        <a href="{% url 'nationality:create' %}" class="block px-3 py-2 text-sm text-[var(--text-color)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-color)] rounded-lg transition-colors">
+                            Add Nationality
+                        </a>
+                    </div>
+                </details>
+
+                <!-- Employees Section -->
+                <details class="group" open>
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-users w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Employees</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                    <div class="ml-8 mt-1 space-y-1">
+                        <a href="{% url 'employee:list' %}" class="block px-3 py-2 text-sm text-[var(--text-color)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-color)] rounded-lg transition-colors">
+                            All Employees
+                        </a>
+                        <a href="{% url 'employee:create' %}" class="block px-3 py-2 text-sm text-[var(--text-color)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-color)] rounded-lg transition-colors">
+                            Add Employee
+                        </a>
+                    </div>
+                </details>
+
+                <!-- Employment Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-briefcase w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Employment</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                    <div class="ml-8 mt-1 space-y-1">
+                        <a href="{% url 'employeement:list' %}" class="block px-3 py-2 text-sm text-[var(--text-color)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-color)] rounded-lg transition-colors">
+                            All Employment
+                        </a>
+                       
+                </details>
+
+                <!-- Passport Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-passport w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Passports</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                  
+                </details>
+
+                <!-- Driving License Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-id-card w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Driving Licenses</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                 
+                </details>
+
+                <!-- Health Insurance Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-heartbeat w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Health Insurance</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                  
+                </details>
+
+                <!-- Contact Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-phone w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Contacts</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                  
+                </details>
+
+                <!-- Address Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-map-marker-alt w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Addresses</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                   
+                </details>
+
+                <!-- Vehicle Section -->
+                <details class="group">
+                    <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer select-none hover:bg-[var(--bg-color)] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-car w-5"></i>
+                            <span class="font-medium text-[var(--text-color)]">Vehicles</span>
+                        </span>
+                        <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+                   
+                </details>
+
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 ml-64">
+            {% block modals %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+    {% block extra_js %}
+    {% endblock %}
+
+    <script>
+        $(document).ready(function () {
+            $('.select2-items').select2();
+        });
+    </script>
+
+
+</body>
+
+</html>
