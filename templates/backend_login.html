@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ site_setting.site_title|default:'' }} — Admin Login</title>
+    <link rel="icon" type="image/png" href="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=favicon">
+    <link rel="icon" type="image/webp" href="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=favicon">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+                    /* brand colors used by the button/links */
+                    colors: {
+                        brand: {
+                            500: '#2E6BDE',
+                            600: '#1E5FB8',
+                            700: '#1A4FA7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="antialiased bg-white text-slate-900 font-sans">
+    <section class="relative min-h-screen overflow-hidden">
+        <!-- Top left -->
+        <svg class="pointer-events-none absolute -z-10 w-48 sm:w-80 lg:w-[748px] h-auto" xmlns="http://www.w3.org/2000/svg" width="748" height="722" viewBox="0 0 748 722" fill="none">
+            <path d="M460.66 140.097C612.268 152.906 715.39 52.036 748 0L-218 0L-218 722H-110.108C223.967 683.974 167.729 532.369 97.8507 461.319C57.0416 411.452 -16.75 291.302 14.5555 209.645C53.6875 107.574 271.149 124.086 460.66 140.097Z" fill="url(#paint0_linear_343_1270)" />
+            <defs>
+                <linearGradient id="paint0_linear_343_1270" x1="748" y1="361" x2="-218" y2="361" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#155DFC" />
+                    <stop offset="1" stop-color="#00CFB9" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <!-- Bottom right ) -->
+        <svg class="pointer-events-none absolute -bottom-20 -right-20 w-64 h-64 sm:w-96 sm:h-96 lg:w-[48rem] lg:h-[48rem] lg:-bottom-64 lg:-right-64 -z-10" xmlns="http://www.w3.org/2000/svg" width="533" height="307" viewBox="0 0 533 307" fill="none">
+            <circle cx="402.5" cy="402.5" r="402.5" fill="url(#paint0_linear_327_2314)" />
+            <ellipse cx="402.5" cy="402" rx="317.5" ry="318" fill="#1561C9" />
+            <ellipse cx="402.5" cy="402" rx="243.5" ry="244" fill="#1E5FB8" />
+            <defs>
+                <linearGradient id="paint0_linear_327_2314" x1="0" y1="402.5" x2="805" y2="402.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#155DFC" />
+                    <stop offset="1" stop-color="#00CFB9" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <!-- CONTENT -->
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-10 items-center  lg:min-h-screen">
+                <!-- Left content -->
+                <div class="py-16 text-center lg:text-left">
+                    <div class="flex items-center gap-2 justify-center lg:justify-start">
+                        <span class="grid h-12 w-10 place-items-center">
+                            <img src="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=logo" alt="">
+                        </span>
+                        <span class="text-2xl leading-[150%] font-bold">{{ site_setting.site_title|default:'' }}</span>
+                    </div>
+
+                    <!-- Mobile -->
+                    <h1 class="mt-8 text-3xl font-bold leading-[150%] lg:hidden">
+                        Welcome to <span class="text-[#1E5FB8]">{{ site_setting.site_title|default:'' }}</span>
+                    </h1>
+
+                    <!-- Desktop -->
+                    <h1 class="mt-8  text-3xl lg:text-[48px] font-bold leading-[150%] hidden lg:block">
+                        Welcome to
+                    </h1>
+                    <p class="mt-1 text-3xl lg:text-[48px] font-bold leading-[150%] hidden lg:block">
+                        <span class="text-[#1E5FB8]">{{ site_setting.site_title|default:'' }}</span>
+                    </p>
+
+                    <p class="mt-8 max-w-xl text-base text-[#4A5565] hidden lg:block">
+                        The all-in-one business management dashboard built for modern entrepreneurs — from real-time
+                        inventory
+                        tracking to insightful sales and growth analytics.
+                    </p>
+                </div>
+
+                <!-- Right card -->
+                <div class="flex justify-center lg:justify-end">
+                    <div class="w-full max-w-[560px] rounded-2xl bg-white/90 backdrop-blur ring-1 ring-black/5 shadow-xl p-6 sm:p-8">
+                        <h2 class="text-center text-xl font-semibold">Log In</h2>
+                        <p class="mt-4 text-center text-xs text-slate-500">
+                            Please Enter Your Username And Password.
+                        </p>
+
+                        <!-- Django messages -->
+                        {% if messages %}
+                            <ul class="mt-4 space-y-2">
+                                {% for message in messages %}
+                                    <li class="text-sm rounded-md px-3 py-2
+                                    {% if message.tags == 'error' %} bg-red-50 text-red-700 ring-1 ring-red-200
+                                    {% elif message.tags == 'success' %} bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200
+                                    {% else %} bg-slate-50 text-slate-700 ring-1 ring-slate-200 {% endif %}">
+                                        {{ message }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% if form.non_field_errors %}
+                            <div class="mt-4 text-sm rounded-md bg-red-50 text-red-700 ring-1 ring-red-200 px-3 py-2">
+                                {{ form.non_field_errors|striptags }}
+                            </div>
+                        {% endif %}
+
+                        <form id="adminLoginForm" method="POST" class="mt-6 space-y-4" novalidate>
+                            {% csrf_token %}
+
+                            <!-- USERNAME -->
+                            <div>
+                                <label for="id_username" class="mb-1 block text-xs font-medium text-slate-700">Username</label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <g clip-path="url(#clip0_327_2406)">
+                                                <g filter="url(#filter0_d_327_2406)">
+                                                    <path d="M12.0002 11.7C14.4864 11.7 16.5002 9.6862 16.5002 7.19995C16.5002 4.7137 14.4864 2.69995 12.0002 2.69995C9.51395 2.69995 7.5002 4.7137 7.5002 7.19995C7.5002 9.6862 9.51395 11.7 12.0002 11.7ZM10.8864 13.8C7.19269 13.8 4.2002 16.7924 4.2002 20.4862C4.2002 21.1012 4.69895 21.6 5.31395 21.6H18.6864C19.3014 21.6 19.8002 21.1012 19.8002 20.4862C19.8002 16.7924 16.8077 13.8 13.1139 13.8H10.8864Z" fill="#4A5565" />
+                                                </g>
+                                            </g>
+                                            <defs>
+                                                <filter id="filter0_d_327_2406" x="0.200195" y="2.69995" width="23.5996" height="26.8999" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                                    <feOffset dy="4" />
+                                                    <feGaussianBlur stdDeviation="2" />
+                                                    <feComposite in2="hardAlpha" operator="out" />
+                                                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                                                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_327_2406" />
+                                                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_327_2406" result="shape" />
+                                                </filter>
+                                                <clipPath id="clip0_327_2406">
+                                                    <rect width="24" height="24" fill="white" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </span>
+                                    {{ form.username }}
+                                </div>
+                                {% if form.username.errors %}
+                                    <p class="mt-1 text-xs text-red-600">{{ form.username.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- PASSWORD -->
+                            <div>
+                                <label for="id_password" class="mb-1 block text-xs font-medium text-slate-700">Password</label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="31" viewBox="0 0 26 31" fill="none">
+                                            <g filter="url(#filter0_d_327_2417)">
+                                                <path d="M13 1.25C16.0376 1.25 18.5 3.71243 18.5 6.75V8.52734C20.0677 9.0071 21.2509 10.3866 21.4756 12.0557C21.6237 13.1559 21.75 14.312 21.75 15.5C21.75 16.688 21.6237 17.8441 21.4756 18.9443C21.204 20.9613 19.5326 22.5558 17.4746 22.6504C16.0463 22.7161 14.5957 22.75 13 22.75C11.4043 22.75 9.95375 22.7161 8.52539 22.6504C6.46733 22.5558 4.79598 20.9613 4.52441 18.9443C4.37628 17.8441 4.25 16.688 4.25 15.5C4.25 14.312 4.37628 13.1559 4.52441 12.0557C4.74914 10.3866 5.93236 9.0071 7.5 8.52734V6.75C7.5 3.71243 9.96243 1.25 13 1.25ZM9 14.4902C8.44772 14.4902 8 14.9379 8 15.4902V15.5C8 16.0523 8.44772 16.5 9 16.5C9.55228 16.5 10 16.0523 10 15.5V15.4902C10 14.9379 9.55228 14.4902 9 14.4902ZM13 14.4902C12.4477 14.4902 12 14.9379 12 15.4902V15.5C12 16.0523 12.4477 16.5 13 16.5C13.5523 16.5 14 16.0523 14 15.5V15.4902C14 14.9379 13.5523 14.4902 13 14.4902ZM17 14.4902C16.4477 14.4902 16 14.9379 16 15.4902V15.5C16 16.0523 16.4477 16.5 17 16.5C17.5523 16.5 18 16.0523 18 15.5V15.4902C18 14.9379 17.5523 14.4902 17 14.4902ZM13 3.25C11.067 3.25 9.5 4.817 9.5 6.75V8.31055C10.6177 8.27087 11.7654 8.25 13 8.25C14.2346 8.25 15.3823 8.27087 16.5 8.31055V6.75C16.5 4.817 14.933 3.25 13 3.25Z" fill="#4A5565" />
+                                            </g>
+                                            <defs>
+                                                <filter id="filter0_d_327_2417" x="-3" y="0" width="32" height="32" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                                    <feOffset dy="4" />
+                                                    <feGaussianBlur stdDeviation="2" />
+                                                    <feComposite in2="hardAlpha" operator="out" />
+                                                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                                                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_327_2417" />
+                                                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_327_2417" result="shape" />
+                                                </filter>
+                                            </defs>
+                                        </svg>
+                                    </span>
+                                    {{ form.password }}
+                                    <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
+                                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/>
+                                            <circle cx="12" cy="12" r="2.5"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                {% if form.password.errors %}
+                                    <p class="mt-1 text-xs text-red-600">{{ form.password.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Remember -->
+                            <div class="flex items-center justify-between">
+                                <label class="inline-flex items-center gap-2 text-xs text-slate-600">
+                                    <input type="checkbox" id="remember" name="remember" class="h-3.5 w-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-600">
+                                    <span>Remember me</span>
+                                </label>
+                                <a href="#" class="text-xs text-brand-600 hover:underline">Forgot password?</a>
+                            </div>
+
+                            <!-- BUTTON -->
+                            <button type="submit" class="block mx-auto h-12 w-[300px] rounded-md bg-brand-600 text-white text-sm font-medium shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30">
+                                Log In
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+<script>
+    getInfo();
+
+    const loginForm = document.getElementById("adminLoginForm");
+
+    loginForm.addEventListener("submit", function (event) {
+        const rememberMeCheckbox = document.getElementById("remember");
+        if (rememberMeCheckbox.checked) {
+            const username = document.getElementById("id_username");
+            const password = document.getElementById("id_password");
+
+            if (username.value && password.value) {
+                localStorage.setItem("id_username_backend", username.value);
+                localStorage.setItem("id_password_backend", password.value);
+            }
+        } else {
+            localStorage.removeItem("id_username_backend");
+            localStorage.removeItem("id_password_backend");
+        }
+    });
+
+    function getInfo() {
+        const rememberMeCheckbox = document.getElementById("remember");
+        const get_username = localStorage.getItem("id_username_backend");
+        const get_password = localStorage.getItem("id_password_backend");
+
+        if (get_username && get_password) {
+            const username = document.getElementById("id_username");
+            const password = document.getElementById("id_password");
+            username.value = get_username;
+            password.value = get_password;
+            rememberMeCheckbox.checked = true;
+        } else {
+            rememberMeCheckbox.checked = false;
+        }
+    }
+
+    function togglePassword() {
+        const passwordField = document.getElementById("id_password");
+        const eyeIcon = document.getElementById("eye-icon");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.innerHTML = `<path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/>`;
+        } else {
+            passwordField.type = "password";
+            eyeIcon.innerHTML = `<path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.5"/>`;
+        }
+    }
+</script>
+
+</html>

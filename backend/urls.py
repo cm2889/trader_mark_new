@@ -1,6 +1,8 @@
 from django.urls import path, include
 from . import views
 
+
+
 # Nationality URL patterns
 nationality_patterns = ([
     path('', views.NationalityListView.as_view(), name='list'),
@@ -67,7 +69,21 @@ vehicle_patterns = ([
     path('detail/<int:pk>/', views.VehicleDetailView.as_view(), name='detail'),
 ], 'vehicle')
 
-urlpatterns = [
+
+backend_patterns = ([
+    path("api/menu-search/", views.search_backend_menus, name="search_backend_menus"),
+    # Image optimization
+    path("image/<str:unique_key>/", views.serve_optimized_image, name="serve_optimized_image"),
+    path('', views.backend_dashboard, name='backend_dashboard'),
+    path('login/', views.backend_login, name='backend_login'),
+    path('logout/', views.backend_logout, name='backend_logout'),
+    path('<str:menu_slug>-menu/', views.menu_wise_dashboard, name='menu_wise_dashboard'),
+], 'backend')
+
+
+urlpatterns = [    
+
+    path('', include(backend_patterns)),
     path('nationality/', include(nationality_patterns)), 
     path('employee/', include(employee_patterns)),
     path('employment/', include(employment_patterns)),

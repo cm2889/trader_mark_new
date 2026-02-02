@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}
+    Employee - Create
+{% endblock %}
 
-{% block modals %}
+{% block breadcrumb %}
+    <span class="mx-1">›</span>
+    <a href="{% url 'employee:list' %}" class="hover:underline">Employee</a>
+    <span class="mx-1">›</span>
+    <span>Add</span>
+{% endblock %}
+
+{% block content %}
 <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->

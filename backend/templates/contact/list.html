@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 
-{% block modals %}
+{% block title %}Contact List{% endblock title %}
+
+{% block breadcrumb %}
+    <span class="mx-1">›</span>
+    <a href="{% url "contact:list" %}">Contact</a>
+    <span class="mx-1">›</span>
+    <span>Contact List</span>
+{% endblock breadcrumb %} 
+
+{% block content %}
 <div class="container mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-6">
@@ -114,4 +123,4 @@
     </div>
     {% endif %}
 </div>
-{% endblock modals %}
+{% endblock  %}

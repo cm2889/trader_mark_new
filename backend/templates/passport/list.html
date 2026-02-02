@@ -1,19 +1,31 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block modals %}
+{% block title %}Passport List{% endblock %}
+
+{% block breadcrumb %}
+    <span class="mx-1">›</span>
+    <a href="{% url "passport:list" %}">
+        Passport 
+    </a>
+    <span class="mx-1">›</span>
+    <span>Passport List</span>
+{% endblock %}
+
+{% block content %}
 <div class="container mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Passport Records</h1>
-            <p class="text-gray-600 mt-1">Manage employee passport information</p>
+            <h1 class="text-3xl font-bold text-[var(--text-color)]">Passport Records</h1>
+            <p class="text-[var(--text-light-color)] mt-1">Manage employee passport information</p>
         </div>
     </div>
 
     <!-- Results Count -->
     <div class="mb-4">
-        <p class="text-gray-600">
-            Found <span class="font-semibold text-gray-800">{{ paginator.paginator.count }}</span> 
+        <p class="text-[var(--text-light-color)]">
+            Found <span class="font-semibold text-[var(--text-color)]">{{ paginator.paginator.count }}</span> 
             {{ paginator.paginator.count|pluralize:"record,records" }}
         </p>
     </div>
@@ -124,4 +136,4 @@
     </div>
     {% endif %}
 </div>
-{% endblock modals %}
+{% endblock  %}

@@ -1,0 +1,258 @@
+[
+  {
+    "model": "backend.backendmenu",
+    "pk": 1,
+    "fields": {
+      "module_name": "User Management",
+      "menu_name": "User Management",
+      "menu_url": "user-management",
+      "menu_icon": "fa-solid fa-users icon",
+      "menu_description": "Manage system users, permissions, and access control.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 2,
+    "fields": {
+      "module_name": "User Management",
+      "menu_name": "User List",
+      "menu_url": "/backend/user/",
+      "menu_icon": "fa-solid fa-list icon",
+      "menu_description": "View and manage all system users.",
+      "parent": 1,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 3,
+    "fields": {
+      "module_name": "User Management",
+      "menu_name": "Add User",
+      "menu_url": "/backend/user/add/",
+      "menu_icon": "fa-solid fa-user-plus icon",
+      "menu_description": "Create new system user account.",
+      "parent": 1,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 4,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employee Management",
+      "menu_url": "employee-management",
+      "menu_icon": "fa-solid fa-user-tie icon",
+      "menu_description": "Manage employee information and records.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 5,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Nationality",
+      "menu_url": "/backend/nationality/",
+      "menu_icon": "fa-solid fa-flag icon",
+      "menu_description": "Manage nationality records.",
+      "parent": 4,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 6,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employee",
+      "menu_url": "/backend/employee/",
+      "menu_icon": "fa-solid fa-id-card icon",
+      "menu_description": "Manage employee profiles and information.",
+      "parent": 4,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 7,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employment",
+      "menu_url": "/backend/employment/",
+      "menu_icon": "fa-solid fa-briefcase icon",
+      "menu_description": "Manage employment details and contracts.",
+      "parent": 4,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 8,
+    "fields": {
+      "module_name": "Documents Management",
+      "menu_name": "Documents Management",
+      "menu_url": "documents-management",
+      "menu_icon": "fa-solid fa-file-alt icon",
+      "menu_description": "Manage employee documents and records.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 9,
+    "fields": {
+      "module_name": "Documents Management",
+      "menu_name": "Passport",
+      "menu_url": "/backend/passport/",
+      "menu_icon": "fa-solid fa-passport icon",
+      "menu_description": "Manage passport information.",
+      "parent": 8,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 10,
+    "fields": {
+      "module_name": "Documents Management",
+      "menu_name": "Driving License",
+      "menu_url": "/backend/driving-license/",
+      "menu_icon": "fa-solid fa-id-card-alt icon",
+      "menu_description": "Manage driving license records.",
+      "parent": 8,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 11,
+    "fields": {
+      "module_name": "Documents Management",
+      "menu_name": "Health Insurance",
+      "menu_url": "/backend/health-insurance/",
+      "menu_icon": "fa-solid fa-heartbeat icon",
+      "menu_description": "Manage health insurance information.",
+      "parent": 8,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 12,
+    "fields": {
+      "module_name": "Contact Information",
+      "menu_name": "Contact Information",
+      "menu_url": "contact-information",
+      "menu_icon": "fa-solid fa-address-book icon",
+      "menu_description": "Manage contact details and communication information.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 13,
+    "fields": {
+      "module_name": "Contact Information",
+      "menu_name": "Contact",
+      "menu_url": "/backend/contact/",
+      "menu_icon": "fa-solid fa-phone icon",
+      "menu_description": "Manage contact information.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 14,
+    "fields": {
+      "module_name": "Contact Information",
+      "menu_name": "Address",
+      "menu_url": "/backend/address/",
+      "menu_icon": "fa-solid fa-map-marker-alt icon",
+      "menu_description": "Manage address information.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 15,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Management",
+      "menu_url": "vehicle-management",
+      "menu_icon": "fa-solid fa-car icon",
+      "menu_description": "Manage vehicle information and records.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 16,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle",
+      "menu_url": "/backend/vehicle/",
+      "menu_icon": "fa-solid fa-car-side icon",
+      "menu_description": "Manage vehicle records and details.",
+      "parent": 15,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  }
+]

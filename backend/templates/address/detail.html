@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
+{% block title %}Address Details{% endblock title %}
 
-{% block modals %}
+{% block breadcrumb %}
+    <span class="mx-1">›</span>
+    <a href="{% url 'address:list' %}" class="hover:underline">Address</a>
+    <span class="mx-1">›</span>
+    <span>Details</span>
+{% endblock breadcrumb %}
+
+
+{% block content %}
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Header Section -->
     <div class="mb-8">
@@ -87,4 +96,4 @@
         </div>
     </div>
 </div>
-{% endblock modals %}
+{% endblock %}
