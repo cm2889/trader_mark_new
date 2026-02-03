@@ -64,7 +64,7 @@ def paginate_data(request, page_num, data_list):
 
     paginator_list = range(start_page, end_page)
 
-    return data_list, paginator_list, last_page_number
+    return paginator_list, data_list, last_page_number
 
 
 
@@ -1091,8 +1091,9 @@ class EmployeementListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['employeements'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], self.get_queryset())
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['employeements'])
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1158,8 +1159,9 @@ class PassportListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['passports'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], self.get_queryset())
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['passports'])
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1228,8 +1230,9 @@ class DrivingLicenseListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['driving_licenses'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], self.get_queryset())
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['driving_licenses'])
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1297,8 +1300,9 @@ class HealthInsuranceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['health_insurances'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], self.get_queryset())
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['health_insurances'])
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1365,8 +1369,9 @@ class ContactListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['contacts'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], self.get_queryset())
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['contacts'])
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1432,8 +1437,9 @@ class AddressListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['addresses'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], self.get_queryset())
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['addresses'])
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1499,8 +1505,9 @@ class VehicleListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['vehicles'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], self.get_queryset())
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['vehicles'])
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
