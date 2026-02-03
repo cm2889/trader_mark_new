@@ -164,7 +164,7 @@
                         <ul class="mt-1 space-y-1 pl-9 pb-2">
                             {% for sub_menu in menu.sub_menu %}
                                 <li>
-                                    <a href="{% if '/' in sub_menu.menu.menu_url %}{{ sub_menu.menu.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' sub_menu.menu.menu_url %}{% endif %}" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[var(--bg-color)] {% if sub_menu.is_current %}ring-1 ring-[var(--border-color)] bg-[var(--bg-color)] text-[var(--primary-color)]{% endif %}">
+                                    <a href="{% if sub_menu.menu.menu_url %}{% if '/' in sub_menu.menu.menu_url %}{{ sub_menu.menu.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' sub_menu.menu.menu_url %}{% endif %}{% else %}#{% endif %}" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[var(--bg-color)] {% if sub_menu.is_current %}ring-1 ring-[var(--border-color)] bg-[var(--bg-color)] text-[var(--primary-color)]{% endif %}">
                                         {{ sub_menu.menu.menu_name }}
                                     </a>
                                 </li>
@@ -238,7 +238,7 @@
                         <ul class="mt-1 space-y-1 pl-6 pb-2">
                             {% for sub_menu in menu.sub_menu %}
                                 <li>
-                                    <a href="{% if '/' in sub_menu.menu.menu_url %}{{ sub_menu.menu.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' sub_menu.menu.menu_url %}{% endif %}"
+                                    <a href="{% if sub_menu.menu.menu_url %}{% if '/' in sub_menu.menu.menu_url %}{{ sub_menu.menu.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' sub_menu.menu.menu_url %}{% endif %}{% else %}#{% endif %}"
                                     class="group flex items-center gap-2 pl-4 pr-3 py-2 cursor-pointer rounded-md
                                             hover:bg-[#EAF4FA] hover:text-[var(--primary-color)]
                                             {% if sub_menu.is_current %}bg-[#EAF4FA] text-[var(--primary-color)]{% endif %}">
@@ -413,7 +413,7 @@
                     <nav class="mt-4 text-sm text-[var(--primary-color)]">
                         <a href="{% url 'backend:backend_dashboard' %}" class="hover:underline">Home</a><span class="mx-1">›</span>
                         {% for breadcrumb in breadcrumb_menu %}
-                            <a {% if breadcrumb.menu_url %}href="{% if '/' in breadcrumb.menu_url %}{{ breadcrumb.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' breadcrumb.menu_url %}{% endif %}" {% endif %} class="hover:underline">{{ breadcrumb.menu_name }}</a>{% if not forloop.last %}<span class="mx-1">›</span>{% endif %}
+                            <a {% if breadcrumb.menu_url %}href="{% if '/' in breadcrumb.menu_url %}{{ breadcrumb.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' breadcrumb.menu_url %}{% endif %}" {% else %}href="#"{% endif %} class="hover:underline">{{ breadcrumb.menu_name }}</a>{% if not forloop.last %}<span class="mx-1">›</span>{% endif %}
                         {% endfor %}
                         {% block breadcrumb %}{% endblock %}
                     </nav>

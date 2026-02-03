@@ -2,8 +2,12 @@ from django.contrib import admin
 from .models import (
     Nationality, 
     Employee, Employment, Passport, DrivingLicense, 
-    HealthInsurance, Contact, Address, Vehicle
+    HealthInsurance, Contact, Address, Vehicle, BackendMenu
 )
+
+@admin.register(BackendMenu)
+class BackendMenuAdmin(admin.ModelAdmin):
+    list_display = ('module_name', 'menu_name', 'menu_url', 'is_active')
 
 @admin.register(Nationality)
 class NationalityAdmin(admin.ModelAdmin):
