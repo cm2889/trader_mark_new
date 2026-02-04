@@ -290,7 +290,7 @@ class VehicleForm(forms.ModelForm):
 class VehicleHandoverForm(forms.ModelForm):
     class Meta:
         model = VehicleHandover
-        exclude = ['created_by', 'created_at']
+        exclude = ['created_by', 'created_at', 'is_active']
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'from_employee': forms.Select(attrs={'class': TAILWIND_SELECT}),

@@ -560,7 +560,7 @@ class Vehicle(models.Model):
         ('COMPANY', 'Company'),
         ('DRIVER', 'Driver'),
     )
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
 
     vehicle_type = models.CharField(max_length=10, choices=VEHICLE_TYPE_CHOICES)
 
@@ -595,6 +595,8 @@ class VehicleHandover(models.Model):
     to_employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, related_name='handover_to')
 
     handover_date = models.DateField()
+    
+    is_active = models.BooleanField(default=True)
     remarks = models.TextField(blank=True, null=True)
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -602,6 +604,9 @@ class VehicleHandover(models.Model):
 
     def __str__(self):
         return f"Handover - {self.vehicle.plate_no}"
+    
+    class Meta:
+        ordering = ['-handover_date', '-created_at']
 
 
 # =========================
@@ -720,3 +725,4 @@ class VehicleAccident(models.Model):
 
     def __str__(self):
         return f"Accident - {self.vehicle.plate_no}"
+
