@@ -92,69 +92,156 @@
             <!-- Employment Details Section -->
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <button type="button" onclick="toggleSection('employment-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
-                    <span class="text-base font-medium text-[var(--text-color)]">Employment Details</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-base font-medium text-[var(--text-color)]">Employment Details</span>
+                        <span type="button" onclick="addEmploymentForm(event)" class="px-3 py-1 text-xs font-medium text-white bg-[var(--primary-color)] rounded hover:opacity-90 transition-opacity cursor-pointer">
+                            <i class="fas fa-plus mr-1"></i>Add Employment
+                        </span>
+                    </div>
                     <svg id="employment-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
                 <div id="employment-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
-                        <!-- Employment Joining Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
-                            <input type="date" name="employment-joining_date" value="{{ employment_form.joining_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
+                    <input type="hidden" name="employment-TOTAL_FORMS" id="employment-total-forms" value="{{ employments|length|default:1 }}">
+                    <div id="employment-forms-container" class="pt-4">
+                        {% for emp in employments %}
+                        <div class="employment-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="{{ forloop.counter0 }}" data-id="{{ emp.id }}">
+                            <input type="hidden" name="employment-{{ forloop.counter0 }}-id" value="{{ emp.id }}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">Employment #{{ forloop.counter }}</h4>
+                                <button type="button" onclick="removeEmploymentForm(this)" class="text-red-500 hover:text-red-700 remove-employment-btn" {% if employments|length <= 1 %}style="display: none;"{% endif %}>
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <!-- Employment Joining Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
+                                    <input type="date" name="employment-{{ forloop.counter0 }}-joining_date" value="{{ emp.joining_at|date:'Y-m-d'|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
 
-                        <!-- Work Status -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
-                            <select name="employment-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                <option value="">Select Work Status</option>
-                                <option value="ACTIVE" {% if employment_form.work_status.value == 'ACTIVE' %}selected{% endif %}>Active</option>
-                                <option value="INACTIVE" {% if employment_form.work_status.value == 'INACTIVE' %}selected{% endif %}>Inactive</option>
-                                <option value="ON_LEAVE" {% if employment_form.work_status.value == 'ON_LEAVE' %}selected{% endif %}>On Leave</option>
-                                <option value="TERMINATED" {% if employment_form.work_status.value == 'TERMINATED' %}selected{% endif %}>Terminated</option>
-                            </select>
-                        </div>
+                                <!-- Work Status -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
+                                    <select name="employment-{{ forloop.counter0 }}-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Work Status</option>
+                                        <option value="ACTIVE" {% if emp.work_status == 'ACTIVE' %}selected{% endif %}>Active</option>
+                                        <option value="INACTIVE" {% if emp.work_status == 'INACTIVE' %}selected{% endif %}>Inactive</option>
+                                        <option value="ON_LEAVE" {% if emp.work_status == 'ON_LEAVE' %}selected{% endif %}>On Leave</option>
+                                        <option value="TERMINATED" {% if emp.work_status == 'TERMINATED' %}selected{% endif %}>Terminated</option>
+                                    </select>
+                                </div>
 
-                        <!-- RP Expiry Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
-                            <input type="date" name="employment-rp_expiry_date" value="{{ employment_form.rp_expiry_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
+                                <!-- RP Expiry Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
+                                    <input type="date" name="employment-{{ forloop.counter0 }}-rp_expiry_date" value="{{ emp.rp_expiry_date|date:'Y-m-d'|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
 
-                        <!-- Work Permit No -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
-                            <input type="text" name="employment-work_permit_no" value="{{ employment_form.work_permit_no.value|default:'' }}" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
+                                <!-- Work Permit No -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
+                                    <input type="text" name="employment-{{ forloop.counter0 }}-work_permit_no" value="{{ emp.work_permit_no|default:'' }}" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
 
-                        <!-- Work ID -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
-                            <input type="text" name="employment-work_id" value="{{ employment_form.work_id.value|default:'' }}" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
+                                <!-- Work ID -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
+                                    <input type="text" name="employment-{{ forloop.counter0 }}-work_id" value="{{ emp.work_id|default:'' }}" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
 
-                        <!-- QID Renew Status -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
-                            <select name="employment-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                <option value="">Select Status</option>
-                                <option value="NOT_DUE" {% if employment_form.qid_renew_status.value == 'NOT_DUE' %}selected{% endif %}>Not Due</option>
-                                <option value="PENDING" {% if employment_form.qid_renew_status.value == 'PENDING' %}selected{% endif %}>Pending</option>
-                                <option value="RENEWED" {% if employment_form.qid_renew_status.value == 'RENEWED' %}selected{% endif %}>Renewed</option>
-                            </select>
-                        </div>
+                                <!-- QID Renew Status -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
+                                    <select name="employment-{{ forloop.counter0 }}-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="NOT_DUE" {% if emp.qid_renew_status == 'NOT_DUE' %}selected{% endif %}>Not Due</option>
+                                        <option value="PENDING" {% if emp.qid_renew_status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                        <option value="RENEWED" {% if emp.qid_renew_status == 'RENEWED' %}selected{% endif %}>Renewed</option>
+                                    </select>
+                                </div>
 
-                        <!-- QID Lost Status -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
-                            <select name="employment-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                <option value="">Select Status</option>
-                                <option value="YES" {% if employment_form.qid_lost_status.value == 'YES' %}selected{% endif %}>Yes</option>
-                                <option value="NO" {% if employment_form.qid_lost_status.value == 'NO' %}selected{% endif %}>No</option>
-                            </select>
+                                <!-- QID Lost Status -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
+                                    <select name="employment-{{ forloop.counter0 }}-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="YES" {% if emp.qid_lost_status == 'YES' %}selected{% endif %}>Yes</option>
+                                        <option value="NO" {% if emp.qid_lost_status == 'NO' %}selected{% endif %}>No</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+                        {% empty %}
+                        <!-- Empty form for new employment -->
+                        <div class="employment-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="0">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">Employment #1</h4>
+                                <button type="button" onclick="removeEmploymentForm(this)" class="text-red-500 hover:text-red-700 remove-employment-btn" style="display: none;">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <!-- Employment Joining Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
+                                    <input type="date" name="employment-0-joining_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+
+                                <!-- Work Status -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
+                                    <select name="employment-0-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Work Status</option>
+                                        <option value="ACTIVE">Active</option>
+                                        <option value="INACTIVE">Inactive</option>
+                                        <option value="ON_LEAVE">On Leave</option>
+                                        <option value="TERMINATED">Terminated</option>
+                                    </select>
+                                </div>
+
+                                <!-- RP Expiry Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
+                                    <input type="date" name="employment-0-rp_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+
+                                <!-- Work Permit No -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
+                                    <input type="text" name="employment-0-work_permit_no" value="" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+
+                                <!-- Work ID -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
+                                    <input type="text" name="employment-0-work_id" value="" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+
+                                <!-- QID Renew Status -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
+                                    <select name="employment-0-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="NOT_DUE">Not Due</option>
+                                        <option value="PENDING">Pending</option>
+                                        <option value="RENEWED">Renewed</option>
+                                    </select>
+                                </div>
+
+                                <!-- QID Lost Status -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
+                                    <select name="employment-0-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="YES">Yes</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -416,6 +503,171 @@
             placeholder: 'Select an option',
             allowClear: true
         });
+
+        // Update remove button visibility
+        updateEmploymentRemoveButtons();
     });
+
+    let employmentFormCount = {{ employments|length|default:1 }};
+    let deletedEmploymentIds = [];
+
+    function addEmploymentForm(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const container = document.getElementById('employment-forms-container');
+        const newIndex = employmentFormCount;
+        
+        const formHtml = `
+            <div class="employment-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="${newIndex}">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-sm font-semibold text-[var(--text-color)]">Employment #${newIndex + 1}</h4>
+                    <button type="button" onclick="removeEmploymentForm(this)" class="text-red-500 hover:text-red-700 remove-employment-btn">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <!-- Employment Joining Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
+                        <input type="date" name="employment-${newIndex}-joining_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- Work Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
+                        <select name="employment-${newIndex}-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <option value="">Select Work Status</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                            <option value="ON_LEAVE">On Leave</option>
+                            <option value="TERMINATED">Terminated</option>
+                        </select>
+                    </div>
+
+                    <!-- RP Expiry Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
+                        <input type="date" name="employment-${newIndex}-rp_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- Work Permit No -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
+                        <input type="text" name="employment-${newIndex}-work_permit_no" value="" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- Work ID -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
+                        <input type="text" name="employment-${newIndex}-work_id" value="" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- QID Renew Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
+                        <select name="employment-${newIndex}-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <option value="">Select Status</option>
+                            <option value="NOT_DUE">Not Due</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="RENEWED">Renewed</option>
+                        </select>
+                    </div>
+
+                    <!-- QID Lost Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
+                        <select name="employment-${newIndex}-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <option value="">Select Status</option>
+                            <option value="YES">Yes</option>
+                            <option value="NO">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', formHtml);
+        employmentFormCount++;
+        
+        // Update total forms counter
+        document.getElementById('employment-total-forms').value = employmentFormCount;
+        
+        // Reinitialize flatpickr for new date fields
+        flatpickr('.flatpickr-date', {
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+
+        // Update remove button visibility
+        updateEmploymentRemoveButtons();
+    }
+
+    function removeEmploymentForm(button) {
+        const formItem = button.closest('.employment-form-item');
+        const employmentId = formItem.getAttribute('data-id');
+        
+        // If it has an ID, track it for deletion
+        if (employmentId) {
+            deletedEmploymentIds.push(employmentId);
+            // Add hidden input to track deleted IDs
+            let deletedInput = document.querySelector('input[name="employment-DELETED_IDS"]');
+            if (!deletedInput) {
+                deletedInput = document.createElement('input');
+                deletedInput.type = 'hidden';
+                deletedInput.name = 'employment-DELETED_IDS';
+                document.querySelector('form').appendChild(deletedInput);
+            }
+            deletedInput.value = deletedEmploymentIds.join(',');
+        }
+        
+        formItem.remove();
+        
+        // Update numbering and reindex
+        reindexEmploymentForms();
+        
+        // Update remove button visibility
+        updateEmploymentRemoveButtons();
+    }
+
+    function reindexEmploymentForms() {
+        const formItems = document.querySelectorAll('.employment-form-item');
+        formItems.forEach((item, index) => {
+            // Update title
+            const title = item.querySelector('h4');
+            title.textContent = `Employment #${index + 1}`;
+            
+            // Update data-index
+            item.setAttribute('data-index', index);
+            
+            // Update all input/select names
+            const inputs = item.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                if (name && name.startsWith('employment-') && name !== 'employment-TOTAL_FORMS' && name !== 'employment-DELETED_IDS') {
+                    const newName = name.replace(/employment-\d+-/, `employment-${index}-`);
+                    input.setAttribute('name', newName);
+                }
+            });
+        });
+        
+        // Update total forms counter and employmentFormCount
+        employmentFormCount = formItems.length;
+        document.getElementById('employment-total-forms').value = employmentFormCount;
+    }
+
+    function updateEmploymentRemoveButtons() {
+        const formItems = document.querySelectorAll('.employment-form-item');
+        formItems.forEach((item) => {
+            const removeBtn = item.querySelector('.remove-employment-btn');
+            if (removeBtn) {
+                if (formItems.length > 1) {
+                    removeBtn.style.display = 'inline-flex';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            }
+        });
+    }
 </script>
 {% endblock %}

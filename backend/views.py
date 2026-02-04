@@ -621,7 +621,6 @@ def employee_create(request):
 
     if request.method == 'POST':
         employee_form = EmployeeForm(request.POST, request.FILES, prefix='employee')
-        employment_form = EmploymentForm(request.POST, prefix='employment')
         passport_form = PassportForm(request.POST, prefix='passport')
         driving_license_form = DrivingLicenseForm(request.POST, prefix='driving_license')
         health_insurance_form = HealthInsuranceForm(request.POST, prefix='health_insurance')
@@ -654,18 +653,55 @@ def employee_create(request):
             employee.updated_by = request.user
             employee.save()
 
-            # Save Employment if data provided
-            if employment_form.is_valid():
-                has_data = any([
-                    v for k, v in employment_form.cleaned_data.items() 
-                    if v not in [None, '', []]
-                ])
+            # Save Multiple Employment forms
+            employment_index = 0
+            while True:
+                # Check if employment data exists for this index
+                employment_prefix = f'employment-{employment_index}'
+                joining_date_key = f'{employment_prefix}-joining_date'
+                
+                if joining_date_key not in request.POST:
+                    break
+                
+                # Extract employment data for this index
+                employment_data = {
+                    'joining_date': request.POST.get(f'{employment_prefix}-joining_date'),
+                    'work_status': request.POST.get(f'{employment_prefix}-work_status'),
+                    'rp_expiry_date': request.POST.get(f'{employment_prefix}-rp_expiry_date'),
+                    'work_permit_no': request.POST.get(f'{employment_prefix}-work_permit_no'),
+                    'work_id': request.POST.get(f'{employment_prefix}-work_id'),
+                    'qid_renew_status': request.POST.get(f'{employment_prefix}-qid_renew_status'),
+                    'qid_lost_status': request.POST.get(f'{employment_prefix}-qid_lost_status'),
+                }
+                
+                # Check if any data is provided
+                has_data = any([v for v in employment_data.values() if v not in [None, '', []]])
+                
                 if has_data:
-                    employment = employment_form.save(commit=False)
-                    employment.employee = employee
-                    employment.created_by = request.user
-                    employment.updated_by = request.user
+                    employment = Employment(
+                        employee=employee,
+                        created_by=request.user,
+                        updated_by=request.user
+                    )
+                    
+                    if employment_data['joining_date']:
+                        employment.joining_at = employment_data['joining_date']
+                    if employment_data['work_status']:
+                        employment.work_status = employment_data['work_status']
+                    if employment_data['rp_expiry_date']:
+                        employment.rp_expiry_date = employment_data['rp_expiry_date']
+                    if employment_data['work_permit_no']:
+                        employment.work_permit_no = employment_data['work_permit_no']
+                    if employment_data['work_id']:
+                        employment.work_id = employment_data['work_id']
+                    if employment_data['qid_renew_status']:
+                        employment.qid_renew_status = employment_data['qid_renew_status']
+                    if employment_data['qid_lost_status']:
+                        employment.qid_lost_status = employment_data['qid_lost_status']
+                    
                     employment.save()
+                
+                employment_index += 1
 
             # Save Passport if data provided
             if passport_form.is_valid():
@@ -738,7 +774,6 @@ def employee_create(request):
             return redirect('employee:list')
     else:
         employee_form = EmployeeForm(prefix='employee')
-        employment_form = EmploymentForm(prefix='employment')
         passport_form = PassportForm(prefix='passport')
         driving_license_form = DrivingLicenseForm(prefix='driving_license')
         health_insurance_form = HealthInsuranceForm(prefix='health_insurance')
@@ -747,7 +782,6 @@ def employee_create(request):
 
     context = {
         'employee_form': employee_form,
-        'employment_form': employment_form,
         'passport_form': passport_form,
         'driving_license_form': driving_license_form,
         'health_insurance_form': health_insurance_form,
@@ -769,7 +803,7 @@ def employee_update(request, pk):
     employee = Employee.objects.get(pk=pk)
     
     # Get related objects or None
-    employment = Employment.objects.filter(employee=employee, is_active=True).first()
+    employments = Employment.objects.filter(employee=employee, is_active=True)
     passport = Passport.objects.filter(employee=employee, is_active=True).first()
     driving_license = DrivingLicense.objects.filter(employee=employee, is_active=True).first()
     health_insurance = HealthInsurance.objects.filter(employee=employee, is_active=True).first()
@@ -779,7 +813,6 @@ def employee_update(request, pk):
 
     if request.method == 'POST':
         employee_form = EmployeeForm(request.POST, request.FILES, instance=employee, prefix='employee')
-        employment_form = EmploymentForm(request.POST, instance=employment, prefix='employment')
         passport_form = PassportForm(request.POST, instance=passport, prefix='passport')
         driving_license_form = DrivingLicenseForm(request.POST, instance=driving_license, prefix='driving_license')
         health_insurance_form = HealthInsuranceForm(request.POST, instance=health_insurance, prefix='health_insurance')
@@ -815,20 +848,66 @@ def employee_update(request, pk):
             employee.updated_by = request.user
             employee.save()
 
-            # Update or Create Employment
-            if employment_form.is_valid():
-                # Check if any field has a value (not just empty strings or None)
-                has_data = any([
-                    v for k, v in employment_form.cleaned_data.items() 
-                    if v not in [None, '', []]
-                ])
+            # Handle deleted employments
+            deleted_ids = request.POST.get('employment-DELETED_IDS', '')
+            if deleted_ids:
+                deleted_id_list = [int(id) for id in deleted_ids.split(',') if id]
+                Employment.objects.filter(id__in=deleted_id_list, employee=employee).update(is_active=False, deleted=True)
+
+            # Handle multiple employment forms
+            employment_index = 0
+            while True:
+                employment_prefix = f'employment-{employment_index}'
+                joining_date_key = f'{employment_prefix}-joining_date'
+                
+                if joining_date_key not in request.POST:
+                    break
+                
+                # Extract employment data for this index
+                employment_id = request.POST.get(f'{employment_prefix}-id')
+                employment_data = {
+                    'joining_date': request.POST.get(f'{employment_prefix}-joining_date'),
+                    'work_status': request.POST.get(f'{employment_prefix}-work_status'),
+                    'rp_expiry_date': request.POST.get(f'{employment_prefix}-rp_expiry_date'),
+                    'work_permit_no': request.POST.get(f'{employment_prefix}-work_permit_no'),
+                    'work_id': request.POST.get(f'{employment_prefix}-work_id'),
+                    'qid_renew_status': request.POST.get(f'{employment_prefix}-qid_renew_status'),
+                    'qid_lost_status': request.POST.get(f'{employment_prefix}-qid_lost_status'),
+                }
+                
+                # Check if any data is provided
+                has_data = any([v for v in employment_data.values() if v not in [None, '', []]])
+                
                 if has_data:
-                    emp_obj = employment_form.save(commit=False)
-                    emp_obj.employee = employee
-                    emp_obj.updated_by = request.user
-                    if not employment:
-                        emp_obj.created_by = request.user
+                    if employment_id:
+                        # Update existing employment
+                        try:
+                            emp_obj = Employment.objects.get(id=employment_id, employee=employee)
+                            emp_obj.updated_by = request.user
+                        except Employment.DoesNotExist:
+                            emp_obj = Employment(employee=employee, created_by=request.user, updated_by=request.user)
+                    else:
+                        # Create new employment
+                        emp_obj = Employment(employee=employee, created_by=request.user, updated_by=request.user)
+                    
+                    if employment_data['joining_date']:
+                        emp_obj.joining_at = employment_data['joining_date']
+                    if employment_data['work_status']:
+                        emp_obj.work_status = employment_data['work_status']
+                    if employment_data['rp_expiry_date']:
+                        emp_obj.rp_expiry_date = employment_data['rp_expiry_date']
+                    if employment_data['work_permit_no']:
+                        emp_obj.work_permit_no = employment_data['work_permit_no']
+                    if employment_data['work_id']:
+                        emp_obj.work_id = employment_data['work_id']
+                    if employment_data['qid_renew_status']:
+                        emp_obj.qid_renew_status = employment_data['qid_renew_status']
+                    if employment_data['qid_lost_status']:
+                        emp_obj.qid_lost_status = employment_data['qid_lost_status']
+                    
                     emp_obj.save()
+                
+                employment_index += 1
 
             # Update or Create Passport
             if passport_form.is_valid():
@@ -917,7 +996,6 @@ def employee_update(request, pk):
             return redirect('employee:list')
     else:
         employee_form = EmployeeForm(instance=employee, prefix='employee')
-        employment_form = EmploymentForm(instance=employment, prefix='employment')
         passport_form = PassportForm(instance=passport, prefix='passport')
         driving_license_form = DrivingLicenseForm(instance=driving_license, prefix='driving_license')
         health_insurance_form = HealthInsuranceForm(instance=health_insurance, prefix='health_insurance')
@@ -928,7 +1006,7 @@ def employee_update(request, pk):
     context = {
         'employee': employee,
         'employee_form': employee_form,
-        'employment_form': employment_form,
+        'employments': employments,
         'passport_form': passport_form,
         'driving_license_form': driving_license_form,
         'health_insurance_form': health_insurance_form,
@@ -1028,9 +1106,11 @@ class EmployeeDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         employee = self.get_object()
 
-        context['employment'] = Employment.objects.filter(employee=employee, is_active=True).first()
+        context['employments'] = Employment.objects.filter(employee=employee, is_active=True).order_by('-created_at')
         context['passport'] = Passport.objects.filter(employee=employee, is_active=True).first()
+        context['passport_history'] = Passport.objects.filter(employee=employee).order_by('-created_at')
         context['driving_license'] = DrivingLicense.objects.filter(employee=employee, is_active=True).first()
+        context['driving_license_history'] = DrivingLicense.objects.filter(employee=employee).order_by('-created_at')
         context['health_insurance'] = HealthInsurance.objects.filter(employee=employee, is_active=True).first()
         context['contact'] = Contact.objects.filter(employee=employee, is_active=True).first()
         context['address'] = Address.objects.filter(employee=employee, is_active=True).first()

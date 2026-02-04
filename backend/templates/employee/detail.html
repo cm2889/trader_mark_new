@@ -97,46 +97,62 @@
                 </div>
             </div>
 
-            <!-- Employment Details -->
-            {% with employment=employee.employments.first %}
-            {% if employment %}
+            <!-- Employment Details - All Records -->
+            {% if employments %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="px-6 py-4 border-b border-[var(--border-color)]">
+                <div class="px-6 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Employment Details</h3>
+                    <span class="text-xs text-[var(--text-light-color)]">{{ employments|length }} record(s)</span>
                 </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Employment Joining Date</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employment.joining_date|date:"F d, Y" }}</p>
+                <div class="p-6 space-y-6">
+                    {% for employment in employments %}
+                    <div class="{% if not forloop.last %}border-b border-[var(--border-color)] pb-6{% endif %}">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-sm font-semibold text-[var(--text-color)]">
+                                Employment #{{ forloop.counter }}
+                                {% if employment.is_active %}
+                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Active</span>
+                                {% endif %}
+                            </h4>
+                            <span class="text-xs text-[var(--text-light-color)]">Created: {{ employment.created_at|date:"M d, Y" }}</span>
                         </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Status</p>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if employment.work_status == 'ACTIVE' %}bg-green-100 text-green-800{% elif employment.work_status == 'INACTIVE' %}bg-red-100 text-red-800{% elif employment.work_status == 'ON_LEAVE' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
-                                {{ employment.work_status }}
-                            </span>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">RP Expiry Date</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employment.rp_expiry_date|date:"F d, Y" }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Permit No</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employment.work_permit_no }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work ID</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employment.work_id }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID Renew Status</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employment.qid_renew_status }}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Joining Date</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employment.joining_at|date:"F d, Y"|default:"-" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Status</p>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if employment.work_status == 'ACTIVE' %}bg-green-100 text-green-800{% elif employment.work_status == 'INACTIVE' %}bg-red-100 text-red-800{% elif employment.work_status == 'ON_LEAVE' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ employment.get_work_status_display|default:employment.work_status }}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">RP Expiry Date</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employment.rp_expiry_date|date:"F d, Y"|default:"-" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Permit No</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employment.work_permit_no|default:"-" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work ID</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employment.work_id|default:"-" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID Renew Status</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employment.get_qid_renew_status_display|default:employment.qid_renew_status|default:"-" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID Lost Status</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employment.get_qid_lost_status_display|default:employment.qid_lost_status|default:"-" }}</p>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
             {% endif %}
-            {% endwith %}
 
             <!-- Contact Information -->
             {% if employee.contact %}
@@ -194,6 +210,14 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
+                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Present Address</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.present_address }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Permanent Address</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.permanent_address }}</p>
+                        </div>
+                        <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">National Address</p>
                             <p class="text-sm text-[var(--text-color)]">{{ employee.address.national_address }}</p>
                         </div>
@@ -206,14 +230,14 @@
             </div>
             {% endif %}
 
-            <!-- Passport Information -->
-            {% with passport=employee.passports.first %}
+            <!-- Passport Information (active + history) -->
             {% if passport %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="px-6 py-4 border-b border-[var(--border-color)]">
+                <div class="px-6 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Passport Information</h3>
+                    <span class="text-xs text-[var(--text-light-color)]">Active record shown below, history follows</span>
                 </div>
-                <div class="p-6">
+                <div class="p-6 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Passport No</p>
@@ -232,32 +256,92 @@
                             {% endif %}
                         </div>
                     </div>
+
+                    {% if passport_history|length > 1 %}
+                    <div class="border-t border-[var(--border-color)] pt-4">
+                        <p class="text-sm font-medium text-[var(--text-color)] mb-3">Previous Passports</p>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-[var(--border-color)] text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Passport No</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Expiry Date</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Renewed</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Active</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[var(--border-color)]">
+                                    {% for item in passport_history %}
+                                    <tr class="{% if item.id == passport.id %}bg-green-50{% endif %}">
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.passport_no }}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.passport_expiry_date|date:"F d, Y" }}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{% if item.passport_renewed %}Yes{% else %}No{% endif %}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{% if item.is_active %}Active{% else %}Inactive{% endif %}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.created_at|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
-            {% endwith %}
 
-            <!-- Driving License -->
-            {% if employee.drivinglicense %}
+            <!-- Driving License (active + history) -->
+            {% if driving_license %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="px-6 py-4 border-b border-[var(--border-color)]">
+                <div class="px-6 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Driving License</h3>
+                    <span class="text-xs text-[var(--text-light-color)]">Active record shown below, history follows</span>
                 </div>
-                <div class="p-6">
+                <div class="p-6 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">License No</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.drivinglicense.license_no }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ driving_license.license_no }}</p>
                         </div>
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Expiry Date</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.drivinglicense.license_expiry_date|date:"F d, Y" }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ driving_license.license_expiry_date|date:"F d, Y" }}</p>
                         </div>
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Renew Status</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.drivinglicense.license_renew_status }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ driving_license.license_renew_status }}</p>
                         </div>
                     </div>
+
+                    {% if driving_license_history|length > 1 %}
+                    <div class="border-t border-[var(--border-color)] pt-4">
+                        <p class="text-sm font-medium text-[var(--text-color)] mb-3">Previous Licenses</p>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-[var(--border-color)] text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">License No</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Expiry Date</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Renew Status</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Active</th>
+                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[var(--border-color)]">
+                                    {% for item in driving_license_history %}
+                                    <tr class="{% if item.id == driving_license.id %}bg-green-50{% endif %}">
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_no }}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_expiry_date|date:"F d, Y" }}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_renew_status }}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{% if item.is_active %}Active{% else %}Inactive{% endif %}</td>
+                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.created_at|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
