@@ -279,34 +279,6 @@ class SMSLog(models.Model):
         return str(self.mobile_number)
     
 
-
-class SiteSettings(models.Model):
-    site_title = models.CharField(max_length=255, default="Demo HRMS")
-    logo = models.ImageField(upload_to='settings/logo/', blank=True, null=True)
-    favicon = models.ImageField(upload_to='settings/favicon/', blank=True, null=True)
-
-    contact_email = models.EmailField(blank=True, null=True)
-    contact_phone = models.CharField(max_length=20, blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-
-    facebook_url = models.URLField(blank=True, null=True)
-    instagram_url = models.URLField(blank=True, null=True)
-
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='site_settings_created_by', blank=True, null=True)
-    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='site_settings_updated_by', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        db_table = 'site_settings'
-        verbose_name_plural = 'Site Settings'
-        ordering = ['-is_active']
-
-    def __str__(self):
-        return self.site_title if self.site_title else "Site Settings"
-    
-
 class Nationality(models.Model):
     code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=100)
