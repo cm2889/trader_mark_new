@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Maintenance Detail{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+<span class="mx-1">›</span>
+<a href="{% url 'vehicle_maintenance:list' %}">Maintenance</a>
+<span class="mx-1">›</span>
+<span>Detail</span>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="mb-8">
+        <div class="flex items-center gap-4 mb-2">
+            <a href="{% url 'vehicle_maintenance:list' %}" class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Maintenance Details</h1>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-medium text-gray-500">Vehicle</label>
+                    <p class="text-lg font-semibold text-gray-800">{{ maintenance.vehicle.vehicle.plate_no }}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-500">Maintenance Type</label>
+                    <p class="text-lg text-gray-800">{{ maintenance.maintenance_type }}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-500">Cost</label>
+                    <p class="text-lg font-semibold text-gray-800">{{ maintenance.cost }}</p>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-medium text-gray-500">Maintenance Date</label>
+                    <p class="text-lg text-gray-800">{{ maintenance.maintenance_date|date:"F d, Y" }}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-500">Status</label>
+                    <p class="mt-1">
+                        {% if maintenance.status == 'PENDING' %}
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">Pending</span>
+                        {% elif maintenance.status == 'IN_PROGRESS' %}
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">In Progress</span>
+                        {% else %}
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Completed</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            {% if maintenance.remarks %}
+            <div class="md:col-span-2">
+                <label class="text-sm font-medium text-gray-500">Remarks</label>
+                <p class="text-gray-800 mt-1">{{ maintenance.remarks }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="flex gap-4 pt-6 mt-6 border-t border-gray-200">
+            <a href="{% url 'vehicle_maintenance:update' maintenance.pk %}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-edit"></i><span>Edit</span>
+            </a>
+            <a href="{% url 'vehicle_maintenance:delete' maintenance.pk %}" onclick="return confirm('Are you sure?')" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-trash"></i><span>Delete</span>
+            </a>
+            <a href="{% url 'vehicle_maintenance:list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i><span>Back to List</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

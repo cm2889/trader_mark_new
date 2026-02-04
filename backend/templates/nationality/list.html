@@ -183,3 +183,18 @@
     {% endif %}
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('.select2-filter').select2({
+            theme: 'default',
+            width: '100%',
+            placeholder: function() {
+                return $(this).find('option:first').text();
+            },
+            allowClear: true
+        });
+    });
+</script>
+{% endblock %}

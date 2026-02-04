@@ -1,23 +1,78 @@
 from django.contrib import admin
 from .models import (
-    Nationality, 
-    Employee, Employment, Passport, DrivingLicense, 
-    HealthInsurance, Contact, Address, Vehicle, BackendMenu
+    WebImages, PasswordResetCode, LoginLog, BackendMenu, UserMenuPermission,
+    SiteSettings, SiteDesignSettings, EmailConfiguration, SMSConfiguration, SMSLog,
+    Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance,
+    Contact, Address, Vehicle, VehicleHandover, VehicleItem, TrafficViolation,
+    VehicleRent, VehicleInstallment, VehicleMaintenance, VehicleAccident
 )
+
+@admin.register(WebImages)
+class WebImagesAdmin(admin.ModelAdmin):
+    list_display = ('unique_key', 'image', 'created_by', 'created_at')
+    search_fields = ('unique_key',)
+    readonly_fields = ('unique_key', 'created_at')
+
+@admin.register(PasswordResetCode)
+class PasswordResetCodeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'code', 'is_used', 'expires_at', 'created_at')
+    search_fields = ('user__email', 'user__username', 'code')
+    list_filter = ('is_used',)
+
+@admin.register(LoginLog)
+class LoginLogAdmin(admin.ModelAdmin):
+    list_display = ('username', 'login_ip', 'login_status', 'created_at')
+    search_fields = ('username', 'login_ip')
+    list_filter = ('login_status',)
 
 @admin.register(BackendMenu)
 class BackendMenuAdmin(admin.ModelAdmin):
-    list_display = ('module_name', 'menu_name', 'menu_url', 'is_active')
+    list_display = ('menu_name', 'module_name', 'menu_url', 'parent', 'is_active')
+    search_fields = ('menu_name', 'module_name')
+    list_filter = ('is_active', 'is_main_menu', 'is_sub_menu')
+
+@admin.register(UserMenuPermission)
+class UserMenuPermissionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'menu', 'can_view', 'can_add', 'can_update', 'can_delete', 'is_active')
+    search_fields = ('user__username', 'menu__menu_name')
+    list_filter = ('is_active', 'can_view')
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('site_title', 'contact_email', 'contact_phone', 'is_active')
+    search_fields = ('site_title', 'contact_email')
+
+@admin.register(SiteDesignSettings)
+class SiteDesignSettingsAdmin(admin.ModelAdmin):
+    list_display = ('primary_color', 'bg_color', 'text_color', 'created_at')
+
+@admin.register(EmailConfiguration)
+class EmailConfigurationAdmin(admin.ModelAdmin):
+    list_display = ('email_host_user', 'email_host', 'email_port', 'is_active')
+    search_fields = ('email_host_user', 'email_host')
+    list_filter = ('is_active', 'use_tls', 'use_ssl')
+
+@admin.register(SMSConfiguration)
+class SMSConfigurationAdmin(admin.ModelAdmin):
+    list_display = ('sms_provider', 'sms_id', 'status', 'created_at')
+    search_fields = ('sms_id', 'username')
+    list_filter = ('status', 'sms_provider')
+
+@admin.register(SMSLog)
+class SMSLogAdmin(admin.ModelAdmin):
+    list_display = ('mobile_number', 'status', 'created_at')
+    search_fields = ('mobile_number',)
+    list_filter = ('status',)
 
 @admin.register(Nationality)
 class NationalityAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code')
+    list_display = ('name', 'code', 'is_active')
     search_fields = ('name', 'code')
-    ordering = ('name',) 
+    ordering = ('name',)
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'hr_file_no', 'qid_no', 'nationality', 'joining_date', 'is_active')
+    list_display = ('full_name', 'hr_file_no', 'qid_no', 'nationality', 'joining_at', 'is_active')
     search_fields = ('first_name', 'last_name', 'hr_file_no', 'qid_no')
     list_filter = ('gender', 'nationality', 'is_active')
     ordering = ('first_name', 'last_name')
@@ -27,7 +82,6 @@ class EmploymentAdmin(admin.ModelAdmin):
     list_display = ('employee', 'work_status', 'work_permit_no', 'qid_renew_status', 'is_active')
     search_fields = ('employee__first_name', 'employee__last_name', 'work_permit_no', 'work_id')
     list_filter = ('work_status', 'qid_renew_status', 'is_active')
-    ordering = ('employee__first_name', 'employee__last_name')
 
 @admin.register(Passport)
 class PassportAdmin(admin.ModelAdmin):
@@ -53,7 +107,6 @@ class HealthInsuranceAdmin(admin.ModelAdmin):
 class ContactAdmin(admin.ModelAdmin):
     list_display = ('employee', 'phone_no', 'home_email')
     search_fields = ('employee__first_name', 'employee__last_name', 'phone_no', 'home_email')
-    ordering = ('employee__first_name', 'employee__last_name')
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
@@ -62,7 +115,51 @@ class AddressAdmin(admin.ModelAdmin):
 
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'vehicle_no', 'istemara_expiry_date')
-    search_fields = ('employee__first_name', 'employee__last_name', 'vehicle_no')
+    list_display = ('plate_no', 'vehicle_type', 'ownership', 'istemara_expiry_date', 'insurance_name', 'is_active')
+    search_fields = ('plate_no', 'insurance_name')
+    list_filter = ('vehicle_type', 'ownership', 'is_active')
     ordering = ('istemara_expiry_date',)
+
+
+@admin.register(VehicleHandover)
+class VehicleHandoverAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'from_employee', 'to_employee', 'handover_date')
+    search_fields = ('vehicle__plate_no', 'from_employee__first_name', 'to_employee__first_name')
+    list_filter = ('handover_date',)
+
+@admin.register(VehicleItem)
+class VehicleItemAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'item_name', 'quantity', 'item_value', 'issued_date', 'is_missing')
+    search_fields = ('vehicle__plate_no', 'item_name')
+    list_filter = ('is_missing', 'issued_date')
+
+@admin.register(TrafficViolation)
+class TrafficViolationAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'employee', 'violation_type', 'violation_date', 'fine_amount', 'is_paid')
+    search_fields = ('vehicle__plate_no', 'employee__first_name', 'violation_type')
+    list_filter = ('is_paid', 'violation_date')
+
+@admin.register(VehicleRent)
+class VehicleRentAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'amount', 'rent_month', 'is_paid')
+    search_fields = ('vehicle__plate_no',)
+    list_filter = ('is_paid', 'rent_month')
+
+@admin.register(VehicleInstallment)
+class VehicleInstallmentAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'installment_no', 'amount', 'due_date', 'is_paid')
+    search_fields = ('vehicle__plate_no',)
+    list_filter = ('is_paid', 'due_date')
+
+@admin.register(VehicleMaintenance)
+class VehicleMaintenanceAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'maintenance_type', 'cost', 'status', 'maintenance_date')
+    search_fields = ('vehicle__plate_no', 'maintenance_type')
+    list_filter = ('status', 'maintenance_date')
+
+@admin.register(VehicleAccident)
+class VehicleAccidentAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'employee', 'accident_date', 'accident_place', 'damage_cost', 'insurance_claimed')
+    search_fields = ('vehicle__plate_no', 'employee__first_name', 'accident_place')
+    list_filter = ('insurance_claimed', 'accident_date')
 

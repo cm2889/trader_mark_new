@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Vehicle Maintenance{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+<span class="mx-1">›</span>
+<a href="{% url 'vehicle_maintenance:list' %}">Maintenance</a>
+<span class="mx-1">›</span>
+<span>Add</span>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+    <div class="mb-8">
+        <div class="flex items-center gap-4 mb-2">
+            <a href="{% url 'vehicle_maintenance:list' %}" class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Add Vehicle Maintenance</h1>
+        </div>
+        <p class="text-gray-600 ml-12">Record a new maintenance</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.vehicle.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Vehicle <span class="text-red-500">*</span></label>
+                    {{ form.vehicle }}
+                </div>
+                <div>
+                    <label for="{{ form.maintenance_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Maintenance Type <span class="text-red-500">*</span></label>
+                    {{ form.maintenance_type }}
+                </div>
+                <div>
+                    <label for="{{ form.cost.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Cost <span class="text-red-500">*</span></label>
+                    {{ form.cost }}
+                </div>
+                <div>
+                    <label for="{{ form.maintenance_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Maintenance Date <span class="text-red-500">*</span></label>
+                    {{ form.maintenance_date }}
+                </div>
+                <div>
+                    <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Status <span class="text-red-500">*</span></label>
+                    {{ form.status }}
+                </div>
+                <div class="md:col-span-2">
+                    <label for="{{ form.remarks.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                    {{ form.remarks }}
+                </div>
+            </div>
+            <div class="flex gap-4 pt-4 border-t border-gray-200">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i><span>Create Maintenance</span>
+                </button>
+                <a href="{% url 'vehicle_maintenance:list' %}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 text-center">
+                    <i class="fas fa-times"></i><span>Cancel</span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    input[type="text"], input[type="number"], input[type="date"], textarea, select { width: 100%; padding: 0.625rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+</style>
+{% endblock %}

@@ -20,7 +20,7 @@
     "model": "backend.backendmenu",
     "pk": 2,
     "fields": {
-      "module_name": "Employee Management",
+      "module_name": "Employee Setup",
       "menu_name": "Employee Management",
       "menu_url": "employee-management",
       "menu_icon": "fa-solid fa-user-tie",
@@ -35,38 +35,6 @@
   {
     "model": "backend.backendmenu",
     "pk": 3,
-    "fields": {
-      "module_name": "Documents Management",
-      "menu_name": "Documents Management",
-      "menu_url": "documents-management",
-      "menu_icon": "fa-solid fa-file",
-      "menu_description": "Manage employee documents.",
-      "parent": null,
-      "is_main_menu": true,
-      "is_sub_menu": false,
-      "is_sub_child_menu": false,
-      "is_active": true
-    }
-  },
-  {
-    "model": "backend.backendmenu",
-    "pk": 4,
-    "fields": {
-      "module_name": "Contact Information",
-      "menu_name": "Contact Information",
-      "menu_url": "contact-information",
-      "menu_icon": "fa-solid fa-address-book",
-      "menu_description": "Manage contact and address information.",
-      "parent": null,
-      "is_main_menu": true,
-      "is_sub_menu": false,
-      "is_sub_child_menu": false,
-      "is_active": true
-    }
-  },
-  {
-    "model": "backend.backendmenu",
-    "pk": 5,
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Management",
@@ -84,7 +52,7 @@
 
   {
     "model": "backend.backendmenu",
-    "pk": 6,
+    "pk": 4,
     "fields": {
       "module_name": "User Management",
       "menu_name": "User Setup",
@@ -100,17 +68,49 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 7,
+    "pk": 5,
     "fields": {
       "module_name": "User Management",
       "menu_name": "User List",
       "menu_url": "/backend/user/",
       "menu_icon": "fa-solid fa-users",
       "menu_description": "View users.",
-      "parent": 6,
+      "parent": 4,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 6,
+    "fields": {
+      "module_name": "User Management",
+      "menu_name": "Add User",
+      "menu_url": "/backend/user/add/",
+      "menu_icon": "fa-solid fa-user-plus",
+      "menu_description": "Create new user.",
+      "parent": 4,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 7,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employee Setup",
+      "menu_url": "employee-setup",
+      "menu_icon": "fa-solid fa-flag",
+      "menu_description": "Employee setup options.",
+      "parent": 2,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
       "is_active": true
     }
   },
@@ -118,46 +118,12 @@
     "model": "backend.backendmenu",
     "pk": 8,
     "fields": {
-      "module_name": "User Management",
-      "menu_name": "Add User",
-      "menu_url": "/backend/user/add/",
-      "menu_icon": "fa-solid fa-user-plus",
-      "menu_description": "Create new user.",
-      "parent": 6,
-      "is_main_menu": false,
-      "is_sub_menu": false,
-      "is_sub_child_menu": true,
-      "is_active": true
-    }
-  },
-
-
-  {
-    "model": "backend.backendmenu",
-    "pk": 9,
-    "fields": {
-      "module_name": "Employee Management",
-      "menu_name": "Nationality",
-      "menu_url": "nationality-setup",
-      "menu_icon": "fa-solid fa-flag",
-      "menu_description": "Manage nationality.",
-      "parent": 2,
-      "is_main_menu": false,
-      "is_sub_menu": true,
-      "is_sub_child_menu": false,
-      "is_active": true
-    }
-  },
-  {
-    "model": "backend.backendmenu",
-    "pk": 10,
-    "fields": {
       "module_name": "Nationality Management",
       "menu_name": "Nationality",
       "menu_url": "/backend/nationality/",
       "menu_icon": "fa-solid fa-id-card",
       "menu_description": "Nationality records.",
-      "parent": 9,
+      "parent": 7,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -166,17 +132,49 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 11,
+    "pk": 9,
     "fields": {
-      "module_name": "Nationality Management",
-      "menu_name": "Create Nationality",
-      "menu_url": "/backend/nationality/create/",
-      "menu_icon": "fa-solid fa-briefcase",
-      "menu_description": "Create new nationality.",
+      "module_name": "Employee Management",
+      "menu_name": "Employee",
+      "menu_url": "employee",
+      "menu_icon": "fa-solid fa-user-plus",
+      "menu_description": "new employee.",
+      "parent": 2,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 10,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employee List",
+      "menu_url": "/backend/employee/",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "Employee records.",
       "parent": 9,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 11,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Setup",
+      "menu_url": "vehicle-setup",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "Vehicle setup options.",
+      "parent": 3,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
       "is_active": true
     }
   },
@@ -184,28 +182,28 @@
     "model": "backend.backendmenu",
     "pk": 12,
     "fields": {
-      "module_name": "Employee Management",
-      "menu_name": "Employee",
-      "menu_url": "employee-setup",
-      "menu_icon": "fa-solid fa-user-tie",
-      "menu_description": "Employee records.",
-      "parent": 2,
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Info",
+      "menu_url": "/backend/vehicle-info/",
+      "menu_icon": "fa-solid fa-car",
+      "menu_description": "Manage vehicle information.",
+      "parent": 11,
       "is_main_menu": false,
-      "is_sub_menu": true,
-      "is_sub_child_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
       "is_active": true
     }
-  }, 
+  },
   {
     "model": "backend.backendmenu",
     "pk": 13,
     "fields": {
-      "module_name": "Employee Management",
-      "menu_name": "Employee List",
-      "menu_url": "/backend/employee/",
-      "menu_icon": "fa-solid fa-list",
-      "menu_description": "Employee records.",
-      "parent": 12,
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Handover",
+      "menu_url": "/backend/vehicle-handover/",
+      "menu_icon": "fa-solid fa-handshake",
+      "menu_description": "Manage vehicle handovers.",
+      "parent": 11,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -216,60 +214,60 @@
     "model": "backend.backendmenu",
     "pk": 14,
     "fields": {
-      "module_name": "Employee Management",
-      "menu_name": "Employee create",
-      "menu_url": "/backend/employee/create/",
-      "menu_icon": "fa-solid fa-user-plus",
-      "menu_description": "View employee create.",
-      "parent": 12,
+      "module_name": "Vehicle Management",
+      "menu_name": "Traffic Violations",
+      "menu_url": "/backend/traffic-violation/",
+      "menu_icon": "fa-solid fa-triangle-exclamation",
+      "menu_description": "Manage traffic violations.",
+      "parent": 11,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
       "is_active": true
     }
-  }, 
+  },
   {
     "model": "backend.backendmenu",
     "pk": 15,
     "fields": {
-      "module_name": "Documents Management",
-      "menu_name": "Passport",
-      "menu_url": "passport-setup",
-      "menu_icon": "fa-solid fa-passport",
-      "menu_description": "Manage passports.",
-      "parent": 3,
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Rent",
+      "menu_url": "/backend/vehicle-rent/",
+      "menu_icon": "fa-solid fa-money-bill",
+      "menu_description": "Manage vehicle rentals.",
+      "parent": 11,
       "is_main_menu": false,
-      "is_sub_menu": true,
-      "is_sub_child_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
       "is_active": true
     }
-  }, 
+  },
   {
     "model": "backend.backendmenu",
     "pk": 16,
     "fields": {
-      "module_name": "Documents Management",
-      "menu_name": "Passport List",
-      "menu_url": "/backend/passport/",
-      "menu_icon": "fa-solid fa-list",
-      "menu_description": "View passports.",
-      "parent": 15,
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Maintenance",
+      "menu_url": "/backend/vehicle-maintenance/",
+      "menu_icon": "fa-solid fa-wrench",
+      "menu_description": "Manage vehicle maintenance.",
+      "parent": 11,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
       "is_active": true
     }
-  }, 
+  },
   {
     "model": "backend.backendmenu",
     "pk": 17,
     "fields": {
-      "module_name": "Documents Management",
-      "menu_name": "Add Passport",
-      "menu_url": "/backend/employee/create/",
-      "menu_icon": "fa-solid fa-plus",
-      "menu_description": "Add new passport.",
-      "parent": 15,
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Accidents",
+      "menu_url": "/backend/vehicle-accident/",
+      "menu_icon": "fa-solid fa-car-burst",
+      "menu_description": "Manage vehicle accidents.",
+      "parent": 11,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -278,142 +276,30 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 24,
+    "pk": 18,
     "fields": {
-      "module_name": "Driving License Management",
-      "menu_name": "Driving License Management",
-      "menu_url": "driving-license-management",
-      "menu_icon": "fa-solid fa-id-card",
-      "menu_description": "Manage driving licenses.",
-      "parent": null,
-      "is_main_menu": true,
-      "is_sub_menu": false,
-      "is_sub_child_menu": false,
-      "is_active": true
-    }
-  }, 
-  {
-    "model": "backend.backendmenu",
-    "pk": 25,
-    "fields": {
-      "module_name": "Driving License Management",
-      "menu_name": "Driving License Setup",
-      "menu_url": "driving-license-setup",
-      "menu_icon": "fa-solid fa-list",
-      "menu_description": "Driving license setup options.",
-      "parent": 24,
-      "is_main_menu": false,
-      "is_sub_menu": true,
-      "is_sub_child_menu": false,
-      "is_active": true
-    }
-  }, 
-  {
-    "model": "backend.backendmenu",
-    "pk": 26,
-    "fields": {
-      "module_name": "Driving License Management",
-      "menu_name": "Driving License List",
-      "menu_url": "/backend/driving-license/",
-      "menu_icon": "fa-solid fa-address-book",
-      "menu_description": "View driving licenses.",
-      "parent": 25,
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Installments",
+      "menu_url": "/backend/vehicle-installment/",
+      "menu_icon": "fa-solid fa-receipt",
+      "menu_description": "Manage vehicle installments.",
+      "parent": 11,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
       "is_active": true
     }
   },
-  {
-    "model": "backend.backendmenu",
-    "pk": 27,
-    "fields": {
-      "module_name": "Driving License Management",
-      "menu_name": "Add Driving License",
-      "menu_url": "/backend/employee/create/",
-      "menu_icon": "fa-solid fa-plus",
-      "menu_description": "Add new driving license.",
-      "parent": 25,
-      "is_main_menu": false,
-      "is_sub_menu": false,
-      "is_sub_child_menu": true,
-      "is_active": true
-    }
-  }, 
   {
     "model": "backend.backendmenu",
     "pk": 19,
     "fields": {
-      "module_name": "Contact Information",
-      "menu_name": "Contact Setup",
-      "menu_url": "contact-setup",
-      "menu_icon": "fa-solid fa-address-book",
-      "menu_description": "Manage contacts and addresses.",
-      "parent": 4,
-      "is_main_menu": false,
-      "is_sub_menu": true,
-      "is_sub_child_menu": false,
-      "is_active": true
-    }
-  }, 
-  {
-    "model": "backend.backendmenu",
-    "pk": 20,
-    "fields": {
-      "module_name": "Contact Information",
-      "menu_name": "Contact List",
-      "menu_url": "/backend/contact/",
-      "menu_icon": "fa-solid fa-list",
-      "menu_description": "View contacts.",
-      "parent": 19,
-      "is_main_menu": false,
-      "is_sub_menu": false,
-      "is_sub_child_menu": true,
-      "is_active": true
-    }
-  },
-  {
-    "model": "backend.backendmenu",
-    "pk": 21,
-    "fields": {
-      "module_name": "Contact Information",
-      "menu_name": "Add Contact",
-      "menu_url": "/backend/employee/create/",
-      "menu_icon": "fa-solid fa-plus",
-      "menu_description": "Add new contact.",
-      "parent": 19,
-      "is_main_menu": false,
-      "is_sub_menu": false,
-      "is_sub_child_menu": true,
-      "is_active": true
-    }
-  }, 
-  {
-    "model": "backend.backendmenu",
-    "pk": 22,
-    "fields": {
       "module_name": "Vehicle Management",
-      "menu_name": "Vehicle Setup",
-      "menu_url": "vehicle-setup",
-      "menu_icon": "fa-solid fa-car",
-      "menu_description": "Manage vehicles.",
-      "parent": 5,
-      "is_main_menu": false,
-      "is_sub_menu": true,
-      "is_sub_child_menu": false,
-      "is_active": true
-    }
-  }, 
-  {
-    "model": "backend.backendmenu",
-    "pk": 23,
-    "fields": {
-      "module_name": "Vehicle Management",
-      "menu_name": "Vehicle List",
-      "menu_url": "/backend/vehicle/",
-      "menu_icon": "fa-solid fa-list",
-      "menu_description": "View vehicles.",
-      "parent": 22,
+      "menu_name": "Vehicle Items",
+      "menu_url": "/backend/vehicle-item/",
+      "menu_icon": "fa-solid fa-box",
+      "menu_description": "Manage vehicle items.",
+      "parent": 11,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,

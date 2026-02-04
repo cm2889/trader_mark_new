@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vehicle Management{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+<span class="mx-1">›</span>
+<span>Dashboard</span>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-[var(--text-color)]">Vehicle Management Dashboard</h1>
+        <p class="text-[var(--text-light-color)] mt-1">Overview of all vehicle-related activities</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Vehicles -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Vehicles</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ total_vehicles }}</p>
+                </div>
+                <div class="p-3 bg-blue-100 rounded-full">
+                    <i class="fas fa-car text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traffic Violations -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-red-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Traffic Violations</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ total_violations }}</p>
+                    <p class="text-xs text-red-500">{{ unpaid_violations }} unpaid</p>
+                </div>
+                <div class="p-3 bg-red-100 rounded-full">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maintenance -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-yellow-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Maintenance</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ total_maintenance }}</p>
+                    <p class="text-xs text-yellow-500">{{ pending_maintenance }} pending</p>
+                </div>
+                <div class="p-3 bg-yellow-100 rounded-full">
+                    <i class="fas fa-wrench text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accidents -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Accidents</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ total_accidents }}</p>
+                </div>
+                <div class="p-3 bg-purple-100 rounded-full">
+                    <i class="fas fa-car-crash text-purple-500 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Access Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Vehicle Info -->
+        <a href="{% url 'vehicle_info:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                    <i class="fas fa-car text-blue-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Vehicle Info</h3>
+                    <p class="text-sm text-gray-500">{{ total_vehicles }} vehicles</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-blue-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+
+        <!-- Vehicle Handover -->
+        <a href="{% url 'vehicle_handover:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                    <i class="fas fa-exchange-alt text-green-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Handover</h3>
+                    <p class="text-sm text-gray-500">{{ total_handovers }} records</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-green-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+
+        <!-- Traffic Violations -->
+        <a href="{% url 'traffic_violation:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Traffic Violations</h3>
+                    <p class="text-sm text-gray-500">{{ unpaid_violations }} unpaid</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-red-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+
+        <!-- Vehicle Rent -->
+        <a href="{% url 'vehicle_rent:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
+                    <i class="fas fa-money-bill-wave text-indigo-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Vehicle Rent</h3>
+                    <p class="text-sm text-gray-500">{{ unpaid_rent }} unpaid</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-indigo-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+
+        <!-- Maintenance -->
+        <a href="{% url 'vehicle_maintenance:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-yellow-100 rounded-lg group-hover:bg-yellow-200 transition-colors">
+                    <i class="fas fa-wrench text-yellow-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Maintenance</h3>
+                    <p class="text-sm text-gray-500">{{ pending_maintenance }} pending</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-yellow-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+
+        <!-- Accidents -->
+        <a href="{% url 'vehicle_accident:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                    <i class="fas fa-car-crash text-purple-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Accidents</h3>
+                    <p class="text-sm text-gray-500">{{ total_accidents }} records</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-purple-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+
+        <!-- Installments -->
+        <a href="{% url 'vehicle_installment:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-teal-100 rounded-lg group-hover:bg-teal-200 transition-colors">
+                    <i class="fas fa-credit-card text-teal-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Installments</h3>
+                    <p class="text-sm text-gray-500">{{ unpaid_installments }} unpaid</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-teal-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+
+        <!-- Vehicle Items -->
+        <a href="{% url 'vehicle_item:list' %}" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
+                    <i class="fas fa-box text-orange-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Vehicle Items</h3>
+                    <p class="text-sm text-gray-500">Merchandise & Items</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <span class="text-orange-600 text-sm font-medium group-hover:underline">Manage →</span>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

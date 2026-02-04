@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Employee Management{% endblock %}
 
+{% block title %}
+    Employee - Create
+{% endblock %}
 
 {% block breadcrumb %}
     <span class="mx-1">›</span>
@@ -10,14 +12,13 @@
     <span>Add</span>
 {% endblock %}
 
-
 {% block content %}
 <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-5xl mx-auto">
+    <div class="">
         <!-- Header -->
         <div class="mb-6">
-            <h1 class="text-2xl font-semibold text-[var(--text-color)]">Update Employee</h1>
-            <p class="text-sm text-[var(--text-light-color)] mt-1">Update employee information for {{ employee.full_name }}.</p>
+            <h1 class="text-2xl font-semibold text-[var(--text-color)]">Create Employee</h1>
+            <p class="text-sm text-[var(--text-light-color)] mt-1">Fill in the employee information below. Only basic info is required.</p>
         </div>
 
         <form method="post" enctype="multipart/form-data" class="space-y-4">
@@ -34,22 +35,7 @@
                 <div id="basic-info" class="px-6 pb-6 border-t border-[var(--border-color)]">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
 
-
-                        <!-- HR File No -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">HR File No <span class="text-red-500">*</span></label>
-                            <input type="text" name="employee-hr_file_no" value="{{ employee_form.hr_file_no.value|default:'' }}" placeholder="Enter HR File No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                            {% if employee_form.hr_file_no.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.hr_file_no.errors.0 }}</p>{% endif %}
-                        </div>
-
-                        <!-- QID No -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID No <span class="text-red-500">*</span></label>
-                            <input type="text" name="employee-qid_no" value="{{ employee_form.qid_no.value|default:'' }}" placeholder="Enter QID No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                            {% if employee_form.qid_no.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.qid_no.errors.0 }}</p>{% endif %}
-                        </div>
-
-                        <!-- First Name -->
+                         <!-- First Name -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">First Name <span class="text-red-500">*</span></label>
                             <input type="text" name="employee-first_name" value="{{ employee_form.first_name.value|default:'' }}" placeholder="Enter First Name" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
@@ -63,13 +49,22 @@
                             {% if employee_form.last_name.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.last_name.errors.0 }}</p>{% endif %}
                         </div>
 
+                        <!-- QID No -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID No <span class="text-red-500">*</span></label>
+                            <input type="text" name="employee-qid_no" value="{{ employee_form.qid_no.value|default:'' }}" placeholder="Enter QID No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.qid_no.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.qid_no.errors.0 }}</p>{% endif %}
+                        </div>
+
+                       
+
                         <!-- Nationality -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Nationality</label>
                             <select name="employee-nationality" class="select2-items w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                                 <option value="">Select Nationality</option>
                                 {% for nationality in nationalities %}
-                                <option value="{{ nationality.pk }}" {% if employee_form.nationality.value|stringformat:"s" == nationality.pk|stringformat:"s" %}selected{% endif %}>{{ nationality.name }}</option>
+                                <option value="{{ nationality.pk }}" {% if employee_form.nationality.value == nationality.pk|stringformat:"s" %}selected{% endif %}>{{ nationality.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -83,15 +78,8 @@
                                 <option value="F" {% if employee_form.gender.value == 'F' %}selected{% endif %}>Female</option>
                             </select>
                             {% if employee_form.gender.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.gender.errors.0 }}</p>{% endif %}
-                        </div>
-
-                        <!-- Joining Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Joining Date <span class="text-red-500">*</span></label>
-                            <input type="date" name="employee-joining_date" value="{% if employee_form.joining_date.value %}{{ employee_form.joining_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                            {% if employee_form.joining_date.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.joining_date.errors.0 }}</p>{% endif %}
-                        </div>
-
+                        </div
+                        
                         <!-- Remarks -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Remarks</label>
@@ -114,7 +102,7 @@
                         <!-- Employment Joining Date -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
-                            <input type="date" name="employment-joining_date" value="{% if employment_form.joining_date.value %}{{ employment_form.joining_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <input type="date" name="employment-joining_date" value="{{ employment_form.joining_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                         </div>
 
                         <!-- Work Status -->
@@ -132,7 +120,7 @@
                         <!-- RP Expiry Date -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
-                            <input type="date" name="employment-rp_expiry_date" value="{% if employment_form.rp_expiry_date.value %}{{ employment_form.rp_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <input type="date" name="employment-rp_expiry_date" value="{{ employment_form.rp_expiry_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                         </div>
 
                         <!-- Work Permit No -->
@@ -235,6 +223,20 @@
                     </svg>
                 </button>
                 <div id="address-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
+                    <div>
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Present
+                                Address</label>
+                            <textarea name="address-present_address" rows="3" placeholder="Enter Present Address"
+                                class="w-full px-3 py-2 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none resize-none">{{ address_form.present_address.value|default:'' }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Permanent
+                                Address</label>
+                            <textarea name="address-permanent_address" rows="3" placeholder="Enter Permanent Address"
+                                class="w-full px-3 py-2 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none resize-none">{{ address_form.permanent_address.value|default:'' }}</textarea>
+                        </div>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
                         <!-- National Address -->
                         <div>
@@ -270,7 +272,7 @@
                         <!-- Passport Expiry Date -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label>
-                            <input type="date" name="passport-passport_expiry_date" value="{% if passport_form.passport_expiry_date.value %}{{ passport_form.passport_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <input type="date" name="passport-passport_expiry_date" value="{{ passport_form.passport_expiry_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                         </div>
 
                         <!-- Passport Renewed -->
@@ -304,7 +306,7 @@
                         <!-- License Expiry Date -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label>
-                            <input type="date" name="driving_license-license_expiry_date" value="{% if driving_license_form.license_expiry_date.value %}{{ driving_license_form.license_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <input type="date" name="driving_license-license_expiry_date" value="{{ driving_license_form.license_expiry_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                         </div>
 
                         <!-- License Renewed -->
@@ -371,38 +373,14 @@
                 </div>
             </div>
 
-            <!-- Vehicle Section -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <button type="button" onclick="toggleSection('vehicle-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
-                    <span class="text-base font-medium text-[var(--text-color)]">Vehicle</span>
-                    <svg id="vehicle-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div id="vehicle-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
-                        <!-- Vehicle No -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Vehicle No</label>
-                            <input type="text" name="vehicle-vehicle_no" value="{{ vehicle_form.vehicle_no.value|default:'' }}" placeholder="Enter Vehicle No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
-
-                        <!-- Istemara Expiry Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Istemara Expiry Date</label>
-                            <input type="date" name="vehicle-istemara_expiry_date" value="{% if vehicle_form.istemara_expiry_date.value %}{{ vehicle_form.istemara_expiry_date.value|date:'Y-m-d' }}{% endif %}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+          
             <!-- Form Actions -->
             <div class="flex items-center justify-end gap-4 pt-4">
                 <a href="{% url 'employee:list' %}" class="px-6 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
                     Cancel
                 </a>
                 <button type="submit" class="px-6 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                    <i class="fas fa-save mr-2"></i>Update Employee
+                    <i class="fas fa-save mr-2"></i>Save Employee
                 </button>
             </div>
         </form>
