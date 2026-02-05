@@ -133,55 +133,6 @@
     <!--  for mobile  -->
     <div id="backdrop" class="fixed inset-0 z-40 hidden bg-black/30 lg:hidden"></div>
 
-    <!-- sidebar -->
-    {% comment %} <aside id="sidebar" class="fixed md:shadow-[2px_0px_25px_var(--shadow-color)] inset-y-0 left-0 z-45 md:z-45 w-72 translate-x-[-100%] overflow-y-auto border-r transition-transform bg-[var(--bg-color)] border-[var(--border-color)] lg:translate-x-0">
-        <a href="{% url 'backend:backend_dashboard' %}" <div class="flex items-center gap-2 px-4 h-16">
-            <img src="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=logo" class="h-9 w-9" alt="">
-            <span class="text-2xl font-semibold">{{ site_setting.site_title|default:'' }}</span>
-        </a>
-
-        <nav class="px-3 py-4 text-[15px]">
-            <div>
-                <a href="{% url 'backend:backend_dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-[var(--bg-color)] {% if dashboard_active %}bg-[var(--bg-color)]{% endif %}">
-                    <i class="fa fa-pie-chart icon"></i>
-                    <span>Dashboard</span>
-                </a>
-            </div>
-            {% for menu in main_menu_list %}
-                {% if menu.sub_menu %}
-                    <details class="group mt-3" {% if menu.is_current %}open{% endif %}>
-                        <summary class="w-full flex items-center justify-between px-3 py-2.5 rounded-md {% if menu.is_current %}bg-[var(--bg-color)]{% endif %} cursor-pointer select-none [&::-webkit-details-marker]:hidden">
-                            <span class="flex items-center gap-3">
-                                <i class="{{ menu.menu.menu_icon }}"></i>
-                                <span class="font-medium">{{ menu.menu.menu_name }}</span>
-                            </span>
-                            <svg class="h-4 w-4 text-[var(--text-light-color)] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M6 9l6 6 6-6" />
-                            </svg>
-                        </summary>
-
-                        <!-- Submenu -->
-                        <ul class="mt-1 space-y-1 pl-9 pb-2">
-                            {% for sub_menu in menu.sub_menu %}
-                                <li>
-                                    <a href="{% if sub_menu.menu.menu_url %}{% if '/' in sub_menu.menu.menu_url %}{{ sub_menu.menu.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' sub_menu.menu.menu_url %}{% endif %}{% else %}#{% endif %}" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-[var(--bg-color)] {% if sub_menu.is_current %}ring-1 ring-[var(--border-color)] bg-[var(--bg-color)] text-[var(--primary-color)]{% endif %}">
-                                        {{ sub_menu.menu.menu_name }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </details>
-                {% else %}
-                    <div>
-                        <a href="{{ menu.menu.menu_url }}" class="mt-1 flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-[var(--bg-color)] {% if menu.is_current %}bg-[var(--bg-color)]{% endif %}">
-                            <i class="{{ menu.menu.menu_icon }}"></i>
-                            <span>{{ menu.menu.menu_name }}</span>
-                        </a>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </nav>
-    </aside> {% endcomment %}
 
     <!-- sidebar -->
     <aside id="sidebar"
@@ -199,20 +150,7 @@
         <!-- Nav -->
         <nav class="px-3 py-4 text-[15px] flex-1">
 
-            <!-- Dashboard -->
-            <div class="relative">
-                <a href="{% url 'backend:backend_dashboard' %}"
-                class="relative flex items-center gap-3 px-3 py-2.5 rounded-md
-                        hover:bg-[#EAF4FA] hover:text-[var(--primary-color)]
-                        before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[6px]
-                        before:bg-[var(--primary-color)] before:rounded-r-3xl
-                        before:transition-opacity before:opacity-0
-                        hover:before:opacity-100
-                        {% if dashboard_active %}bg-[#EAF4FA] text-[var(--primary-color)] before:opacity-100{% endif %}">
-                    <i class="fa fa-pie-chart icon"></i>
-                    <span>Dashboard</span>
-                </a>
-            </div>
+           
 
             {% for menu in main_menu_list %}
                 {% if menu.sub_menu %}
@@ -321,48 +259,6 @@
                                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9" />
                             </svg>
                         </button>
-
-                        {% comment %} <div class="relative">
-                            <button type="button" onclick="toggleProfileMenu()" id="profileMenuBtn">
-                                {% if request.user.employee.get_photo_url %}
-                                    <img src="{{ request.user.employee.get_photo_url }}" class="h-9 w-9 rounded-full ring-1 ring-[var(--border-color)] cursor-pointer hover:ring-2 hover:ring-[var(--primary-color)] transition" alt="">
-                                {% else %}
-                                    <img src="{% static 'images/profile.jpg' %}" class="h-9 w-9 rounded-full ring-1 ring-[var(--border-color)] cursor-pointer hover:ring-2 hover:ring-[var(--primary-color)] transition" alt="">
-                                {% endif %}
-                            </button>
-                            <div id="profileMenu" class="hidden absolute right-0 top-full mt-2 w-56 rounded-lg shadow-xl bg-white border border-gray-200 overflow-hidden z-50">
-                                <div class="py-1">
-                                    <a href="{% url 'backend:employee_profile' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <i class="fas fa-chart-line w-5 mr-3 text-blue-500"></i>
-                                        <span>Overview</span>
-                                    </a>
-                                    <a href="{% url 'backend:employee_profile_info' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <i class="fas fa-user w-5 mr-3 text-green-500"></i>
-                                        <span>Info</span>
-                                    </a>
-                                    <a href="{% url 'backend:employee_profile_attendance' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <i class="fas fa-calendar-check w-5 mr-3 text-purple-500"></i>
-                                        <span>Attendance</span>
-                                    </a>
-                                    <a href="{% url 'backend:employee_profile_documents' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <i class="fas fa-file-alt w-5 mr-3 text-orange-500"></i>
-                                        <span>Documents</span>
-                                    </a>
-                                    <a href="{% url 'backend:employee_profile_leave_history' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <i class="fas fa-history w-5 mr-3 text-indigo-500"></i>
-                                        <span>Leave History</span>
-                                    </a>
-                                    <div class="border-t border-gray-100 my-1"></div>
-                                    <a href="{% url 'backend:backend_logout' %}" class="flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                        <i class="fas fa-sign-out-alt w-5 mr-3"></i>
-                                        <span>Logout</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div> {% endcomment %}
-
-
-
                     </div>
                 </div>
 

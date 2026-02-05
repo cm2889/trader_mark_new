@@ -27,17 +27,18 @@ from datetime import datetime
 from backend.models import (
     WebImages, SiteSettings, LoginLog, UserMenuPermission, 
     BackendMenu, 
+    Visitor, 
     Nationality, Employee, Employment, Passport, DrivingLicense, 
     HealthInsurance, Contact, Address, Vehicle, 
-    VehicleHandover, VehicleItem, TrafficViolation, VehicleRent,
+    VehicleHandover, TrafficViolation,
     VehicleInstallment, VehicleMaintenance, VehicleAccident
 )
 
 from backend.forms import (
     CustomUserLoginForm, NationalityForm, EmployeeForm, EmploymentForm, 
     PassportForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
-    AddressForm, UserCreateForm, VehicleForm,
-    VehicleHandoverForm, VehicleItemForm, TrafficViolationForm, VehicleRentForm,
+    AddressForm, UserCreateForm, VehicleForm, VisitorForm, 
+    VehicleHandoverForm, TrafficViolationForm,
     VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm
 ) 
 
@@ -538,23 +539,22 @@ class NationalityListView(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        filters = {
-            'is_active': True, 
-        } 
+        queryset = Nationality.objects.filter(is_active=True)
 
-        name = self.request.GET.get('name', '') 
-        code = self.request.GET.get('code', '')
+        name_id = self.request.GET.get('name', '') 
+        code_id = self.request.GET.get('code', '')
 
-        if name:
-           filters['name__icontains'] = name
-        if code:
-            filters['code__icontains'] = code
+        if name_id:
+            queryset = queryset.filter(id=name_id)
+        if code_id:
+            queryset = queryset.filter(id=code_id)
 
-        return Nationality.objects.filter(**filters)
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['nationalities'] = self.get_queryset()
+        context['all_nationalities'] = Nationality.objects.filter(is_active=True).order_by('name')
         context['page_num'] = self.request.GET.get('page', 1)
         context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['nationalities'])
 
@@ -610,6 +610,135 @@ def nationality_delete(request, pk):
     nationality.is_active = False
     nationality.save()
     return redirect('nationality:list') 
+
+
+class VisitorListView(ListView):
+    model = Visitor 
+    template_name = "visitor/list.html" 
+    paginate_by = None 
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/visitor/"):
+            messages.error(request, "You do not have permission to view visitors.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs) 
+    
+    def get_queryset(self):
+        queryset = Visitor.objects.filter(is_active=True)
+
+        name_id = self.request.GET.get('name', '')
+        email = self.request.GET.get('email', '')
+        phone = self.request.GET.get('phone', '') 
+
+        if name_id:
+            queryset = queryset.filter(id=name_id)
+        if email:
+            queryset = queryset.filter(email=email)
+        if phone:
+            queryset = queryset.filter(phone_number=phone)
+
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['visitors'] = self.get_queryset()
+        context['all_visitors'] = Visitor.objects.filter(is_active=True).order_by('first_name', 'last_name')
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['visitors'])
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+        return context
+    
+
+@method_decorator(login_required, name='dispatch')
+class VisitorCreateView(CreateView):
+    model = Visitor
+    template_name = "visitor/create.html"
+    form_class = VisitorForm
+    success_url = reverse_lazy('visitor:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/visitor/"):
+            messages.error(request, "You do not have permission to add visitors.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form) 
+    
+
+@method_decorator(login_required, name='dispatch')
+class VisitorUpdateView(UpdateView):
+    model = Visitor
+    template_name = "visitor/update.html"
+    form_class = VisitorForm
+    success_url = reverse_lazy('visitor:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/visitor/"):
+            messages.error(request, "You do not have permission to update visitors.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form) 
+
+
+@login_required
+def visitor_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/visitor/"):
+        messages.error(request, "You do not have permission to delete visitors.")
+        return render(request, "403.html", status=403)
+    
+    visitor = Visitor.objects.get(pk=pk)
+    visitor.is_active = False
+    visitor.save()
+    return redirect('visitor:list') 
+
+
+@login_required
+def get_visitor_by_contact(request):
+    """
+    AJAX endpoint to fetch visitor data by email or phone number
+    """
+    email = request.GET.get('email', '').strip()
+    phone = request.GET.get('phone', '').strip()
+    
+    visitor = None
+    matched_by = None
+    
+    # Try to find visitor by email first
+    if email:
+        visitor = Visitor.objects.filter(email__iexact=email, is_active=True).first()
+        if visitor:
+            matched_by = 'email'
+    
+    # If not found by email, try by phone
+    if not visitor and phone:
+        visitor = Visitor.objects.filter(phone_number__iexact=phone, is_active=True).first()
+        if visitor:
+            matched_by = 'phone'
+    
+    if visitor:
+        return JsonResponse({
+            'found': True,
+            'matched_by': matched_by,
+            'data': {
+                'first_name': visitor.first_name or '',
+                'last_name': visitor.last_name or '',
+                'email': visitor.email or '',
+                'phone_number': visitor.phone_number or '',
+            },
+            'message': f'Visitor data found: {visitor.first_name} {visitor.last_name}'
+        })
+    else:
+        return JsonResponse({'found': False, 'message': ''})
 
 
 @login_required
@@ -703,33 +832,84 @@ def employee_create(request):
                 
                 employment_index += 1
 
-            # Save Passport if data provided
-            if passport_form.is_valid():
-                has_data = any([
-                    v for k, v in passport_form.cleaned_data.items() 
-                    if v not in [None, '', []]
-                ])
+            # Save Multiple Passport forms
+            passport_index = 0
+            while True:
+                # Check if passport data exists for this index
+                passport_prefix = f'passport-{passport_index}'
+                passport_no_key = f'{passport_prefix}-passport_no'
+                
+                if passport_no_key not in request.POST:
+                    break
+                
+                # Extract passport data for this index
+                passport_data = {
+                    'passport_no': request.POST.get(f'{passport_prefix}-passport_no'),
+                    'passport_expiry_date': request.POST.get(f'{passport_prefix}-passport_expiry_date'),
+                    'passport_renewed': request.POST.get(f'{passport_prefix}-passport_renewed'),
+                }
+                
+                # Check if any data is provided
+                has_data = any([v for v in passport_data.values() if v not in [None, '', []]])
                 
                 if has_data:
-                    passport = passport_form.save(commit=False)
-                    passport.employee = employee
-                    passport.created_by = request.user
-                    passport.updated_by = request.user
+                    passport = Passport(
+                        employee=employee,
+                        created_by=request.user,
+                        updated_by=request.user
+                    )
+                    
+                    if passport_data['passport_no']:
+                        passport.passport_no = passport_data['passport_no']
+                    if passport_data['passport_expiry_date']:
+                        passport.passport_expiry_date = passport_data['passport_expiry_date']
+                    if passport_data['passport_renewed']:
+                        passport.passport_renewed = True
+                    
                     passport.save()
+                
+                passport_index += 1
 
-            # Save Driving License if data provided
-            if driving_license_form.is_valid():
-                has_data = any([
-                    v for k, v in driving_license_form.cleaned_data.items() 
-                    if v not in [None, '', []]
-                ])
-
+            # Save Multiple Driving License forms
+            license_index = 0
+            while True:
+                # Check if driving license data exists for this index
+                license_prefix = f'driving_license-{license_index}'
+                license_no_key = f'{license_prefix}-license_no'
+                
+                if license_no_key not in request.POST:
+                    break
+                
+                # Extract driving license data for this index
+                license_data = {
+                    'license_no': request.POST.get(f'{license_prefix}-license_no'),
+                    'license_expiry_date': request.POST.get(f'{license_prefix}-license_expiry_date'),
+                    'license_renewed': request.POST.get(f'{license_prefix}-license_renewed'),
+                    'license_renew_status': request.POST.get(f'{license_prefix}-license_renew_status'),
+                }
+                
+                # Check if any data is provided
+                has_data = any([v for v in license_data.values() if v not in [None, '', []]])
+                
                 if has_data:
-                    driving_license = driving_license_form.save(commit=False)
-                    driving_license.employee = employee
-                    driving_license.created_by = request.user
-                    driving_license.updated_by = request.user
+                    driving_license = DrivingLicense(
+                        employee=employee,
+                        created_by=request.user,
+                        updated_by=request.user
+                    )
+                    
+                    if license_data['license_no']:
+                        driving_license.license_no = license_data['license_no']
+                    if license_data['license_expiry_date']:
+                        driving_license.license_expiry_date = license_data['license_expiry_date']
+                    if license_data['license_renewed']:
+                        driving_license.license_renewed = True
+                    if license_data['license_renew_status']:
+                        driving_license.license_renew_status = license_data['license_renew_status']
+                    
                     driving_license.save()
+                
+                license_index += 1
 
             # Save Health Insurance if data provided
             if health_insurance_form.is_valid():
@@ -1226,8 +1406,6 @@ def vehicle_management(request):
     total_handovers = VehicleHandover.objects.count()
     total_violations = TrafficViolation.objects.count()
     unpaid_violations = TrafficViolation.objects.filter(is_paid=False).count()
-    total_rent = VehicleRent.objects.count()
-    unpaid_rent = VehicleRent.objects.filter(is_paid=False).count()
     total_maintenance = VehicleMaintenance.objects.count()
     pending_maintenance = VehicleMaintenance.objects.filter(status='PENDING').count()
     total_accidents = VehicleAccident.objects.count()
@@ -1239,8 +1417,6 @@ def vehicle_management(request):
         'total_handovers': total_handovers,
         'total_violations': total_violations,
         'unpaid_violations': unpaid_violations,
-        'total_rent': total_rent,
-        'unpaid_rent': unpaid_rent,
         'total_maintenance': total_maintenance,
         'pending_maintenance': pending_maintenance,
         'total_accidents': total_accidents,
@@ -1494,111 +1670,6 @@ def traffic_violation_delete(request, pk):
     violation.delete()
     messages.success(request, "Traffic violation deleted successfully.")
     return redirect('traffic_violation:list')
-
-
-# ========================================
-# VEHICLE RENT VIEWS
-# ========================================
-@method_decorator(login_required, name='dispatch')
-class VehicleRentListView(ListView):
-    model = VehicleRent
-    template_name = "vehicle_rent/list.html"
-    paginate_by = None
-
-    def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-rent/"):
-            messages.error(request, "You do not have permission to view vehicle rents.")
-            return render(request, "403.html", status=403)
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        queryset = VehicleRent.objects.all().order_by('-rent_month')
-        
-        plate_no = self.request.GET.get('plate_no', '')
-        is_paid = self.request.GET.get('is_paid', '')
-        
-        if plate_no:
-            queryset = queryset.filter(vehicle__vehicle__plate_no=plate_no)
-        if is_paid:
-            queryset = queryset.filter(is_paid=(is_paid == 'true'))
-        
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['rents'] = self.get_queryset()
-        context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(
-            self.request, context['page_num'], context['rents']
-        )
-        get_param = self.request.GET.copy()
-        if 'page' in get_param:
-            get_param.pop('page')
-        context['get_param'] = get_param.urlencode()
-        
-        # Add data for select2 dropdowns
-        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
-        
-        return context
-
-
-@login_required
-def vehicle_rent_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-rent/"):
-        messages.error(request, "You do not have permission to add vehicle rents.")
-        return render(request, "403.html", status=403)
-
-    if request.method == 'POST':
-        form = VehicleRentForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Vehicle rent created successfully.")
-            return redirect('vehicle_rent:list')
-    else:
-        form = VehicleRentForm()
-
-    context = {
-        'form': form,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-    }
-    return render(request, 'vehicle_rent/create.html', context)
-
-
-@login_required
-def vehicle_rent_update(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/vehicle-rent/"):
-        messages.error(request, "You do not have permission to update vehicle rents.")
-        return render(request, "403.html", status=403)
-
-    rent = get_object_or_404(VehicleRent, pk=pk)
-    
-    if request.method == 'POST':
-        form = VehicleRentForm(request.POST, instance=rent)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Vehicle rent updated successfully.")
-            return redirect('vehicle_rent:list')
-    else:
-        form = VehicleRentForm(instance=rent)
-
-    context = {
-        'form': form,
-        'rent': rent,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-    }
-    return render(request, 'vehicle_rent/update.html', context)
-
-
-@login_required
-def vehicle_rent_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-rent/"):
-        messages.error(request, "You do not have permission to delete vehicle rents.")
-        return render(request, "403.html", status=403)
-
-    rent = get_object_or_404(VehicleRent, pk=pk)
-    rent.delete()
-    messages.success(request, "Vehicle rent deleted successfully.")
-    return redirect('vehicle_rent:list')
 
 
 # ========================================
@@ -1944,109 +2015,3 @@ def vehicle_installment_delete(request, pk):
     return redirect('vehicle_installment:list')
 
 
-# ========================================
-# VEHICLE ITEM VIEWS
-# ========================================
-@method_decorator(login_required, name='dispatch')
-class VehicleItemListView(ListView):
-    model = VehicleItem
-    template_name = "vehicle_item/list.html"
-    paginate_by = None
-
-    def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-item/"):
-            messages.error(request, "You do not have permission to view vehicle items.")
-            return render(request, "403.html", status=403)
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        queryset = VehicleItem.objects.all().order_by('-issued_date')
-        
-        plate_no = self.request.GET.get('plate_no', '')
-        item_name = self.request.GET.get('item_name', '')
-        is_missing = self.request.GET.get('is_missing', '')
-        
-        if plate_no:
-            queryset = queryset.filter(vehicle__vehicle__plate_no=plate_no)
-        if item_name:
-            queryset = queryset.filter(item_name__icontains=item_name)
-        if is_missing:
-            queryset = queryset.filter(is_missing=(is_missing == 'true'))
-        
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['items'] = self.get_queryset()
-        context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(
-            self.request, context['page_num'], context['items']
-        )
-        get_param = self.request.GET.copy()
-        if 'page' in get_param:
-            get_param.pop('page')
-        context['get_param'] = get_param.urlencode()
-        
-        # Add data for select2 dropdowns
-        context['all_vehicles'] = Vehicle.objects.filter(is_active=True).select_related('vehicle_info').order_by('vehicle_info__plate_no')
-        
-        return context
-
-
-@login_required
-def vehicle_item_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-item/"):
-        messages.error(request, "You do not have permission to add vehicle items.")
-        return render(request, "403.html", status=403)
-
-    if request.method == 'POST':
-        form = VehicleItemForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Vehicle item created successfully.")
-            return redirect('vehicle_item:list')
-    else:
-        form = VehicleItemForm()
-
-    context = {
-        'form': form,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-    }
-    return render(request, 'vehicle_item/create.html', context)
-
-
-@login_required
-def vehicle_item_update(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/vehicle-item/"):
-        messages.error(request, "You do not have permission to update vehicle items.")
-        return render(request, "403.html", status=403)
-
-    item = get_object_or_404(VehicleItem, pk=pk)
-    
-    if request.method == 'POST':
-        form = VehicleItemForm(request.POST, instance=item)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Vehicle item updated successfully.")
-            return redirect('vehicle_item:list')
-    else:
-        form = VehicleItemForm(instance=item)
-
-    context = {
-        'form': form,
-        'item': item,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-    }
-    return render(request, 'vehicle_item/update.html', context)
-
-
-@login_required
-def vehicle_item_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-item/"):
-        messages.error(request, "You do not have permission to delete vehicle items.")
-        return render(request, "403.html", status=403)
-
-    item = get_object_or_404(VehicleItem, pk=pk)
-    item.delete()
-    messages.success(request, "Vehicle item deleted successfully.")
-    return redirect('vehicle_item:list')

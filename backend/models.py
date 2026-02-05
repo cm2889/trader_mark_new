@@ -1,9 +1,3 @@
-from django.db import models
-from django.contrib.auth.models import User 
-from django.utils import timezone
-
-
-
 import os
 import uuid
 import string
@@ -14,7 +8,9 @@ from django.db.models import JSONField
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.urls import reverse
-
+from django.db import models
+from django.contrib.auth.models import User 
+from django.utils import timezone
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -298,6 +294,22 @@ class Nationality(models.Model):
         ordering = ['name']
 
 
+class Visitor(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100) 
+    phone_number = models.CharField(max_length=20, blank=True, null=True) 
+    email = models.EmailField(blank=True, null=True) 
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}".strip()
+    
+    class Meta:
+        ordering = ['-created_at'] 
+
 class Employee(models.Model):
     
     GENDER_CHOICES = (
@@ -310,6 +322,8 @@ class Employee(models.Model):
     qid_no = models.CharField(max_length=20, unique=True)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200) 
+    email = models.EmailField(blank=True, null=True) 
+    phone_number = models.CharField(max_length=20, blank=True, null=True) 
     nationality = models.ForeignKey(Nationality, on_delete=models.SET_NULL, null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     joining_at = models.DateTimeField(default=timezone.now)
@@ -418,7 +432,7 @@ class DrivingLicense(models.Model):
             ('YES', 'Renewed'),
             ('NO', 'Not Renewed'),
         )
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='driving_licenses')
 
     license_no = models.CharField(max_length=50)
     license_expiry_date = models.DateField()
@@ -450,7 +464,7 @@ class HealthInsurance(models.Model):
             ('NO', 'Not Renewed'),
         )
     
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, related_name='health_insurance')
 
     hamad_health_card = models.BooleanField(default=False)
     wm_insurance = models.CharField(max_length=3, choices=YES_NO_CHOICES) 
@@ -471,7 +485,7 @@ class HealthInsurance(models.Model):
 
 
 class Contact(models.Model):
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, related_name='contact')
 
     phone_no = models.CharField(max_length=20)
     phone_no_alt = models.CharField(max_length=20, blank=True, null=True)
@@ -532,7 +546,7 @@ class Vehicle(models.Model):
         ('COMPANY', 'Company'),
         ('DRIVER', 'Driver'),
     )
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    
 
     vehicle_type = models.CharField(max_length=10, choices=VEHICLE_TYPE_CHOICES)
 
@@ -558,6 +572,27 @@ class Vehicle(models.Model):
         ordering = ['-created_at']
 
 
+class VehicleAssign(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='vehicle_assignments')
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_assignments') 
+
+    assigned_date = models.DateField()
+    remarks = models.TextField(blank=True, null=True) 
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_assign_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_assign_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False) 
+
+    def __str__(self):
+        return f"{self.vehicle.plate_no} assigned to {self.employee.full_name}"
+    
+    class Meta:
+        ordering = ['-assigned_date', '-created_at'] 
+
+
 # =========================
 # HAND OVER / TAKE OVER
 # =========================
@@ -568,11 +603,15 @@ class VehicleHandover(models.Model):
 
     handover_date = models.DateField()
     
-    is_active = models.BooleanField(default=True)
+    
     remarks = models.TextField(blank=True, null=True)
 
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_handover_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_handover_updated_by', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False) 
 
     def __str__(self):
         return f"Handover - {self.vehicle.plate_no}"
@@ -582,29 +621,10 @@ class VehicleHandover(models.Model):
 
 
 # =========================
-# MERCHANDISE / MISSING ITEMS
-# =========================
-class VehicleItem(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    item_name = models.CharField(max_length=200)
-    quantity = models.PositiveIntegerField()
-    item_value = models.DecimalField(max_digits=10, decimal_places=2)
-
-    issued_date = models.DateField()
-    is_missing = models.BooleanField(default=False)
-
-    remarks = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.item_name} - {self.vehicle.plate_no}"
-
-
-# =========================
 # TRAFFIC VIOLATION
 # =========================
 class TrafficViolation(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='traffic_violations')
 
     violation_type = models.CharField(max_length=200)
     violation_date = models.DateField()
@@ -615,33 +635,26 @@ class TrafficViolation(models.Model):
 
     remarks = models.TextField(blank=True, null=True)
 
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='traffic_violation_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='traffic_violation_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
     def __str__(self):
         return f"Violation - {self.vehicle.plate_no}"
 
+    class Meta:
+        ordering = ['-violation_date', '-created_at']
 
-# =========================
-# RENT PAID / RECEIVED
-# =========================
-class VehicleRent(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    rent_month = models.DateField()
-
-    is_paid = models.BooleanField(default=False)
-    payment_date = models.DateField(null=True, blank=True)
-
-    remarks = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Rent - {self.vehicle.plate_no}"
 
 
 # =========================
 # INSTALLMENT PAID / RECEIVED
 # =========================
 class VehicleInstallment(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_installments')
 
     installment_no = models.PositiveIntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -651,6 +664,13 @@ class VehicleInstallment(models.Model):
     paid_date = models.DateField(null=True, blank=True)
 
     remarks = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='installment_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='installment_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Installment {self.installment_no} - {self.vehicle.plate_no}"
@@ -667,7 +687,7 @@ class VehicleMaintenance(models.Model):
         ('COMPLETED', 'Completed'),
     )
 
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_maintenances')
     maintenance_type = models.CharField(max_length=200)
     cost = models.DecimalField(max_digits=10, decimal_places=2)
 
@@ -675,6 +695,13 @@ class VehicleMaintenance(models.Model):
     maintenance_date = models.DateField()
 
     remarks = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='maintenance_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='maintenance_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Maintenance - {self.vehicle.plate_no}"
@@ -684,8 +711,7 @@ class VehicleMaintenance(models.Model):
 # ACCIDENT HISTORY
 # =========================
 class VehicleAccident(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_accidents')
 
     accident_date = models.DateField()
     accident_place = models.CharField(max_length=200)
@@ -694,6 +720,13 @@ class VehicleAccident(models.Model):
     insurance_claimed = models.BooleanField(default=False)
 
     remarks = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accident_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accident_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Accident - {self.vehicle.plate_no}"

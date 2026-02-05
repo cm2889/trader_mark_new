@@ -2,12 +2,11 @@ from django import forms
 from django.contrib.auth.models import User
 from django import forms 
 from backend.models import (
+    Visitor, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
-    Vehicle, VehicleHandover, VehicleItem, TrafficViolation, VehicleRent, VehicleInstallment,
-    VehicleMaintenance, VehicleAccident,  
+    Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment,
+    VehicleMaintenance, VehicleAccident, VehicleAssign 
 )
-
-
 
 TAILWIND_TEXT = (
     "h-11 w-full mt-1 rounded-lg bg-[var(--bg-color)] px-3 text-sm "
@@ -155,14 +154,14 @@ class NationalityForm(forms.ModelForm):
     code = forms.CharField(
         max_length=10,
         widget=forms.TextInput(attrs={
-            "placeholder": "Enter nationality code (e.g., US, UK, IN)",
+            "placeholder": "(e.g., US, UK, IN)",
             "class": TAILWIND_TEXT,
         })
     )
     name = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
-            "placeholder": "Enter nationality name (e.g., United States)",
+            "placeholder": "(e.g., United States)",
             "class": TAILWIND_TEXT,
         })
     )
@@ -170,6 +169,20 @@ class NationalityForm(forms.ModelForm):
     class Meta:
         model = Nationality
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+
+
+class VisitorForm(forms.ModelForm):
+    class Meta:
+        model = Visitor
+        exclude = ['created_at', 'is_active', 'deleted']
+
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter first name'}),
+            'last_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter last name'}),
+            'phone_number': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter phone number'}),
+            'email': forms.EmailInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter email address'}), 
+        }
+
 
 class EmployeeForm(forms.ModelForm):
     class Meta:
@@ -180,11 +193,13 @@ class EmployeeForm(forms.ModelForm):
             'qid_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter QID number'}),
             'first_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter first name'}),
             'last_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter last name'}),
+            'phone_number': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter phone number'}),
+            'email': forms.EmailInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter email address'}), 
             'nationality': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'gender': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            # 'joining_at': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
+
 
 class EmploymentForm(forms.ModelForm):
     class Meta:
@@ -261,7 +276,6 @@ class VehicleForm(forms.ModelForm):
         model = Vehicle
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'vehicle_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'plate_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter plate number'}),
             'istemara_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
@@ -270,22 +284,17 @@ class VehicleForm(forms.ModelForm):
             'ownership': forms.Select(attrs={'class': TAILWIND_SELECT}),
         }
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     # Filter employees who don't have a vehicle yet, or keep the current one if updating
-    #     from .models import Employee, Vehicle
-    #     if self.instance.pk:
-    #         # Update mode: include currently assigned employee
-    #         self.fields['employee'].queryset = Employee.objects.filter(
-    #             models.Q(vehicle__isnull=True) | models.Q(vehicle=self.instance),
-    #             is_active=True, deleted=False
-    #         )
-    #     else:
-    #         # Create mode: only employees without vehicles
-    #         self.fields['employee'].queryset = Employee.objects.filter(
-    #             vehicle__isnull=True, is_active=True, deleted=False
-    #         )
 
+class VehicleAssignForm(forms.ModelForm):
+    class Meta:
+        model = VehicleAssign
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'assign_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
+        }
 
 class VehicleHandoverForm(forms.ModelForm):
     class Meta:
@@ -299,24 +308,11 @@ class VehicleHandoverForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
-class VehicleItemForm(forms.ModelForm):
-    class Meta:
-        model = VehicleItem
-        fields = '__all__'
-        widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'item_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter item name'}),
-            'quantity': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter quantity'}),
-            'item_value': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter item value'}),
-            'issued_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
-            'is_missing': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),
-            'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
-        }
 
 class TrafficViolationForm(forms.ModelForm):
     class Meta:
         model = TrafficViolation
-        fields = '__all__'
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
@@ -328,23 +324,11 @@ class TrafficViolationForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
-class VehicleRentForm(forms.ModelForm):
-    class Meta:
-        model = VehicleRent
-        fields = '__all__'
-        widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter amount'}),
-            'rent_month': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
-            'is_paid': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),
-            'payment_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
-            'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
-        }
 
 class VehicleInstallmentForm(forms.ModelForm):
     class Meta:
         model = VehicleInstallment
-        fields = '__all__'
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'installment_no': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter installment number'}),
@@ -358,7 +342,7 @@ class VehicleInstallmentForm(forms.ModelForm):
 class VehicleMaintenanceForm(forms.ModelForm):
     class Meta:
         model = VehicleMaintenance
-        fields = '__all__'
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'maintenance_type': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter maintenance type'}),
@@ -371,7 +355,7 @@ class VehicleMaintenanceForm(forms.ModelForm):
 class VehicleAccidentForm(forms.ModelForm):
     class Meta:
         model = VehicleAccident
-        fields = '__all__'
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted'] 
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'employee': forms.Select(attrs={'class': TAILWIND_SELECT}),

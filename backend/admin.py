@@ -3,8 +3,8 @@ from .models import (
     WebImages, PasswordResetCode, LoginLog, BackendMenu, UserMenuPermission,
     SiteSettings, SiteDesignSettings, EmailConfiguration, SMSConfiguration, SMSLog,
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance,
-    Contact, Address, Vehicle, VehicleHandover, VehicleItem, TrafficViolation,
-    VehicleRent, VehicleInstallment, VehicleMaintenance, VehicleAccident
+    Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
+    VehicleInstallment, VehicleMaintenance, VehicleAccident
 )
 
 @admin.register(WebImages)
@@ -127,23 +127,18 @@ class VehicleHandoverAdmin(admin.ModelAdmin):
     search_fields = ('vehicle__plate_no', 'from_employee__first_name', 'to_employee__first_name')
     list_filter = ('handover_date',)
 
-@admin.register(VehicleItem)
-class VehicleItemAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'item_name', 'quantity', 'item_value', 'issued_date', 'is_missing')
-    search_fields = ('vehicle__plate_no', 'item_name')
-    list_filter = ('is_missing', 'issued_date')
+@admin.register(VehicleAssign)
+class VehicleAssignAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'employee', 'assigned_date', 'is_active')
+    search_fields = ('vehicle__plate_no', 'employee__first_name', 'employee__last_name')
+    list_filter = ('assigned_date', 'is_active')
 
 @admin.register(TrafficViolation)
 class TrafficViolationAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'employee', 'violation_type', 'violation_date', 'fine_amount', 'is_paid')
-    search_fields = ('vehicle__plate_no', 'employee__first_name', 'violation_type')
+    list_display = ('vehicle', 'violation_type', 'violation_date', 'fine_amount', 'is_paid')
+    search_fields = ('vehicle__plate_no', 'violation_type')
     list_filter = ('is_paid', 'violation_date')
 
-@admin.register(VehicleRent)
-class VehicleRentAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'amount', 'rent_month', 'is_paid')
-    search_fields = ('vehicle__plate_no',)
-    list_filter = ('is_paid', 'rent_month')
 
 @admin.register(VehicleInstallment)
 class VehicleInstallmentAdmin(admin.ModelAdmin):
@@ -159,7 +154,7 @@ class VehicleMaintenanceAdmin(admin.ModelAdmin):
 
 @admin.register(VehicleAccident)
 class VehicleAccidentAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'employee', 'accident_date', 'accident_place', 'damage_cost', 'insurance_claimed')
-    search_fields = ('vehicle__plate_no', 'employee__first_name', 'accident_place')
+    list_display = ('vehicle', 'accident_date', 'accident_place', 'damage_cost', 'insurance_claimed')
+    search_fields = ('vehicle__plate_no', 'accident_place')
     list_filter = ('insurance_claimed', 'accident_date')
 

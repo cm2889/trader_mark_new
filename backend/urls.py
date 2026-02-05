@@ -11,6 +11,14 @@ nationality_patterns = ([
     path('delete/<int:pk>/', views.nationality_delete, name='delete'),
 ], 'nationality')
 
+
+visitor_patterns = ([
+    path('', views.VisitorListView.as_view(), name='list'),
+    path('create/', views.VisitorCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.VisitorUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.visitor_delete, name='delete'),
+], 'visitor')
+
 # Employee URL patterns
 employee_patterns = ([
     path('', views.EmployeeListView.as_view(), name='list'),
@@ -46,14 +54,6 @@ traffic_violation_patterns = ([
     path('delete/<int:pk>/', views.traffic_violation_delete, name='delete'),
 ], 'traffic_violation')
 
-# Vehicle Rent URL patterns
-vehicle_rent_patterns = ([
-    path('', views.VehicleRentListView.as_view(), name='list'),
-    path('create/', views.vehicle_rent_create, name='create'),
-    path('update/<int:pk>/', views.vehicle_rent_update, name='update'),
-    path('delete/<int:pk>/', views.vehicle_rent_delete, name='delete'),
-], 'vehicle_rent')
-
 # Vehicle Maintenance URL patterns
 vehicle_maintenance_patterns = ([
     path('', views.VehicleMaintenanceListView.as_view(), name='list'),
@@ -80,17 +80,11 @@ vehicle_installment_patterns = ([
     path('delete/<int:pk>/', views.vehicle_installment_delete, name='delete'),
 ], 'vehicle_installment')
 
-# Vehicle Item URL patterns
-vehicle_item_patterns = ([
-    path('', views.VehicleItemListView.as_view(), name='list'),
-    path('create/', views.vehicle_item_create, name='create'),
-    path('update/<int:pk>/', views.vehicle_item_update, name='update'),
-    path('delete/<int:pk>/', views.vehicle_item_delete, name='delete'),
-], 'vehicle_item')
 
 
 backend_patterns = ([
     path("api/menu-search/", views.search_backend_menus, name="search_backend_menus"),
+    path("api/get-visitor/", views.get_visitor_by_contact, name="get_visitor_by_contact"),
     # Image optimization
     path("image/<str:unique_key>/", views.serve_optimized_image, name="serve_optimized_image"),
     path('', views.backend_dashboard, name='backend_dashboard'),
@@ -111,17 +105,14 @@ backend_patterns = ([
 
 
 urlpatterns = [
-    # User Management
- 
     path('', include(backend_patterns)),
     path('nationality/', include(nationality_patterns)), 
+    path('visitor/', include(visitor_patterns)), 
     path('employee/', include(employee_patterns)),
     path('vehicle-info/', include(vehicle_patterns)),
     path('vehicle-handover/', include(vehicle_handover_patterns)),
     path('traffic-violation/', include(traffic_violation_patterns)),
-    path('vehicle-rent/', include(vehicle_rent_patterns)),
     path('vehicle-maintenance/', include(vehicle_maintenance_patterns)),
     path('vehicle-accident/', include(vehicle_accident_patterns)),
     path('vehicle-installment/', include(vehicle_installment_patterns)),
-    path('vehicle-item/', include(vehicle_item_patterns)),
 ]

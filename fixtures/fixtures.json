@@ -48,8 +48,6 @@
       "is_active": true
     }
   },
-
-
   {
     "model": "backend.backendmenu",
     "pk": 4,
@@ -134,6 +132,22 @@
     "model": "backend.backendmenu",
     "pk": 9,
     "fields": {
+      "module_name": "Visitors",
+      "menu_name": "Visitor",
+      "menu_url": "/backend/visitor/",
+      "menu_icon": "fa-solid fa-id-card",
+      "menu_description": "Visitor records.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 10,
+    "fields": {
       "module_name": "Employee Management",
       "menu_name": "Employee",
       "menu_url": "employee",
@@ -148,14 +162,14 @@
   }, 
   {
     "model": "backend.backendmenu",
-    "pk": 10,
+    "pk": 11,
     "fields": {
       "module_name": "Employee Management",
       "menu_name": "Employee List",
       "menu_url": "/backend/employee/",
       "menu_icon": "fa-solid fa-list",
       "menu_description": "Employee records.",
-      "parent": 9,
+      "parent": 10,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -164,7 +178,7 @@
   }, 
   {
     "model": "backend.backendmenu",
-    "pk": 11,
+    "pk": 12,
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Setup",
@@ -180,30 +194,14 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 12,
+    "pk": 13,
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Info",
       "menu_url": "/backend/vehicle-info/",
       "menu_icon": "fa-solid fa-car",
       "menu_description": "Manage vehicle information.",
-      "parent": 11,
-      "is_main_menu": false,
-      "is_sub_menu": false,
-      "is_sub_child_menu": true,
-      "is_active": true
-    }
-  },
-  {
-    "model": "backend.backendmenu",
-    "pk": 13,
-    "fields": {
-      "module_name": "Vehicle Management",
-      "menu_name": "Vehicle Handover",
-      "menu_url": "/backend/vehicle-handover/",
-      "menu_icon": "fa-solid fa-handshake",
-      "menu_description": "Manage vehicle handovers.",
-      "parent": 11,
+      "parent": 12,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -215,11 +213,11 @@
     "pk": 14,
     "fields": {
       "module_name": "Vehicle Management",
-      "menu_name": "Traffic Violations",
-      "menu_url": "/backend/traffic-violation/",
-      "menu_icon": "fa-solid fa-triangle-exclamation",
-      "menu_description": "Manage traffic violations.",
-      "parent": 11,
+      "menu_name": "Vehicle Handover",
+      "menu_url": "/backend/vehicle-handover/",
+      "menu_icon": "fa-solid fa-handshake",
+      "menu_description": "Manage vehicle handovers.",
+      "parent": 12,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -231,11 +229,11 @@
     "pk": 15,
     "fields": {
       "module_name": "Vehicle Management",
-      "menu_name": "Vehicle Rent",
-      "menu_url": "/backend/vehicle-rent/",
-      "menu_icon": "fa-solid fa-money-bill",
-      "menu_description": "Manage vehicle rentals.",
-      "parent": 11,
+      "menu_name": "Traffic Violations",
+      "menu_url": "/backend/traffic-violation/",
+      "menu_icon": "fa-solid fa-triangle-exclamation",
+      "menu_description": "Manage traffic violations.",
+      "parent": 12,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -251,7 +249,7 @@
       "menu_url": "/backend/vehicle-maintenance/",
       "menu_icon": "fa-solid fa-wrench",
       "menu_description": "Manage vehicle maintenance.",
-      "parent": 11,
+      "parent": 12,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -267,7 +265,7 @@
       "menu_url": "/backend/vehicle-accident/",
       "menu_icon": "fa-solid fa-car-burst",
       "menu_description": "Manage vehicle accidents.",
-      "parent": 11,
+      "parent": 12,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
@@ -283,23 +281,7 @@
       "menu_url": "/backend/vehicle-installment/",
       "menu_icon": "fa-solid fa-receipt",
       "menu_description": "Manage vehicle installments.",
-      "parent": 11,
-      "is_main_menu": false,
-      "is_sub_menu": false,
-      "is_sub_child_menu": true,
-      "is_active": true
-    }
-  },
-  {
-    "model": "backend.backendmenu",
-    "pk": 19,
-    "fields": {
-      "module_name": "Vehicle Management",
-      "menu_name": "Vehicle Items",
-      "menu_url": "/backend/vehicle-item/",
-      "menu_icon": "fa-solid fa-box",
-      "menu_description": "Manage vehicle items.",
-      "parent": 11,
+      "parent": 12,
       "is_main_menu": false,
       "is_sub_menu": false,
       "is_sub_child_menu": true,
