@@ -4,7 +4,7 @@ from .models import (
     SiteSettings, SiteDesignSettings, EmailConfiguration, SMSConfiguration, SMSLog,
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance,
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
-    VehicleInstallment, VehicleMaintenance, VehicleAccident
+    VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType 
 )
 
 @admin.register(WebImages)
@@ -120,7 +120,6 @@ class VehicleAdmin(admin.ModelAdmin):
     list_filter = ('vehicle_type', 'ownership', 'is_active')
     ordering = ('istemara_expiry_date',)
 
-
 @admin.register(VehicleHandover)
 class VehicleHandoverAdmin(admin.ModelAdmin):
     list_display = ('vehicle', 'from_employee', 'to_employee', 'handover_date')
@@ -132,6 +131,12 @@ class VehicleAssignAdmin(admin.ModelAdmin):
     list_display = ('vehicle', 'employee', 'assigned_date', 'is_active')
     search_fields = ('vehicle__plate_no', 'employee__first_name', 'employee__last_name')
     list_filter = ('assigned_date', 'is_active')
+
+@admin.register(ViolationType)
+class ViolationTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active')
+    search_fields = ('name',)
+    list_filter = ('is_active',) 
 
 @admin.register(TrafficViolation)
 class TrafficViolationAdmin(admin.ModelAdmin):

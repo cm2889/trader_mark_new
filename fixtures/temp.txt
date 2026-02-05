@@ -1,0 +1,30 @@
+
+
+{
+    "model": "backend.backendmenu",
+    "pk": 19,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Assignments",
+      "menu_url": "/backend/vehicle-assign/",
+      "menu_icon": "fa-solid fa-user-tag",
+      "menu_description": "Manage vehicle-to-employee assignments.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }
+
+
+   "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Handover",
+      "menu_url": "/backend/vehicle-handover/",
+      "menu_icon": "fa-solid fa-handshake",
+      "menu_description": "Manage vehicle handovers.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true

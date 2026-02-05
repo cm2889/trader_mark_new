@@ -5,7 +5,7 @@ from backend.models import (
     Visitor, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment,
-    VehicleMaintenance, VehicleAccident, VehicleAssign 
+    VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType
 )
 
 TAILWIND_TEXT = (
@@ -309,14 +309,22 @@ class VehicleHandoverForm(forms.ModelForm):
         }
 
 
+class ViolationTypeForm(forms.ModelForm):
+    class Meta:
+        model = ViolationType
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter violation type name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+        }
+
 class TrafficViolationForm(forms.ModelForm):
     class Meta:
         model = TrafficViolation
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'violation_type': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter violation type'}),
+            'violation_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'violation_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'fine_amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter fine amount'}),
             'is_paid': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),

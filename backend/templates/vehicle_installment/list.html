@@ -76,7 +76,7 @@
                     {% for installment in installments %}
                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ installment.vehicle.vehicle.plate_no }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ installment.vehicle.plate_no }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">#{{ installment.installment_no }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900 font-medium">{{ installment.amount }}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ installment.due_date|date:"M d, Y" }}</td>

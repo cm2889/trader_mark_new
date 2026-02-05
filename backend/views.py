@@ -30,16 +30,16 @@ from backend.models import (
     Visitor, 
     Nationality, Employee, Employment, Passport, DrivingLicense, 
     HealthInsurance, Contact, Address, Vehicle, 
-    VehicleHandover, TrafficViolation,
-    VehicleInstallment, VehicleMaintenance, VehicleAccident
+    VehicleHandover, TrafficViolation,ViolationType, 
+    VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType
 )
 
 from backend.forms import (
     CustomUserLoginForm, NationalityForm, EmployeeForm, EmploymentForm, 
     PassportForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
     AddressForm, UserCreateForm, VehicleForm, VisitorForm, 
-    VehicleHandoverForm, TrafficViolationForm,
-    VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm
+    VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm,
+    VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm
 ) 
 
 from backend.common_func import checkUserPermission
@@ -984,21 +984,15 @@ def employee_update(request, pk):
     
     # Get related objects or None
     employments = Employment.objects.filter(employee=employee, is_active=True)
-    passport = Passport.objects.filter(employee=employee, is_active=True).first()
-    driving_license = DrivingLicense.objects.filter(employee=employee, is_active=True).first()
     health_insurance = HealthInsurance.objects.filter(employee=employee, is_active=True).first()
     contact = Contact.objects.filter(employee=employee, is_active=True).first()
     address = Address.objects.filter(employee=employee, is_active=True).first()
-    vehicle = Vehicle.objects.filter(employee=employee, is_active=True).first()
 
     if request.method == 'POST':
         employee_form = EmployeeForm(request.POST, request.FILES, instance=employee, prefix='employee')
-        passport_form = PassportForm(request.POST, instance=passport, prefix='passport')
-        driving_license_form = DrivingLicenseForm(request.POST, instance=driving_license, prefix='driving_license')
         health_insurance_form = HealthInsuranceForm(request.POST, instance=health_insurance, prefix='health_insurance')
         contact_form = ContactForm(request.POST, instance=contact, prefix='contact')
         address_form = AddressForm(request.POST, instance=address, prefix='address')
-        vehicle_form = VehicleForm(request.POST, instance=vehicle, prefix='vehicle')
 
         if employee_form.is_valid():
             employee = employee_form.save(commit=False)
@@ -1089,33 +1083,96 @@ def employee_update(request, pk):
                 
                 employment_index += 1
 
-            # Update or Create Passport
-            if passport_form.is_valid():
-                has_data = any([
-                    v for k, v in passport_form.cleaned_data.items() 
-                    if v not in [None, '', []]
-                ])
+            # Handle multiple passport forms
+            passport_index = 0
+            while True:
+                passport_prefix = f'passport-{passport_index}'
+                passport_no_key = f'{passport_prefix}-passport_no'
+                
+                if passport_no_key not in request.POST:
+                    break
+                
+                passport_data = {
+                    'passport_no': request.POST.get(f'{passport_prefix}-passport_no'),
+                    'passport_expiry_date': request.POST.get(f'{passport_prefix}-passport_expiry_date'),
+                    'passport_renewed': request.POST.get(f'{passport_prefix}-passport_renewed') == 'on',
+                }
+                
+                # Check if any data is provided
+                has_data = any([v for k, v in passport_data.items() if v not in [None, '', [], False] and k != 'passport_renewed'])
+                
                 if has_data:
-                    pass_obj = passport_form.save(commit=False)
-                    pass_obj.employee = employee
-                    pass_obj.updated_by = request.user
-                    if not passport:
-                        pass_obj.created_by = request.user
-                    pass_obj.save()
+                    # Try to find existing passport by passport_no or create new
+                    passport_obj = None
+                    if passport_data['passport_no']:
+                        passport_obj = Passport.objects.filter(
+                            employee=employee, 
+                            passport_no=passport_data['passport_no']
+                        ).first()
+                    
+                    if passport_obj:
+                        # Update existing
+                        passport_obj.updated_by = request.user
+                    else:
+                        # Create new
+                        passport_obj = Passport(employee=employee, created_by=request.user, updated_by=request.user)
+                    
+                    if passport_data['passport_no']:
+                        passport_obj.passport_no = passport_data['passport_no']
+                    if passport_data['passport_expiry_date']:
+                        passport_obj.passport_expiry_date = passport_data['passport_expiry_date']
+                    passport_obj.passport_renewed = passport_data['passport_renewed']
+                    
+                    passport_obj.save()
+                
+                passport_index += 1
 
-            # Update or Create Driving License
-            if driving_license_form.is_valid():
-                has_data = any([
-                    v for k, v in driving_license_form.cleaned_data.items() 
-                    if v not in [None, '', []]
-                ])
+            # Handle multiple driving license forms
+            license_index = 0
+            while True:
+                license_prefix = f'driving_license-{license_index}'
+                license_no_key = f'{license_prefix}-license_no'
+                
+                if license_no_key not in request.POST:
+                    break
+                
+                license_data = {
+                    'license_no': request.POST.get(f'{license_prefix}-license_no'),
+                    'license_expiry_date': request.POST.get(f'{license_prefix}-license_expiry_date'),
+                    'license_renewed': request.POST.get(f'{license_prefix}-license_renewed') == 'on',
+                    'license_renew_status': request.POST.get(f'{license_prefix}-license_renew_status'),
+                }
+                
+                # Check if any data is provided
+                has_data = any([v for k, v in license_data.items() if v not in [None, '', [], False] and k != 'license_renewed'])
+                
                 if has_data:
-                    dl_obj = driving_license_form.save(commit=False)
-                    dl_obj.employee = employee
-                    dl_obj.updated_by = request.user
-                    if not driving_license:
-                        dl_obj.created_by = request.user
-                    dl_obj.save()
+                    # Try to find existing license by license_no or create new
+                    license_obj = None
+                    if license_data['license_no']:
+                        license_obj = DrivingLicense.objects.filter(
+                            employee=employee,
+                            license_no=license_data['license_no']
+                        ).first()
+                    
+                    if license_obj:
+                        # Update existing
+                        license_obj.updated_by = request.user
+                    else:
+                        # Create new
+                        license_obj = DrivingLicense(employee=employee, created_by=request.user, updated_by=request.user)
+                    
+                    if license_data['license_no']:
+                        license_obj.license_no = license_data['license_no']
+                    if license_data['license_expiry_date']:
+                        license_obj.license_expiry_date = license_data['license_expiry_date']
+                    license_obj.license_renewed = license_data['license_renewed']
+                    if license_data['license_renew_status']:
+                        license_obj.license_renew_status = license_data['license_renew_status']
+                    
+                    license_obj.save()
+                
+                license_index += 1
 
             # Update or Create Health Insurance
             if health_insurance_form.is_valid():
@@ -1159,40 +1216,27 @@ def employee_update(request, pk):
                         addr_obj.created_by = request.user
                     addr_obj.save()
 
-            # Update or Create Vehicle
-            if vehicle_form.is_valid():
-                has_data = any([
-                    v for k, v in vehicle_form.cleaned_data.items() 
-                    if v not in [None, '', []]
-                ])
-                if has_data:
-                    veh_obj = vehicle_form.save(commit=False)
-                    veh_obj.employee = employee
-                    veh_obj.updated_by = request.user
-                    if not vehicle:
-                        veh_obj.created_by = request.user
-                    veh_obj.save()
-
+            messages.success(request, 'Employee updated successfully!')
             return redirect('employee:list')
     else:
         employee_form = EmployeeForm(instance=employee, prefix='employee')
-        passport_form = PassportForm(instance=passport, prefix='passport')
-        driving_license_form = DrivingLicenseForm(instance=driving_license, prefix='driving_license')
         health_insurance_form = HealthInsuranceForm(instance=health_insurance, prefix='health_insurance')
         contact_form = ContactForm(instance=contact, prefix='contact')
         address_form = AddressForm(instance=address, prefix='address')
-        vehicle_form = VehicleForm(instance=vehicle, prefix='vehicle')
+
+    # Get all passports and driving licenses for display
+    passports = Passport.objects.filter(employee=employee, is_active=True).order_by('-created_at')
+    driving_licenses = DrivingLicense.objects.filter(employee=employee, is_active=True).order_by('-created_at')
 
     context = {
         'employee': employee,
         'employee_form': employee_form,
         'employments': employments,
-        'passport_form': passport_form,
-        'driving_license_form': driving_license_form,
+        'passports': passports,
+        'driving_licenses': driving_licenses,
         'health_insurance_form': health_insurance_form,
         'contact_form': contact_form,
         'address_form': address_form,
-        'vehicle_form': vehicle_form,
         'nationalities': Nationality.objects.filter(is_active=True),
     }
     return render(request, "employee/update.html", context)
@@ -1286,15 +1330,29 @@ class EmployeeDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         employee = self.get_object()
 
+        # Get all related records
         context['employments'] = Employment.objects.filter(employee=employee, is_active=True).order_by('-created_at')
+        context['employment_history'] = Employment.objects.filter(employee=employee).order_by('-created_at')
+        
+        # Passport - get all passports (active and history)
+        context['passports'] = Passport.objects.filter(employee=employee, is_active=True).order_by('-created_at')
         context['passport'] = Passport.objects.filter(employee=employee, is_active=True).first()
         context['passport_history'] = Passport.objects.filter(employee=employee).order_by('-created_at')
+        
+        # Driving License - get all licenses (active and history)
+        context['driving_licenses'] = DrivingLicense.objects.filter(employee=employee, is_active=True).order_by('-created_at')
         context['driving_license'] = DrivingLicense.objects.filter(employee=employee, is_active=True).first()
         context['driving_license_history'] = DrivingLicense.objects.filter(employee=employee).order_by('-created_at')
+        
         context['health_insurance'] = HealthInsurance.objects.filter(employee=employee, is_active=True).first()
         context['contact'] = Contact.objects.filter(employee=employee, is_active=True).first()
         context['address'] = Address.objects.filter(employee=employee, is_active=True).first()
-        context['vehicle'] = Vehicle.objects.filter(employee=employee, is_active=True).first()
+        
+        # Get vehicle through VehicleAssign relationship
+        vehicle_assign = VehicleAssign.objects.filter(employee=employee, is_active=True, deleted=False).select_related('vehicle').first()
+        context['vehicle'] = vehicle_assign.vehicle if vehicle_assign else None
+        context['vehicle_assign'] = vehicle_assign
+        context['vehicle_assignments'] = VehicleAssign.objects.filter(employee=employee, deleted=False).select_related('vehicle').order_by('-created_at')
 
         return context
 
@@ -1328,16 +1386,31 @@ class VehicleListView(ListView):
         if ownership:
             filters['ownership'] = ownership
        
-        return Vehicle.objects.select_related('employee').filter(**filters)
+        return Vehicle.objects.filter(**filters)
 
     def get_context_data(self, **kwargs):
+        from backend.models import VehicleAssign
         context = super().get_context_data(**kwargs)
-        context['vehicle_infos'] = self.get_queryset()
+        vehicle_infos = self.get_queryset()
+        
+        # Get current vehicle assignments
+        vehicle_assignments = {}
+        for assignment in VehicleAssign.objects.filter(is_active=True, deleted=False).select_related('employee', 'vehicle'):
+            vehicle_assignments[assignment.vehicle_id] = assignment.employee
+        
+        # Add current_employee to each vehicle
+        for vehicle in vehicle_infos:
+            vehicle.current_employee = vehicle_assignments.get(vehicle.id)
+        
+        context['vehicle_infos'] = vehicle_infos
         context['page_num'] = self.request.GET.get('page', 1)
         context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['vehicle_infos'])
 
-        # Add all vehicles for select2 dropdown
-        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).select_related('employee').order_by('plate_no')
+        # Add all vehicles for select2 dropdown with current assignment
+        all_vehicles = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
+        for vehicle in all_vehicles:
+            vehicle.current_employee = vehicle_assignments.get(vehicle.id)
+        context['all_vehicles'] = all_vehicles
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1394,6 +1467,92 @@ def vehicle_delete(request, pk):
     return redirect('vehicle_info:list')
 
 
+@method_decorator(login_required, name='dispatch')
+class VehicleAssignListView(ListView):
+    model = VehicleAssign
+    template_name = "vehicle_assign/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/vehicle-assign/"):
+            messages.error(request, "You do not have permission to view vehicle assignments.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = VehicleAssign.objects.filter(is_active=True, deleted=False).select_related('vehicle', 'employee').order_by('-created_at')
+        
+        employee = self.request.GET.get('employee', '')
+        vehicle = self.request.GET.get('vehicle', '')
+        
+        if employee:
+            queryset = queryset.filter(employee_id=employee)
+        if vehicle:
+            queryset = queryset.filter(vehicle_id=vehicle)
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['vehicle_assignments'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['vehicle_assignments'])
+        
+        # Add filter options
+        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
+        context['all_employees'] = Employee.objects.filter(is_active=True, deleted=False).order_by('first_name', 'last_name')
+        
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+        return context  
+
+@method_decorator(login_required, name='dispatch')
+class VehicleAssignCreateView(CreateView):
+    model = VehicleAssign
+    template_name = "vehicle_assign/create.html"
+    form_class = VehicleAssignForm
+    success_url = reverse_lazy('vehicle_assign:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/vehicle-assign/"):
+            messages.error(request, "You do not have permission to add vehicle assignments.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+@method_decorator(login_required, name='dispatch')
+class VehicleAssignUpdateView(UpdateView):
+    model = VehicleAssign
+    template_name = "vehicle_assign/update.html"
+    form_class = VehicleAssignForm
+    success_url = reverse_lazy('vehicle_assign:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/vehicle-assign/"):
+            messages.error(request, "You do not have permission to edit vehicle assignments.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form) 
+
+
+@login_required
+def vehicle_assign_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/vehicle-assign/"):
+        messages.error(request, "You do not have permission to delete vehicle assignments.")
+        return render(request, "403.html", status=403) 
+    vehicle_assign = VehicleAssign.objects.get(pk=pk)
+    vehicle_assign.is_active = False
+    vehicle_assign.deleted = True
+    vehicle_assign.save()
+    return redirect('vehicle_assign:list') 
 
 @login_required
 def vehicle_management(request):
@@ -1449,7 +1608,7 @@ class VehicleHandoverListView(ListView):
         to_employee = self.request.GET.get('to_employee', '')
         
         if plate_no:
-            queryset = queryset.filter(vehicle__vehicle__plate_no=plate_no)
+            queryset = queryset.filter(vehicle__plate_no=plate_no)
         if from_employee:
             queryset = queryset.filter(from_employee_id=from_employee)
         if to_employee:
@@ -1549,6 +1708,94 @@ def vehicle_handover_delete(request, pk):
     messages.success(request, "Vehicle handover deleted successfully.")
     return redirect('vehicle_handover:list')
 
+# ================================================
+# VIOLATION TYPE VIEWS
+# ================================================ 
+@method_decorator(login_required, name='dispatch') 
+class ViolationTypeListView(ListView):
+    model = ViolationType
+    template_name = "violation_type/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/violation-type/"):
+            messages.error(request, "You do not have permission to view violation types.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+
+        filters = {
+            'is_active' : True,
+        }
+
+        name = self.request.GET.get('name', '')
+        
+        if name:
+            filters['name__icontains'] = name
+        return ViolationType.objects.filter(**filters).order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['violation_types'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        page_numbers, context['paginator_list'], context['last_page_number'] = paginate_data(
+            self.request, context['page_num'], context['violation_types']
+        )
+        context['paginator'] = context['paginator_list']
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode()
+        
+        return context 
+
+
+@method_decorator(login_required, name='dispatch')
+class ViolationTypeCreateView(CreateView):
+    model = ViolationType
+    template_name = "violation_type/create.html"
+    form_class = ViolationTypeForm
+    success_url = reverse_lazy('violation_type:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/violation-type/"):
+            messages.error(request, "You do not have permission to add violation types.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+@method_decorator(login_required, name='dispatch')
+class ViolationTypeUpdateView(UpdateView):
+    model = ViolationType
+    template_name = "violation_type/update.html"
+    form_class = ViolationTypeForm
+    success_url = reverse_lazy('violation_type:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/violation-type/"):
+            messages.error(request, "You do not have permission to edit violation types.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form) 
+
+@login_required
+def violation_type_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/violation-type/"):
+        messages.error(request, "You do not have permission to delete violation types.")
+        return render(request, "403.html", status=403)
+    violation_type = ViolationType.objects.get(pk=pk)
+    violation_type.is_active = False
+    violation_type.deleted = True
+    violation_type.save()
+    messages.success(request, "Violation type deleted successfully.")
+    return redirect('violation_type:list')
 
 # ========================================
 # TRAFFIC VIOLATION VIEWS
@@ -1569,13 +1816,13 @@ class TrafficViolationListView(ListView):
         queryset = TrafficViolation.objects.all().order_by('-violation_date')
         
         plate_no = self.request.GET.get('plate_no', '')
-        employee = self.request.GET.get('employee', '')
+        violation_type = self.request.GET.get('violation_type', '')
         is_paid = self.request.GET.get('is_paid', '')
         
         if plate_no:
-            queryset = queryset.filter(vehicle__vehicle__plate_no=plate_no)
-        if employee:
-            queryset = queryset.filter(employee_id=employee)
+            queryset = queryset.filter(vehicle__plate_no=plate_no)
+        if violation_type:
+            queryset = queryset.filter(violation_type_id=violation_type)
         if is_paid:
             queryset = queryset.filter(is_paid=(is_paid == 'true'))
         
@@ -1595,7 +1842,7 @@ class TrafficViolationListView(ListView):
         
         # Add data for select2 dropdowns
         context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
-        context['all_employees'] = Employee.objects.filter(is_active=True, deleted=False).order_by('first_name', 'last_name')
+        context['all_violation_types'] = ViolationType.objects.filter(is_active=True).order_by('name')
         
         return context
 
@@ -1609,7 +1856,9 @@ def traffic_violation_create(request):
     if request.method == 'POST':
         form = TrafficViolationForm(request.POST)
         if form.is_valid():
-            form.save()
+            violation = form.save(commit=False)
+            violation.created_by = request.user
+            violation.save()
             messages.success(request, "Traffic violation created successfully.")
             return redirect('traffic_violation:list')
     else:
@@ -1617,9 +1866,10 @@ def traffic_violation_create(request):
 
     context = {
         'form': form,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-        'employees': Employee.objects.filter(is_active=True),
+        'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
+        'violation_types': ViolationType.objects.filter(is_active=True),
     }
+    
     return render(request, 'traffic_violation/create.html', context)
 
 
@@ -1634,7 +1884,9 @@ def traffic_violation_update(request, pk):
     if request.method == 'POST':
         form = TrafficViolationForm(request.POST, instance=violation)
         if form.is_valid():
-            form.save()
+            violation = form.save(commit=False)
+            violation.updated_by = request.user
+            violation.save()
             messages.success(request, "Traffic violation updated successfully.")
             return redirect('traffic_violation:list')
     else:
@@ -1643,8 +1895,8 @@ def traffic_violation_update(request, pk):
     context = {
         'form': form,
         'violation': violation,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-        'employees': Employee.objects.filter(is_active=True),
+        'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
+        'violation_types': ViolationType.objects.filter(is_active=True),
     }
     return render(request, 'traffic_violation/update.html', context)
 
@@ -1694,7 +1946,7 @@ class VehicleMaintenanceListView(ListView):
         status = self.request.GET.get('status', '')
         
         if plate_no:
-            queryset = queryset.filter(vehicle__vehicle__plate_no__icontains=plate_no)
+            queryset = queryset.filter(vehicle__plate_no__icontains=plate_no)
         if status:
             queryset = queryset.filter(status=status)
         
@@ -1807,13 +2059,10 @@ class VehicleAccidentListView(ListView):
         queryset = VehicleAccident.objects.all().order_by('-accident_date')
         
         plate_no = self.request.GET.get('plate_no', '')
-        employee = self.request.GET.get('employee', '')
         insurance_claimed = self.request.GET.get('insurance_claimed', '')
         
         if plate_no:
-            queryset = queryset.filter(vehicle__vehicle__plate_no=plate_no)
-        if employee:
-            queryset = queryset.filter(employee_id=employee)
+            queryset = queryset.filter(vehicle__plate_no=plate_no)
         if insurance_claimed:
             queryset = queryset.filter(insurance_claimed=(insurance_claimed == 'true'))
         
@@ -1828,8 +2077,18 @@ class VehicleAccidentListView(ListView):
         )
         
         # Add data for select2 dropdowns
-        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).select_related('employee').order_by('plate_no')
+        all_vehicles = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
         context['all_employees'] = Employee.objects.filter(is_active=True).order_by('first_name', 'last_name')
+        
+        # Get current vehicle assignments
+        vehicle_assignments = {}
+        for assignment in VehicleAssign.objects.filter(is_active=True, deleted=False).select_related('employee', 'vehicle'):
+            vehicle_assignments[assignment.vehicle_id] = assignment.employee
+        
+        # Add current_employee to each vehicle
+        for vehicle in all_vehicles:
+            vehicle.current_employee = vehicle_assignments.get(vehicle.id)
+        context['all_vehicles'] = all_vehicles
         
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -1932,7 +2191,7 @@ class VehicleInstallmentListView(ListView):
         is_paid = self.request.GET.get('is_paid', '')
         
         if plate_no:
-            queryset = queryset.filter(vehicle__vehicle__plate_no=plate_no)
+            queryset = queryset.filter(vehicle__plate_no=plate_no)
         if is_paid:
             queryset = queryset.filter(is_paid=(is_paid == 'true'))
         

@@ -13,6 +13,23 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    @keyframes slide-in {
+        from {
+            opacity: 0;
+            transform: translateX(400px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    .animate-slide-in {
+        animation: slide-in 0.3s ease-out;
+        transition: all 0.3s ease-out;
+    }
+</style>
+
 <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
     <div class="">
         <!-- Header -->
@@ -38,15 +55,29 @@
                          <!-- First Name -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">First Name <span class="text-red-500">*</span></label>
-                            <input type="text" name="employee-first_name" value="{{ employee_form.first_name.value|default:'' }}" placeholder="Enter First Name" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <input type="text" id="employee-first_name" name="employee-first_name" value="{{ employee_form.first_name.value|default:'' }}" placeholder="Enter First Name" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                             {% if employee_form.first_name.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.first_name.errors.0 }}</p>{% endif %}
                         </div>
 
                         <!-- Last Name -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Last Name <span class="text-red-500">*</span></label>
-                            <input type="text" name="employee-last_name" value="{{ employee_form.last_name.value|default:'' }}" placeholder="Enter Last Name" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <input type="text" id="employee-last_name" name="employee-last_name" value="{{ employee_form.last_name.value|default:'' }}" placeholder="Enter Last Name" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                             {% if employee_form.last_name.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.last_name.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Phone Number-->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="text" id="employee-phone_number" name="employee-phone_number" value="{{ employee_form.phone_number.value|default:'' }}" placeholder="Enter Phone Number" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.phone_number.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.phone_number.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!--Email -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Email <span class="text-red-500">*</span></label>
+                            <input type="email" id="employee-email" name="employee-email" value="{{ employee_form.email.value|default:'' }}" placeholder="Enter Email" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            {% if employee_form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.email.errors.0 }}</p>{% endif %}
                         </div>
 
                         <!-- QID No -->
@@ -55,8 +86,6 @@
                             <input type="text" name="employee-qid_no" value="{{ employee_form.qid_no.value|default:'' }}" placeholder="Enter QID No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
                             {% if employee_form.qid_no.errors %}<p class="text-red-500 text-xs mt-1">{{ employee_form.qid_no.errors.0 }}</p>{% endif %}
                         </div>
-
-                       
 
                         <!-- Nationality -->
                         <div>
@@ -103,78 +132,9 @@
                     </svg>
                 </button>
                 <div id="employment-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
-                    <input type="hidden" name="employment-TOTAL_FORMS" id="employment-total-forms" value="{{ employments|length|default:1 }}">
+                    <input type="hidden" name="employment-TOTAL_FORMS" id="employment-total-forms" value="1">
                     <div id="employment-forms-container" class="pt-4">
-                        {% for emp in employments %}
-                        <div class="employment-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="{{ forloop.counter0 }}" data-id="{{ emp.id }}">
-                            <input type="hidden" name="employment-{{ forloop.counter0 }}-id" value="{{ emp.id }}">
-                            <div class="flex justify-between items-center mb-4">
-                                <h4 class="text-sm font-semibold text-[var(--text-color)]">Employment #{{ forloop.counter }}</h4>
-                                <button type="button" onclick="removeEmploymentForm(this)" class="text-red-500 hover:text-red-700 remove-employment-btn" {% if employments|length <= 1 %}style="display: none;"{% endif %}>
-                                    <i class="fas fa-trash"></i> Remove
-                                </button>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                <!-- Employment Joining Date -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
-                                    <input type="date" name="employment-{{ forloop.counter0 }}-joining_date" value="{{ emp.joining_at|date:'Y-m-d'|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Work Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
-                                    <select name="employment-{{ forloop.counter0 }}-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                        <option value="">Select Work Status</option>
-                                        <option value="ACTIVE" {% if emp.work_status == 'ACTIVE' %}selected{% endif %}>Active</option>
-                                        <option value="INACTIVE" {% if emp.work_status == 'INACTIVE' %}selected{% endif %}>Inactive</option>
-                                        <option value="ON_LEAVE" {% if emp.work_status == 'ON_LEAVE' %}selected{% endif %}>On Leave</option>
-                                        <option value="TERMINATED" {% if emp.work_status == 'TERMINATED' %}selected{% endif %}>Terminated</option>
-                                    </select>
-                                </div>
-
-                                <!-- RP Expiry Date -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
-                                    <input type="date" name="employment-{{ forloop.counter0 }}-rp_expiry_date" value="{{ emp.rp_expiry_date|date:'Y-m-d'|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Work Permit No -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
-                                    <input type="text" name="employment-{{ forloop.counter0 }}-work_permit_no" value="{{ emp.work_permit_no|default:'' }}" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Work ID -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
-                                    <input type="text" name="employment-{{ forloop.counter0 }}-work_id" value="{{ emp.work_id|default:'' }}" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- QID Renew Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
-                                    <select name="employment-{{ forloop.counter0 }}-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                        <option value="">Select Status</option>
-                                        <option value="NOT_DUE" {% if emp.qid_renew_status == 'NOT_DUE' %}selected{% endif %}>Not Due</option>
-                                        <option value="PENDING" {% if emp.qid_renew_status == 'PENDING' %}selected{% endif %}>Pending</option>
-                                        <option value="RENEWED" {% if emp.qid_renew_status == 'RENEWED' %}selected{% endif %}>Renewed</option>
-                                    </select>
-                                </div>
-
-                                <!-- QID Lost Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
-                                    <select name="employment-{{ forloop.counter0 }}-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                        <option value="">Select Status</option>
-                                        <option value="YES" {% if emp.qid_lost_status == 'YES' %}selected{% endif %}>Yes</option>
-                                        <option value="NO" {% if emp.qid_lost_status == 'NO' %}selected{% endif %}>No</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <!-- Empty form for new employment -->
+                        <!-- Employment forms will be added here -->
                         <div class="employment-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="0">
                             <div class="flex justify-between items-center mb-4">
                                 <h4 class="text-sm font-semibold text-[var(--text-color)]">Employment #1</h4>
@@ -241,7 +201,6 @@
                                 </div>
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -343,31 +302,47 @@
             <!-- Passport Section -->
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <button type="button" onclick="toggleSection('passport-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
-                    <span class="text-base font-medium text-[var(--text-color)]">Passport</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-base font-medium text-[var(--text-color)]">Passport</span>
+                        <span type="button" onclick="addPassportForm(event)" class="px-3 py-1 text-xs font-medium text-white bg-[var(--primary-color)] rounded hover:opacity-90 transition-opacity cursor-pointer">
+                            <i class="fas fa-plus mr-1"></i>Add Passport
+                        </span>
+                    </div>
                     <svg id="passport-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
                 <div id="passport-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
-                        <!-- Passport No -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport No</label>
-                            <input type="text" name="passport-passport_no" value="{{ passport_form.passport_no.value|default:'' }}" placeholder="Enter Passport No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
+                    <div id="passport-forms-container" class="pt-4">
+                        <!-- Passport forms will be added here -->
+                        <div class="passport-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="0">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">Passport #1</h4>
+                                <button type="button" onclick="removePassportForm(this)" class="text-red-500 hover:text-red-700 remove-passport-btn" style="display: none;">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <!-- Passport No -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport No</label>
+                                    <input type="text" name="passport-0-passport_no" value="" placeholder="Enter Passport No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
 
-                        <!-- Passport Expiry Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label>
-                            <input type="date" name="passport-passport_expiry_date" value="{{ passport_form.passport_expiry_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
+                                <!-- Passport Expiry Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label>
+                                    <input type="date" name="passport-0-passport_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
 
-                        <!-- Passport Renewed -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Renewed</label>
-                            <div class="flex items-center h-11">
-                                <input type="checkbox" name="passport-passport_renewed" {% if passport_form.passport_renewed.value %}checked{% endif %} class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
-                                <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                                <!-- Passport Renewed -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Renewed</label>
+                                    <div class="flex items-center h-11">
+                                        <input type="checkbox" name="passport-0-passport_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                                        <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -377,42 +352,58 @@
             <!-- Driving License Section -->
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <button type="button" onclick="toggleSection('driving-license-info')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-t-lg">
-                    <span class="text-base font-medium text-[var(--text-color)]">Driving License</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-base font-medium text-[var(--text-color)]">Driving License</span>
+                        <span type="button" onclick="addDrivingLicenseForm(event)" class="px-3 py-1 text-xs font-medium text-white bg-[var(--primary-color)] rounded hover:opacity-90 transition-opacity cursor-pointer">
+                            <i class="fas fa-plus mr-1"></i>Add License
+                        </span>
+                    </div>
                     <svg id="driving-license-info-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
                 <div id="driving-license-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
-                        <!-- License No -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
-                            <input type="text" name="driving_license-license_no" value="{{ driving_license_form.license_no.value|default:'' }}" placeholder="Enter License No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
-
-                        <!-- License Expiry Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label>
-                            <input type="date" name="driving_license-license_expiry_date" value="{{ driving_license_form.license_expiry_date.value|default:'' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                        </div>
-
-                        <!-- License Renewed -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renewed</label>
-                            <div class="flex items-center h-11">
-                                <input type="checkbox" name="driving_license-license_renewed" {% if driving_license_form.license_renewed.value %}checked{% endif %} class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
-                                <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                    <div id="license-forms-container" class="pt-4">
+                        <!-- License forms will be added here -->
+                        <div class="license-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="0">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">License #1</h4>
+                                <button type="button" onclick="removeDrivingLicenseForm(this)" class="text-red-500 hover:text-red-700 remove-license-btn" style="display: none;">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
                             </div>
-                        </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <!-- License No -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
+                                    <input type="text" name="driving_license-0-license_no" value="" placeholder="Enter License No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
 
-                        <!-- License Renew Status -->
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renew Status</label>
-                            <select name="driving_license-license_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                <option value="">Select Status</option>
-                                <option value="YES" {% if driving_license_form.license_renew_status.value == 'YES' %}selected{% endif %}>Renewed</option>
-                                <option value="NO" {% if driving_license_form.license_renew_status.value == 'NO' %}selected{% endif %}>Not Renewed</option>
-                            </select>
+                                <!-- License Expiry Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label>
+                                    <input type="date" name="driving_license-0-license_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+
+                                <!-- License Renewed -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renewed</label>
+                                    <div class="flex items-center h-11">
+                                        <input type="checkbox" name="driving_license-0-license_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                                        <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                                    </div>
+                                </div>
+
+                                <!-- License Renew Status -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renew Status</label>
+                                    <select name="driving_license-0-license_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="YES">Renewed</option>
+                                        <option value="NO">Not Renewed</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -508,8 +499,7 @@
         updateEmploymentRemoveButtons();
     });
 
-    let employmentFormCount = {{ employments|length|default:1 }};
-    let deletedEmploymentIds = [];
+    let employmentFormCount = 1;
 
     function addEmploymentForm(event) {
         event.stopPropagation();
@@ -605,22 +595,6 @@
 
     function removeEmploymentForm(button) {
         const formItem = button.closest('.employment-form-item');
-        const employmentId = formItem.getAttribute('data-id');
-        
-        // If it has an ID, track it for deletion
-        if (employmentId) {
-            deletedEmploymentIds.push(employmentId);
-            // Add hidden input to track deleted IDs
-            let deletedInput = document.querySelector('input[name="employment-DELETED_IDS"]');
-            if (!deletedInput) {
-                deletedInput = document.createElement('input');
-                deletedInput.type = 'hidden';
-                deletedInput.name = 'employment-DELETED_IDS';
-                document.querySelector('form').appendChild(deletedInput);
-            }
-            deletedInput.value = deletedEmploymentIds.join(',');
-        }
-        
         formItem.remove();
         
         // Update numbering and reindex
@@ -644,7 +618,7 @@
             const inputs = item.querySelectorAll('input, select');
             inputs.forEach(input => {
                 const name = input.getAttribute('name');
-                if (name && name.startsWith('employment-') && name !== 'employment-TOTAL_FORMS' && name !== 'employment-DELETED_IDS') {
+                if (name && name.startsWith('employment-')) {
                     const newName = name.replace(/employment-\d+-/, `employment-${index}-`);
                     input.setAttribute('name', newName);
                 }
@@ -660,6 +634,362 @@
         const formItems = document.querySelectorAll('.employment-form-item');
         formItems.forEach((item) => {
             const removeBtn = item.querySelector('.remove-employment-btn');
+            if (removeBtn) {
+                if (formItems.length > 1) {
+                    removeBtn.style.display = 'inline-flex';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Auto-fill from Visitor Data - AJAX
+    let visitorCheckTimeout;
+    let lastCheckedEmail = '';
+    let lastCheckedPhone = '';
+    
+    function showVisitorNotification(message, type = 'info') {
+        // Remove existing notification if any
+        const existingNotification = document.getElementById('visitor-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.id = 'visitor-notification';
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-slide-in`;
+        
+        if (type === 'success') {
+            notification.className += ' bg-green-500 text-white';
+            notification.innerHTML = `<i class="fas fa-check-circle"></i><span>${message}</span>`;
+        } else if (type === 'info') {
+            notification.className += ' bg-blue-500 text-white';
+            notification.innerHTML = `<i class="fas fa-info-circle"></i><span>${message}</span>`;
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    }
+    
+    function highlightField(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.classList.add('ring-2', 'ring-green-500', 'bg-green-50');
+            setTimeout(() => {
+                field.classList.remove('ring-2', 'ring-green-500', 'bg-green-50');
+            }, 2000);
+        }
+    }
+    
+    function checkVisitorData(sourceField) {
+        const email = document.getElementById('employee-email').value.trim();
+        const phone = document.getElementById('employee-phone_number').value.trim();
+        
+        // Only check if email or phone is provided and has changed
+        if ((!email && !phone) || (email === lastCheckedEmail && phone === lastCheckedPhone)) {
+            return;
+        }
+        
+        // Clear previous timeout
+        if (visitorCheckTimeout) {
+            clearTimeout(visitorCheckTimeout);
+        }
+        
+        // Debounce AJAX call
+        visitorCheckTimeout = setTimeout(() => {
+            const params = new URLSearchParams();
+            if (email) params.append('email', email);
+            if (phone) params.append('phone', phone);
+            
+            fetch('{% url "backend:get_visitor_by_contact" %}?' + params.toString())
+            .then(response => response.json())
+            .then(data => {
+                if (data.found) {
+                    // Auto-fill form fields only if they are empty
+                    const firstNameField = document.getElementById('employee-first_name');
+                    const lastNameField = document.getElementById('employee-last_name');
+                    const emailField = document.getElementById('employee-email');
+                    const phoneField = document.getElementById('employee-phone_number');
+                    
+                    let fieldsUpdated = [];
+                    
+                    if (!firstNameField.value && data.data.first_name) {
+                        firstNameField.value = data.data.first_name;
+                        highlightField('employee-first_name');
+                        fieldsUpdated.push('First Name');
+                    }
+                    
+                    if (!lastNameField.value && data.data.last_name) {
+                        lastNameField.value = data.data.last_name;
+                        highlightField('employee-last_name');
+                        fieldsUpdated.push('Last Name');
+                    }
+                    
+                    if (!emailField.value && data.data.email && sourceField !== 'email') {
+                        emailField.value = data.data.email;
+                        highlightField('employee-email');
+                        fieldsUpdated.push('Email');
+                    }
+                    
+                    if (!phoneField.value && data.data.phone_number && sourceField !== 'phone') {
+                        phoneField.value = data.data.phone_number;
+                        highlightField('employee-phone_number');
+                        fieldsUpdated.push('Phone');
+                    }
+                    
+                    // Show notification if any fields were updated
+                    if (fieldsUpdated.length > 0) {
+                        showVisitorNotification(
+                            `Visitor found! Auto-filled: ${fieldsUpdated.join(', ')}`,
+                            'success'
+                        );
+                    }
+                    
+                    // Update last checked values
+                    lastCheckedEmail = email;
+                    lastCheckedPhone = phone;
+                }
+            })
+            .catch(error => {
+                console.error('Error checking visitor data:', error);
+            });
+        }, 600); // Wait 600ms after user stops typing
+    }
+    
+    // Add event listeners for email and phone fields
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailField = document.getElementById('employee-email');
+        const phoneField = document.getElementById('employee-phone_number');
+        
+        if (emailField) {
+            // Check on input (while typing) with debounce
+            emailField.addEventListener('input', function() {
+                checkVisitorData('email');
+            });
+            // Also check on blur
+            emailField.addEventListener('blur', function() {
+                checkVisitorData('email');
+            });
+        }
+        
+        if (phoneField) {
+            // Check on input (while typing) with debounce
+            phoneField.addEventListener('input', function() {
+                checkVisitorData('phone');
+            });
+            // Also check on blur
+            phoneField.addEventListener('blur', function() {
+                checkVisitorData('phone');
+            });
+        }
+    });
+
+    // ===== PASSPORT FORM MANAGEMENT =====
+    let passportFormCount = 1;
+
+    function addPassportForm(event) {
+        event.stopPropagation();
+        
+        const container = document.getElementById('passport-forms-container');
+        const newIndex = passportFormCount;
+        
+        const formHTML = `
+            <div class="passport-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="${newIndex}">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-sm font-semibold text-[var(--text-color)]">Passport #${newIndex + 1}</h4>
+                    <button type="button" onclick="removePassportForm(this)" class="text-red-500 hover:text-red-700 remove-passport-btn">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <!-- Passport No -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport No</label>
+                        <input type="text" name="passport-${newIndex}-passport_no" value="" placeholder="Enter Passport No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- Passport Expiry Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label>
+                        <input type="date" name="passport-${newIndex}-passport_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- Passport Renewed -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Renewed</label>
+                        <div class="flex items-center h-11">
+                            <input type="checkbox" name="passport-${newIndex}-passport_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                            <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', formHTML);
+        passportFormCount++;
+        
+        // Update remove button visibility
+        updatePassportRemoveButtons();
+    }
+
+    function removePassportForm(button) {
+        const formItem = button.closest('.passport-form-item');
+        formItem.remove();
+        
+        // Update numbering and reindex
+        reindexPassportForms();
+        
+        // Update remove button visibility
+        updatePassportRemoveButtons();
+    }
+
+    function reindexPassportForms() {
+        const formItems = document.querySelectorAll('.passport-form-item');
+        formItems.forEach((item, index) => {
+            // Update title
+            const title = item.querySelector('h4');
+            title.textContent = `Passport #${index + 1}`;
+            
+            // Update data-index
+            item.setAttribute('data-index', index);
+            
+            // Update all input names
+            const inputs = item.querySelectorAll('input');
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                if (name && name.startsWith('passport-')) {
+                    const newName = name.replace(/passport-\d+-/, `passport-${index}-`);
+                    input.setAttribute('name', newName);
+                }
+            });
+        });
+        
+        // Update passportFormCount
+        passportFormCount = formItems.length;
+    }
+
+    function updatePassportRemoveButtons() {
+        const formItems = document.querySelectorAll('.passport-form-item');
+        formItems.forEach((item) => {
+            const removeBtn = item.querySelector('.remove-passport-btn');
+            if (removeBtn) {
+                if (formItems.length > 1) {
+                    removeBtn.style.display = 'inline-flex';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // ===== DRIVING LICENSE FORM MANAGEMENT =====
+    let licenseFormCount = 1;
+
+    function addDrivingLicenseForm(event) {
+        event.stopPropagation();
+        
+        const container = document.getElementById('license-forms-container');
+        const newIndex = licenseFormCount;
+        
+        const formHTML = `
+            <div class="license-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="${newIndex}">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-sm font-semibold text-[var(--text-color)]">License #${newIndex + 1}</h4>
+                    <button type="button" onclick="removeDrivingLicenseForm(this)" class="text-red-500 hover:text-red-700 remove-license-btn">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <!-- License No -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
+                        <input type="text" name="driving_license-${newIndex}-license_no" value="" placeholder="Enter License No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- License Expiry Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label>
+                        <input type="date" name="driving_license-${newIndex}-license_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                    </div>
+
+                    <!-- License Renewed -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renewed</label>
+                        <div class="flex items-center h-11">
+                            <input type="checkbox" name="driving_license-${newIndex}-license_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                            <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                        </div>
+                    </div>
+
+                    <!-- License Renew Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renew Status</label>
+                        <select name="driving_license-${newIndex}-license_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <option value="">Select Status</option>
+                            <option value="YES">Renewed</option>
+                            <option value="NO">Not Renewed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', formHTML);
+        licenseFormCount++;
+        
+        // Update remove button visibility
+        updateLicenseRemoveButtons();
+    }
+
+    function removeDrivingLicenseForm(button) {
+        const formItem = button.closest('.license-form-item');
+        formItem.remove();
+        
+        // Update numbering and reindex
+        reindexLicenseForms();
+        
+        // Update remove button visibility
+        updateLicenseRemoveButtons();
+    }
+
+    function reindexLicenseForms() {
+        const formItems = document.querySelectorAll('.license-form-item');
+        formItems.forEach((item, index) => {
+            // Update title
+            const title = item.querySelector('h4');
+            title.textContent = `License #${index + 1}`;
+            
+            // Update data-index
+            item.setAttribute('data-index', index);
+            
+            // Update all input/select names
+            const inputs = item.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                if (name && name.startsWith('driving_license-')) {
+                    const newName = name.replace(/driving_license-\d+-/, `driving_license-${index}-`);
+                    input.setAttribute('name', newName);
+                }
+            });
+        });
+        
+        // Update licenseFormCount
+        licenseFormCount = formItems.length;
+    }
+
+    function updateLicenseRemoveButtons() {
+        const formItems = document.querySelectorAll('.license-form-item');
+        formItems.forEach((item) => {
+            const removeBtn = item.querySelector('.remove-license-btn');
             if (removeBtn) {
                 if (formItems.length > 1) {
                     removeBtn.style.display = 'inline-flex';

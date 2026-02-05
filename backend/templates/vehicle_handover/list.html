@@ -93,7 +93,7 @@
                     {% for handover in handovers %}
                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ handover.vehicle.vehicle.plate_no }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ handover.vehicle.plate_no }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ handover.from_employee.full_name|default:"-" }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ handover.to_employee.full_name|default:"-" }}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ handover.handover_date|date:"M d, Y" }}</td>

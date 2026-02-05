@@ -1,8 +1,6 @@
 from django.urls import path, include
 from . import views
 
-
-
 # Nationality URL patterns
 nationality_patterns = ([
     path('', views.NationalityListView.as_view(), name='list'),
@@ -28,6 +26,13 @@ employee_patterns = ([
     path('detail/<int:pk>/', views.EmployeeDetailView.as_view(), name='detail'),
 ], 'employee')
 
+vehicle_assign_patterns = ([
+    path('', views.VehicleAssignListView.as_view(), name='list'),
+    path('create/', views.VehicleAssignCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.VehicleAssignUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.vehicle_assign_delete, name='delete'),
+], 'vehicle_assign')
+
 # Vehicle Info URL patterns
 vehicle_patterns = ([
     path('', views.VehicleListView.as_view(), name='list'),
@@ -44,6 +49,14 @@ vehicle_handover_patterns = ([
     path('detail/<int:pk>/', views.vehicle_handover_detail, name='detail'),
     path('delete/<int:pk>/', views.vehicle_handover_delete, name='delete'),
 ], 'vehicle_handover')
+
+# Traffic violation Type URL patterns
+violation_type_patterns = ([
+    path('', views.ViolationTypeListView.as_view(), name='list'),
+    path('create/', views.ViolationTypeCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.ViolationTypeUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.violation_type_delete, name='delete'),
+], 'violation_type') 
 
 # Traffic Violation URL patterns
 traffic_violation_patterns = ([
@@ -110,7 +123,9 @@ urlpatterns = [
     path('visitor/', include(visitor_patterns)), 
     path('employee/', include(employee_patterns)),
     path('vehicle-info/', include(vehicle_patterns)),
+    path('vehicle-assign/', include(vehicle_assign_patterns)), 
     path('vehicle-handover/', include(vehicle_handover_patterns)),
+    path('violation-type/', include(violation_type_patterns)),
     path('traffic-violation/', include(traffic_violation_patterns)),
     path('vehicle-maintenance/', include(vehicle_maintenance_patterns)),
     path('vehicle-accident/', include(vehicle_accident_patterns)),

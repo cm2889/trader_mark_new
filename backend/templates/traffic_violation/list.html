@@ -38,11 +38,11 @@
                 </select>
             </div>
             <div class="flex-1 min-w-[200px]">
-                <label for="employee" class="block text-sm font-medium text-gray-700 mb-2">Employee</label>
-                <select name="employee" id="employee" class="select2-filter w-full">
-                    <option value="">All Employees</option>
-                    {% for emp in all_employees %}
-                    <option value="{{ emp.id }}" {% if request.GET.employee|stringformat:'s' == emp.id|stringformat:'s' %}selected{% endif %}>{{ emp.full_name }}</option>
+                <label for="violation_type" class="block text-sm font-medium text-gray-700 mb-2">Violation Type</label>
+                <select name="violation_type" id="violation_type" class="select2-filter w-full">
+                    <option value="">All Types</option>
+                    {% for vtype in all_violation_types %}
+                    <option value="{{ vtype.id }}" {% if request.GET.violation_type == vtype.id|stringformat:"s" %}selected{% endif %}>{{ vtype.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -78,7 +78,6 @@
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vehicle</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Employee</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Violation Type</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fine Amount</th>
@@ -90,8 +89,7 @@
                     {% for violation in violations %}
                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ violation.vehicle.vehicle.plate_no }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ violation.employee.full_name|default:"-" }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ violation.vehicle.plate_no }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ violation.violation_type }}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ violation.violation_date|date:"M d, Y" }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900 font-medium">{{ violation.fine_amount }}</td>
@@ -118,7 +116,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center">
+                        <td colspan="7" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-500">
                                 <i class="fas fa-exclamation-triangle text-5xl mb-4"></i>
                                 <p class="text-lg font-medium">No violations found</p>

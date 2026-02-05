@@ -31,18 +31,7 @@
                     <option value="">All Vehicles</option>
                     {% for vehicle in all_vehicles %}
                     <option value="{{ vehicle.plate_no }}" {% if request.GET.plate_no == vehicle.plate_no %}selected{% endif %}>
-                        {{ vehicle.plate_no }} - {{ vehicle.employee.full_name|default:"Unassigned" }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="flex-1 min-w-[200px]">
-                <label for="employee" class="block text-sm font-medium text-gray-700 mb-2">Employee</label>
-                <select name="employee" id="employee" class="select2-filter w-full">
-                    <option value="">All Employees</option>
-                    {% for emp in all_employees %}
-                    <option value="{{ emp.id }}" {% if request.GET.employee == emp.id|stringformat:"s" %}selected{% endif %}>
-                        {{ emp.full_name }}
+                        {{ vehicle.plate_no }}{% if vehicle.current_employee %} - {{ vehicle.current_employee.full_name }}{% else %} - Unassigned{% endif %}
                     </option>
                     {% endfor %}
                 </select>
@@ -77,7 +66,6 @@
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vehicle</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Employee</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Place</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Damage Cost</th>
@@ -89,8 +77,7 @@
                     {% for accident in accidents %}
                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ accident.vehicle.vehicle.plate_no }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ accident.employee.full_name|default:"-" }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ accident.vehicle.plate_no }}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ accident.accident_date|date:"M d, Y" }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ accident.accident_place }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900 font-medium">{{ accident.damage_cost }}</td>
@@ -117,7 +104,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center">
+                        <td colspan="7" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-500">
                                 <i class="fas fa-car-crash text-5xl mb-4"></i>
                                 <p class="text-lg font-medium">No accident records found</p>
