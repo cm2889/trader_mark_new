@@ -1723,6 +1723,7 @@ class ViolationTypeListView(ListView):
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
 
+
     def get_queryset(self):
 
         filters = {
