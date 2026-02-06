@@ -31,11 +31,13 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     <i class="fas fa-search mr-1"></i>Search by Name
                 </label>
-                <input type="text" 
-                       name="name" 
-                       value="{{ request.GET.name }}"
-                       placeholder="Enter violation type name"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+                <select name="" class=" select2-items w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="">
+                    <option value="">All Violation Types </option>
+                    {% for violation_type in violation_types %}
+                        <option value="{{ violation_type.name }}">{{ violation_type.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <button type="submit" 
                     class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
@@ -145,3 +147,13 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+ <script>
+  $(document).ready(function () {
+    $('.select2-items').select2();
+  });
+
+</script>
+{% endblock %}
+ 

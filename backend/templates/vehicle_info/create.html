@@ -4,163 +4,135 @@
 {% block title %}Add Vehicle Info{% endblock %}
 
 {% block breadcrumb %}
-<span class="mx-1">›</span>
-<a href="{% url 'vehicle_info:list' %}" class="hover:underline">Vehicle Info</a>
-<span class="mx-1">›</span>
-<span>Add</span>
+<span class="mx-1 text-gray-400">›</span>
+<a href="{% url 'vehicle_info:list' %}" class="text-sm text-gray-600 hover:text-gray-800 hover:underline">
+    Vehicle Info
+</a>
+<span class="mx-1 text-gray-400">›</span>
+<span class="text-sm text-gray-800 font-medium">Add</span>
+{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'vehicle_info:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span>Back to List</span>
+</a>
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-3xl">
-    <!-- Header Section -->
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-2">
-            <a href="{% url 'vehicle_info:list' %}"
-                class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-gray-800">Create Vehicle Info</h1>
-        </div>
-        <p class="text-gray-600 ml-12">Add a new vehicle record to the system</p>
-    </div>
-
-    <!-- Form Section -->
-    <div class="bg-white rounded-lg shadow-sm p-8">
-        <form method="post" class="space-y-6">
+<div class=" px-4 py-10">
+    <!-- Form Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <form method="post" class="p-8 space-y-8">
             {% csrf_token %}
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-               
+            <!-- Fields Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+
                 <!-- Vehicle Type -->
                 <div>
-                    <label for="{{ form.vehicle_type.id_for_label }}"
-                        class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="{{ form.vehicle_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                         Vehicle Type <span class="text-red-500">*</span>
                     </label>
                     {{ form.vehicle_type }}
                     {% if form.vehicle_type.errors %}
-                    <div class="mt-2 text-sm text-red-600">
-                        {% for error in form.vehicle_type.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
+                        <p class="mt-1 text-xs text-red-600">
+                            {{ form.vehicle_type.errors.0 }}
+                        </p>
                     {% endif %}
                 </div>
 
                 <!-- Plate No -->
                 <div>
-                    <label for="{{ form.plate_no.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="{{ form.plate_no.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                         Plate No <span class="text-red-500">*</span>
                     </label>
                     {{ form.plate_no }}
                     {% if form.plate_no.errors %}
-                    <div class="mt-2 text-sm text-red-600">
-                        {% for error in form.plate_no.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
+                        <p class="mt-1 text-xs text-red-600">
+                            {{ form.plate_no.errors.0 }}
+                        </p>
                     {% endif %}
                 </div>
 
                 <!-- Istemara Expiry -->
                 <div>
-                    <label for="{{ form.istemara_expiry_date.id_for_label }}"
-                        class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="{{ form.istemara_expiry_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                         Istemara Expiry <span class="text-red-500">*</span>
                     </label>
                     {{ form.istemara_expiry_date }}
                     {% if form.istemara_expiry_date.errors %}
-                    <div class="mt-2 text-sm text-red-600">
-                        {% for error in form.istemara_expiry_date.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
+                        <p class="mt-1 text-xs text-red-600">
+                            {{ form.istemara_expiry_date.errors.0 }}
+                        </p>
                     {% endif %}
                 </div>
 
                 <!-- Insurance Name -->
                 <div>
-                    <label for="{{ form.insurance_name.id_for_label }}"
-                        class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="{{ form.insurance_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                         Insurance Name <span class="text-red-500">*</span>
                     </label>
                     {{ form.insurance_name }}
                     {% if form.insurance_name.errors %}
-                    <div class="mt-2 text-sm text-red-600">
-                        {% for error in form.insurance_name.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
+                        <p class="mt-1 text-xs text-red-600">
+                            {{ form.insurance_name.errors.0 }}
+                        </p>
                     {% endif %}
                 </div>
 
                 <!-- Insurance Expiry -->
                 <div>
-                    <label for="{{ form.insurance_expiry_date.id_for_label }}"
-                        class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="{{ form.insurance_expiry_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                         Insurance Expiry <span class="text-red-500">*</span>
                     </label>
                     {{ form.insurance_expiry_date }}
                     {% if form.insurance_expiry_date.errors %}
-                    <div class="mt-2 text-sm text-red-600">
-                        {% for error in form.insurance_expiry_date.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
+                        <p class="mt-1 text-xs text-red-600">
+                            {{ form.insurance_expiry_date.errors.0 }}
+                        </p>
                     {% endif %}
                 </div>
 
                 <!-- Ownership -->
                 <div>
-                    <label for="{{ form.ownership.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="{{ form.ownership.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                         Ownership <span class="text-red-500">*</span>
                     </label>
                     {{ form.ownership }}
                     {% if form.ownership.errors %}
-                    <div class="mt-2 text-sm text-red-600">
-                        {% for error in form.ownership.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
+                        <p class="mt-1 text-xs text-red-600">
+                            {{ form.ownership.errors.0 }}
+                        </p>
                     {% endif %}
                 </div>
+
             </div>
 
             <!-- Non-field Errors -->
             {% if form.non_field_errors %}
-            <div class="bg-red-50 border-l-4 border-red-500 p-4">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-exclamation-circle text-red-400"></i>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-red-800">Form Errors</h3>
-                        <div class="mt-2 text-sm text-red-700">
-                            <ul class="list-disc list-inside space-y-1">
-                                {% for error in form.non_field_errors %}
-                                <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <div class="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+                {{ form.non_field_errors.0 }}
             </div>
             {% endif %}
 
-            <!-- Form Actions -->
-            <div class="flex gap-4 pt-4 border-t border-gray-200">
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
                 <button type="submit"
-                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
-                    <i class="fas fa-save"></i>
-                    <span>Create Vehicle Info</span>
+                    class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                    Create Vehicle Info
                 </button>
+
                 <a href="{% url 'vehicle_info:list' %}"
-                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 text-center">
-                    <i class="fas fa-times"></i>
-                    <span>Cancel</span>
+                    class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
+                    Cancel
                 </a>
             </div>
+
         </form>
     </div>
+
 </div>
 {% endblock %}

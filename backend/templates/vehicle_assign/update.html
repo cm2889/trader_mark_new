@@ -1,65 +1,28 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Update Vehicle Assignment{% endblock %}
+{% block title %}Assign Vehicle{% endblock %}
 
 {% block breadcrumb %}
 <a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
 <span class="mx-1">›</span>
 <a href="{% url 'vehicle_assign:list' %}">Vehicle Assignments</a>
 <span class="mx-1">›</span>
-<span>Update Assignment</span>
+<span>Create Assignment</span>
+{% endblock %}
+
+
+{% block header_actions %}
+<a href="{% url 'vehicle_assign:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span>Back to List</span>
+</a>
 {% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <!-- Header Section -->
-    <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-            <a href="{% url 'vehicle_assign:list' %}" 
-               class="text-gray-600 hover:text-gray-800 transition-colors">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-[var(--text-color)]">Update Vehicle Assignment</h1>
-        </div>
-        <p class="text-[var(--text-light-color)] ml-10">Modify existing vehicle assignment details</p>
-    </div>
-
-    <!-- Current Assignment Info -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-sm p-6 mb-6 border border-blue-200">
-        <div class="flex items-start gap-4">
-            <div class="bg-blue-600 text-white p-3 rounded-lg">
-                <i class="fas fa-car-side text-2xl"></i>
-            </div>
-            <div class="flex-1">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">Current Assignment</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Vehicle</p>
-                        <p class="font-semibold text-gray-900">{{ form.instance.vehicle.plate_no }}</p>
-                        <p class="text-sm text-gray-600">{{ form.instance.vehicle.get_vehicle_type_display }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Employee</p>
-                        <p class="font-semibold text-gray-900">{{ form.instance.employee.full_name }}</p>
-                        <p class="text-sm text-gray-600">{{ form.instance.employee.hr_file_no }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Status</p>
-                        {% if form.instance.is_active %}
-                        <span class="inline-flex px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                            <i class="fas fa-check-circle mr-1"></i> Active
-                        </span>
-                        {% else %}
-                        <span class="inline-flex px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
-                            <i class="fas fa-times-circle mr-1"></i> Inactive
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Form Section -->
     <div class="bg-white rounded-lg shadow-sm p-6">
@@ -93,7 +56,7 @@
                     {% if form.vehicle.errors %}
                     <p class="mt-1 text-sm text-red-600">{{ form.vehicle.errors.0 }}</p>
                     {% endif %}
-                    <p class="mt-1 text-xs text-gray-500">Change the assigned vehicle</p>
+                    <p class="mt-1 text-xs text-gray-500">Select the vehicle to assign</p>
                 </div>
 
                 <!-- Employee Selection -->
@@ -105,38 +68,24 @@
                     {% if form.employee.errors %}
                     <p class="mt-1 text-sm text-red-600">{{ form.employee.errors.0 }}</p>
                     {% endif %}
-                    <p class="mt-1 text-xs text-gray-500">Change the assigned employee</p>
+                    <p class="mt-1 text-xs text-gray-500">Select the employee to assign to</p>
                 </div>
 
                 <!-- Assigned Date -->
-               <div>
+                <div>
                     <label for="id_assigned_date" class="block text-sm font-medium text-gray-700 mb-2">
                         Assigned Date <span class="text-red-500">*</span>
                     </label>
                     <input type="date" 
                            name="assigned_date" 
                            id="id_assigned_date"
-                           value="{% if form.instance.assigned_date %}{{ form.instance.assigned_date|date:'Y-m-d' }}{% endif %}"
+                           value="{{ form.assigned_date.value|default:'' }}"
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                            required>
                     {% if form.assigned_date.errors %}
                         <p class="mt-1 text-sm text-red-600">{{ form.assigned_date.errors.0 }}</p>
                     {% endif %}
                     <p class="mt-1 text-xs text-gray-500">Date when the vehicle was assigned</p>
-                </div>
-                <!-- Status -->
-                <div>
-                    <label for="{{ form.is_active.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        Status
-                    </label>
-                    <div class="flex items-center gap-2">
-                        {{ form.is_active }}
-                        <span class="text-sm text-gray-600">Active Assignment</span>
-                    </div>
-                    {% if form.is_active.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.is_active.errors.0 }}</p>
-                    {% endif %}
-                    <p class="mt-1 text-xs text-gray-500">Uncheck to deactivate this assignment</p>
                 </div>
             </div>
 
@@ -149,7 +98,7 @@
                 {% if form.remarks.errors %}
                 <p class="mt-1 text-sm text-red-600">{{ form.remarks.errors.0 }}</p>
                 {% endif %}
-                <p class="mt-1 text-xs text-gray-500">Update or add notes about this assignment</p>
+                <p class="mt-1 text-xs text-gray-500">Any additional notes about this assignment</p>
             </div>
 
             <!-- Action Buttons -->
@@ -157,42 +106,14 @@
                 <button type="submit" 
                         class="bg-[var(--primary-color)] hover:opacity-90 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
                     <i class="fas fa-save"></i>
-                    <span>Update Assignment</span>
+                    <span>Assign Vehicle</span>
                 </button>
                 <a href="{% url 'vehicle_assign:list' %}" 
                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-medium transition-all duration-200">
                     <i class="fas fa-times mr-2"></i>Cancel
                 </a>
-               
             </div>
         </form>
     </div>
-
-   
 </div>
-
-<style>
-    select, input[type="date"], textarea {
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-    }
-    select:focus, input[type="date"]:focus, textarea:focus {
-        outline: none;
-        border-color: #3b82f6;
-        ring: 2px;
-        ring-color: #3b82f680;
-    }
-    textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-    input[type="checkbox"] {
-        width: 1.25rem;
-        height: 1.25rem;
-        cursor: pointer;
-    }
-</style>
 {% endblock %}

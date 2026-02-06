@@ -9,7 +9,6 @@ nationality_patterns = ([
     path('delete/<int:pk>/', views.nationality_delete, name='delete'),
 ], 'nationality')
 
-
 visitor_patterns = ([
     path('', views.VisitorListView.as_view(), name='list'),
     path('create/', views.VisitorCreateView.as_view(), name='create'),

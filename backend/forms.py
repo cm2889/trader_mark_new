@@ -21,7 +21,7 @@ TAILWIND_TEXTAREA = (
 )
 
 TAILWIND_SELECT = (
-    "h-11 w-full mt-1 appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm "
+    "select2-items h-11 w-full mt-1 appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm "
     "ring-1 ring-[var(--border-color)] outline-none "
     "focus:ring-[var(--primary-color)]/40"
 )
@@ -276,7 +276,7 @@ class VehicleForm(forms.ModelForm):
         model = Vehicle
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'vehicle_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'vehicle_type': forms.Select(attrs={'class': TAILWIND_SELECT, }),
             'plate_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter plate number'}),
             'istemara_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'insurance_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter insurance name'}),

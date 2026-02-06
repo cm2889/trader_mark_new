@@ -1476,17 +1476,18 @@ class VehicleAssignListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         if not checkUserPermission(request, "can_view", "/backend/vehicle-assign/"):
             messages.error(request, "You do not have permission to view vehicle assignments.")
-            return render(request, "403.html", status=403) 
+            return render(request, "403.html") 
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = VehicleAssign.objects.filter(is_active=True, deleted=False).select_related('vehicle', 'employee').order_by('-created_at')
+        queryset = VehicleAssign.objects.filter(is_active=True).select_related('vehicle', 'employee').order_by('-created_at')
         
         employee = self.request.GET.get('employee', '')
         vehicle = self.request.GET.get('vehicle', '')
         
         if employee:
             queryset = queryset.filter(employee_id=employee)
+
         if vehicle:
             queryset = queryset.filter(vehicle_id=vehicle)
         
@@ -1499,13 +1500,16 @@ class VehicleAssignListView(ListView):
         context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['vehicle_assignments'])
         
         # Add filter options
-        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
-        context['all_employees'] = Employee.objects.filter(is_active=True, deleted=False).order_by('first_name', 'last_name')
+        context['all_vehicles'] = Vehicle.objects.filter(is_active=True).order_by('plate_no')
+        context['all_employees'] = Employee.objects.filter(is_active=True).order_by('first_name', 'last_name')
         
         get_param = self.request.GET.copy()
+
         if 'page' in get_param:
             get_param.pop('page')
+
         context['get_param'] = get_param.urlencode() 
+
         return context  
 
 @method_decorator(login_required, name='dispatch')
@@ -1518,7 +1522,7 @@ class VehicleAssignCreateView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         if not checkUserPermission(request, "can_add", "/backend/vehicle-assign/"):
             messages.error(request, "You do not have permission to add vehicle assignments.")
-            return render(request, "403.html", status=403) 
+            return render(request, "403.html") 
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -1535,7 +1539,7 @@ class VehicleAssignUpdateView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         if not checkUserPermission(request, "can_update", "/backend/vehicle-assign/"):
             messages.error(request, "You do not have permission to edit vehicle assignments.")
-            return render(request, "403.html", status=403) 
+            return render(request, "403.html") 
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -1547,7 +1551,7 @@ class VehicleAssignUpdateView(UpdateView):
 def vehicle_assign_delete(request, pk):
     if not checkUserPermission(request, "can_delete", "/backend/vehicle-assign/"):
         messages.error(request, "You do not have permission to delete vehicle assignments.")
-        return render(request, "403.html", status=403) 
+        return render(request, "403.html") 
     vehicle_assign = VehicleAssign.objects.get(pk=pk)
     vehicle_assign.is_active = False
     vehicle_assign.deleted = True
@@ -1558,10 +1562,10 @@ def vehicle_assign_delete(request, pk):
 def vehicle_management(request):
     if not checkUserPermission(request, "can_view", "/backend/vehicle-management/"):
         messages.error(request, "You do not have permission to view vehicle management.")
-        return render(request, "403.html", status=403) 
+        return render(request, "403.html") 
 
     # Get counts for dashboard
-    total_vehicles = Vehicle.objects.filter(is_active=True, deleted=False).count()
+    total_vehicles = Vehicle.objects.filter(is_active=True).count()
     total_handovers = VehicleHandover.objects.count()
     total_violations = TrafficViolation.objects.count()
     unpaid_violations = TrafficViolation.objects.filter(is_paid=False).count()

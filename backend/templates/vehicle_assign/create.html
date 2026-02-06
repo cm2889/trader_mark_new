@@ -11,19 +11,18 @@
 <span>Create Assignment</span>
 {% endblock %}
 
+
+{% block header_actions %}
+<a href="{% url 'vehicle_assign:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span>Back to List</span>
+</a>
+{% endblock %}
+
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <!-- Header Section -->
-    <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-            <a href="{% url 'vehicle_assign:list' %}" 
-               class="text-gray-600 hover:text-gray-800 transition-colors">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-[var(--text-color)]">Assign Vehicle to Employee</h1>
-        </div>
-        <p class="text-[var(--text-light-color)] ml-10">Create a new vehicle assignment</p>
-    </div>
 
     <!-- Form Section -->
     <div class="bg-white rounded-lg shadow-sm p-6">
@@ -88,20 +87,6 @@
                     {% endif %}
                     <p class="mt-1 text-xs text-gray-500">Date when the vehicle was assigned</p>
                 </div>
-
-                <!-- Status -->
-                <div>
-                    <label for="{{ form.is_active.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        Status
-                    </label>
-                    <div class="flex items-center gap-2">
-                        {{ form.is_active }}
-                        <span class="text-sm text-gray-600">Active Assignment</span>
-                    </div>
-                    {% if form.is_active.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.is_active.errors.0 }}</p>
-                    {% endif %}
-                </div>
             </div>
 
             <!-- Remarks -->
@@ -130,61 +115,5 @@
             </div>
         </form>
     </div>
-
-    <!-- Info Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-            <div class="flex">
-                <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
-                <div>
-                    <h3 class="font-medium text-blue-800 mb-1">Important Notes</h3>
-                    <ul class="list-disc list-inside text-sm text-blue-700 space-y-1">
-                        <li>One vehicle can be assigned to only one employee at a time</li>
-                        <li>Make sure to deactivate previous assignments before creating new ones</li>
-                        <li>The assigned date should be the actual date of handover</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-            <div class="flex">
-                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                <div>
-                    <h3 class="font-medium text-green-800 mb-1">Quick Tips</h3>
-                    <ul class="list-disc list-inside text-sm text-green-700 space-y-1">
-                        <li>Use remarks field to note any special conditions</li>
-                        <li>Keep assignment records for audit purposes</li>
-                        <li>Review vehicle availability before assignment</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-
-<style>
-    select, input[type="date"], textarea {
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-    }
-    select:focus, input[type="date"]:focus, textarea:focus {
-        outline: none;
-        border-color: #3b82f6;
-        ring: 2px;
-        ring-color: #3b82f680;
-    }
-    textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-    input[type="checkbox"] {
-        width: 1.25rem;
-        height: 1.25rem;
-        cursor: pointer;
-    }
-</style>
 {% endblock %}
