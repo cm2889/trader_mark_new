@@ -1984,7 +1984,9 @@ def vehicle_maintenance_create(request):
     if request.method == 'POST':
         form = VehicleMaintenanceForm(request.POST)
         if form.is_valid():
-            form.save()
+            maintenance = form.save(commit=False)
+            maintenance.created_by = request.user
+            maintenance.save()
             messages.success(request, "Vehicle maintenance created successfully.")
             return redirect('vehicle_maintenance:list')
     else:
@@ -2008,7 +2010,9 @@ def vehicle_maintenance_update(request, pk):
     if request.method == 'POST':
         form = VehicleMaintenanceForm(request.POST, instance=maintenance)
         if form.is_valid():
-            form.save()
+            maintenance = form.save(commit=False)
+            maintenance.updated_by = request.user
+            maintenance.save()
             messages.success(request, "Vehicle maintenance updated successfully.")
             return redirect('vehicle_maintenance:list')
     else:
@@ -2111,7 +2115,9 @@ def vehicle_accident_create(request):
     if request.method == 'POST':
         form = VehicleAccidentForm(request.POST)
         if form.is_valid():
-            form.save()
+            accident = form.save(commit=False)
+            accident.created_by = request.user
+            accident.save()
             messages.success(request, "Vehicle accident created successfully.")
             return redirect('vehicle_accident:list')
     else:
@@ -2136,7 +2142,9 @@ def vehicle_accident_update(request, pk):
     if request.method == 'POST':
         form = VehicleAccidentForm(request.POST, instance=accident)
         if form.is_valid():
-            form.save()
+            accident = form.save(commit=False)
+            accident.updated_by = request.user
+            accident.save()
             messages.success(request, "Vehicle accident updated successfully.")
             return redirect('vehicle_accident:list')
     else:
@@ -2229,7 +2237,9 @@ def vehicle_installment_create(request):
     if request.method == 'POST':
         form = VehicleInstallmentForm(request.POST)
         if form.is_valid():
-            form.save()
+            installment = form.save(commit=False)
+            installment.created_by = request.user
+            installment.save()
             messages.success(request, "Vehicle installment created successfully.")
             return redirect('vehicle_installment:list')
     else:
@@ -2253,7 +2263,9 @@ def vehicle_installment_update(request, pk):
     if request.method == 'POST':
         form = VehicleInstallmentForm(request.POST, instance=installment)
         if form.is_valid():
-            form.save()
+            installment = form.save(commit=False)
+            installment.updated_by = request.user
+            installment.save()
             messages.success(request, "Vehicle installment updated successfully.")
             return redirect('vehicle_installment:list')
     else:

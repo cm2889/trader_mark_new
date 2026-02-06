@@ -11,17 +11,18 @@
 <span>Add</span>
 {% endblock %}
 
+{% block header_actions %}
+<a href="{% url 'vehicle_installment:list' %}"
+   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back to List
+</a>
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-3xl">
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-2">
-            <a href="{% url 'vehicle_installment:list' %}" class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-gray-800">Add Vehicle Installment</h1>
-        </div>
-        <p class="text-gray-600 ml-12">Record a new installment payment</p>
-    </div>
+<div class="container  px-4 py-8 ">
 
     <div class="bg-white rounded-lg shadow-sm p-8">
         <form method="post" class="space-y-6">
@@ -67,8 +68,5 @@
         </form>
     </div>
 </div>
-<style>
-    input[type="text"], input[type="number"], input[type="date"], textarea, select { width: 100%; padding: 0.625rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; }
-    input:focus, textarea:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-</style>
+
 {% endblock %}
