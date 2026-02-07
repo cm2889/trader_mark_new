@@ -108,8 +108,32 @@
                                 ⋯
                                 </button>
 
-                                <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
+                                <div class="hidden absolute right-4 mt-1 w-[180px] z-50 rounded-md bg-[var(--white-color)]
                                             ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
+
+                                {% if info.current_employee %}
+                                <a href="{% url 'vehicle_assign:create' %}?vehicle={{ info.pk }}&employee={{ info.current_employee.id }}"
+                                    class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                    role="menuitem"
+                                    onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 2v12M2 8h12" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round"/>
+                                    </svg>
+                                    Vehicle Assignment
+                                </a>
+                                {% else %}
+                                <a href="{% url 'vehicle_assign:create' %}?vehicle={{ info.pk }}"
+                                    class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                    role="menuitem"
+                                    onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 2v12M2 8h12" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round"/>
+                                    </svg>
+                                    Vehicle Assignment
+                                </a>
+                                {% endif %}
+
+                                <div class="border-t border-[var(--border-color)]"></div>
 
                                 <a href="{% url 'vehicle_info:update' info.pk %}"
                                     class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"

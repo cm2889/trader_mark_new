@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Create Violation Type{% endblock title %}
+
+{% block breadcrumb %}
+    <span class="mx-1">›</span>
+    <a href="{% url 'violation_type:list' %}" class="hover:underline">
+        Violation Type
+    </a>
+    <span class="mx-1">›</span>
+    <span>Create</span>
+{% endblock breadcrumb %} 
+
+
+{% block header_actions %}
+<a href="{% url 'violation_type:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span>Back to List</span>
+</a>
+{% endblock %}
+
+
+{% block content %}
+<div class="container px-4 py-8 ">
+    <!-- Form Section -->
+    <div class="bg-white rounded-lg shadow-sm p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Name Field -->
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    Violation Type Name <span class="text-red-500">*</span>
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in form.name.errors %}
+                    <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <p class="mt-1 text-sm text-gray-500">Enter a unique name for the violation type (e.g., Speeding, Parking Violation, Red Light)</p>
+            </div>
+
+            <!-- Description Field -->
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in form.description.errors %}
+                    <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <p class="mt-1 text-sm text-gray-500">Enter a detailed description of this violation type (optional)</p>
+            </div>
+
+            <!-- Non-field Errors -->
+            {% if form.non_field_errors %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Form Errors</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Form Actions -->
+            <div class="flex gap-3 pt-4 border-t border-gray-200">
+                <button type="submit" 
+                        class="inline-flex items-center gap-2 h-11 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md">
+                    <i class="fas fa-save"></i>
+                    <span>Create Violation Type</span>
+                </button>
+                <a href="{% url 'violation_type:list' %}" 
+                   class="inline-flex items-center gap-2 h-11 px-5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-all duration-200">
+                    <i class="fas fa-times"></i>
+                    <span>Cancel</span>
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

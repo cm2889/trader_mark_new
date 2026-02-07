@@ -1526,6 +1526,28 @@ class VehicleAssignCreateView(CreateView):
             return render(request, "403.html") 
         return super().dispatch(request, *args, **kwargs)
 
+    def get_initial(self):
+        initial = super().get_initial()
+        # Pre-fill vehicle if passed in query params
+        vehicle_id = self.request.GET.get('vehicle')
+        if vehicle_id:
+            try:
+                vehicle = Vehicle.objects.get(pk=vehicle_id, is_active=True)
+                initial['vehicle'] = vehicle
+            except Vehicle.DoesNotExist:
+                pass
+        
+        # Pre-fill employee if passed in query params
+        employee_id = self.request.GET.get('employee')
+        if employee_id:
+            try:
+                employee = Employee.objects.get(pk=employee_id, is_active=True)
+                initial['employee'] = employee
+            except Employee.DoesNotExist:
+                pass
+        
+        return initial
+
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
@@ -1744,6 +1766,7 @@ class ViolationTypeListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['violation_types'] = self.get_queryset()
+        context['all_violation_types'] = ViolationType.objects.filter(is_active=True).order_by('name')
         context['page_num'] = self.request.GET.get('page', 1)
         page_numbers, context['paginator_list'], context['last_page_number'] = paginate_data(
             self.request, context['page_num'], context['violation_types']
