@@ -374,7 +374,7 @@ class VehicleMaintenanceForm(forms.ModelForm):
 class VehicleAccidentForm(forms.ModelForm):
     class Meta:
         model = VehicleAccident
-        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted'] 
+        exclude = ['insurance_claimed', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted'] 
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'accident_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
