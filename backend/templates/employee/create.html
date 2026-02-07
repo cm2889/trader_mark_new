@@ -453,13 +453,16 @@
 
           
             <!-- Form Actions -->
-            <div class="flex items-center justify-end gap-4 pt-4">
-                <a href="{% url 'employee:list' %}" class="px-6 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
+                <button type="submit"
+                    class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                    Create Employee
+                </button>
+
+                <a href="{% url 'employee:list' %}"
+                    class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
                     Cancel
                 </a>
-                <button type="submit" class="px-6 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                    <i class="fas fa-save mr-2"></i>Save Employee
-                </button>
             </div>
         </form>
     </div>

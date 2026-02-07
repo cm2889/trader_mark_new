@@ -82,26 +82,16 @@
             </div>
 
            <!-- Actions -->
-            <div class="flex flex-col sm:flex-row gap-3 pt-5 border-t border-gray-200">
-
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
                 <button type="submit"
-                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2
-                            bg-blue-600 hover:bg-blue-700 text-white
-                            px-5 py-2.5 rounded-md
-                            text-sm font-medium transition">
-                    <i class="fas fa-save text-sm"></i>
+                    class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
                     Create Violation
                 </button>
 
                 <a href="{% url 'traffic_violation:list' %}"
-                class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2
-                        bg-gray-200 hover:bg-gray-300 text-gray-700
-                        px-5 py-2.5 rounded-md
-                        text-sm font-medium transition">
-                    <i class="fas fa-times text-sm"></i>
+                    class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
                     Cancel
                 </a>
-
             </div>
 
 
