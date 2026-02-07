@@ -378,25 +378,25 @@ class UserListView(ListView):
         return context
 
 
-@login_required
-def user_add(request):
-    if not checkUserPermission(request, "can_add", "/backend/user/"):
-        return render(request, "403.html", status=403)
+# @login_required
+# def user_add(request):
+#     if not checkUserPermission(request, "can_add", "/backend/user/"):
+#         return render(request, "403.html", status=403)
 
-    if request.method == 'POST':
-        form = UserCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'New user has been added successfully!')
-            return redirect('backend:user_list')
-        else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{field}: {error}")
-    else:
-        form = UserCreateForm()
+#     if request.method == 'POST':
+#         form = UserCreateForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'New user has been added successfully!')
+#             return redirect('backend:user_list')
+#         else:
+#             for field, errors in form.errors.items():
+#                 for error in errors:
+#                     messages.error(request, f"{field}: {error}")
+#     else:
+#         form = UserCreateForm()
 
-    return render(request, 'user/add.html', {'form': form})
+#     return render(request, 'user/add.html', {'form': form})
 
 
 @login_required
@@ -612,6 +612,7 @@ def nationality_delete(request, pk):
     return redirect('nationality:list') 
 
 
+@method_decorator(login_required, name='dispatch')
 class VisitorListView(ListView):
     model = Visitor 
     template_name = "visitor/list.html" 

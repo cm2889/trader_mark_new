@@ -105,7 +105,7 @@ backend_patterns = ([
     path('<str:menu_slug>-menu/', views.menu_wise_dashboard, name='menu_wise_dashboard'),
 
     path('user/', views.UserListView.as_view(), name='user_list'),
-    path('user/add/', views.user_add, name='user_add'),
+    # path('user/add/', views.user_add, name='user_add'),
     path('user/update/<str:data_id>/', views.user_update, name='user_update'),
     path('user/password/reset/<str:data_id>/', views.reset_password, name='reset_password'),
     path('user/permission/<int:user_id>/', views.user_permission, name='user_permission'),

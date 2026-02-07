@@ -1,29 +1,28 @@
 {% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Add Nationality{% endblock %}
+{% block title %}Update Nationality{% endblock title %}
 
 {% block breadcrumb %}
     <span class="mx-1">›</span>
-    <a href="{% url 'nationality:list' %}" class="hover:underline">Nationality</a>
+    <a href="{% url 'nationality:list' %}" class="hover:underline">
+        Nationality
+    </a>
     <span class="mx-1">›</span>
-    <span>Add</span>
+    <span>Create</span>
+{% endblock breadcrumb %} 
+
+
+{% block header_actions %}
+<a href="{% url 'nationality:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span>Back to List</span>
+</a>
 {% endblock %}
 
-{% block content %}
-<div class="container mx-auto px-4 py-8 max-w-3xl">
-    <!-- Header Section -->
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-2">
-            <a href="{% url 'nationality:list' %}" 
-               class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-gray-800">Create Nationality</h1>
-        </div>
-        <p class="text-gray-600 ml-12">Add a new nationality to the system</p>
-    </div>
 
+{% block content %}
+<div class="container px-4 py-8 ">
     <!-- Form Section -->
     <div class="bg-white rounded-lg shadow-sm p-8">
         <form method="post" class="space-y-6">
@@ -87,7 +86,7 @@
                 <button type="submit" 
                         class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
                     <i class="fas fa-save"></i>
-                    <span>Create Nationality</span>
+                    <span>Update Nationality</span>
                 </button>
                 <a href="{% url 'nationality:list' %}" 
                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 text-center">
@@ -98,40 +97,4 @@
         </form>
     </div>
 </div>
-
-<style>
-    /* Form Input Styling */
-    input[type="text"],
-    input[type="number"],
-    input[type="email"],
-    textarea,
-    select {
-        width: 100%;
-        padding: 0.625rem 1rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        transition: all 0.2s;
-    }
-
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="email"]:focus,
-    textarea:focus,
-    select:focus {
-        outline: none;
-        border-color: #3b82f6;
-        ring: 2px;
-        ring-color: rgba(59, 130, 246, 0.3);
-    }
-
-    input[type="text"]:disabled,
-    input[type="number"]:disabled,
-    input[type="email"]:disabled,
-    textarea:disabled,
-    select:disabled {
-        background-color: #f3f4f6;
-        cursor: not-allowed;
-    }
-</style>
 {% endblock %}

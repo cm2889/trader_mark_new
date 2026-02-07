@@ -82,22 +82,6 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 6,
-    "fields": {
-      "module_name": "User Management",
-      "menu_name": "Add User",
-      "menu_url": "/backend/user/add/",
-      "menu_icon": "fa-solid fa-user-plus",
-      "menu_description": "Create new user.",
-      "parent": 4,
-      "is_main_menu": false,
-      "is_sub_menu": false,
-      "is_sub_child_menu": true,
-      "is_active": true
-    }
-  },
-  {
-    "model": "backend.backendmenu",
     "pk": 7,
     "fields": {
       "module_name": "Employee Management",
