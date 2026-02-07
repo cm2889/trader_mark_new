@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Maintenance Type{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+    <span class="mx-1">›</span>
+    <a href="{% url "vehicle_maintanance_type:list" %}">Maintenance Types</a>
+    <span class="mx-1">›</span>
+    <span>Add Type</span>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-[var(--text-color)]">Add Maintenance Type</h1>
+            <p class="text-sm text-[var(--text-light-color)] mt-1">Create a new vehicle maintenance type</p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Name -->
+                <div class="mb-6">
+                    <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-[var(--text-color)] mb-1">
+                        Name <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-[var(--text-color)] mb-1">
+                        Description
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end gap-4 pt-6 border-t border-[var(--border-color)]">
+                    <a href="{% url 'vehicle_maintanance_type:list' %}" 
+                       class="px-6 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 font-medium transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-[var(--primary-color)] hover:opacity-90 text-white rounded-lg font-medium transition-opacity flex items-center gap-2">
+                        <i class="fas fa-save"></i>
+                        <span>Save Type</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('.select2-items').select2({
+            theme: 'default',
+            width: '100%'
+        });
+    });
+</script>
+{% endblock %}

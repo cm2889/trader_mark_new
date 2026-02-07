@@ -243,6 +243,22 @@
       "is_active": true
     }
   },
+  {
+    "model": "backend.backendmenu",
+    "pk": 305,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Maintenance Type",
+      "menu_url": "/backend/vehicle-maintenance-type/",
+      "menu_icon": "fa-solid fa-file",
+      "menu_description": "Manage vehicle maintenance types.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    } 
+  }, 
 
   {
     "model": "backend.backendmenu",

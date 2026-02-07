@@ -774,6 +774,24 @@ class VehicleInstallment(models.Model):
         return f"Installment {self.installment_no} - {self.vehicle.plate_no}"
 
 
+class VehicleMaintananceType(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='maintenance_type_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='maintenance_type_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name 
+
+    class Meta:
+        ordering = ['name'] 
+
+
 # =========================
 # MAINTENANCE
 # =========================
@@ -786,7 +804,7 @@ class VehicleMaintenance(models.Model):
     )
 
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_maintenances')
-    maintenance_type = models.CharField(max_length=200)
+    maintenance_type = models.ForeignKey(VehicleMaintananceType, on_delete=models.CASCADE, related_name='vehicle_maintenances')
     cost = models.DecimalField(max_digits=10, decimal_places=2)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)

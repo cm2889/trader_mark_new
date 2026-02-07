@@ -110,6 +110,14 @@ insurance_claim_patterns = ([
     path('delete/<int:pk>/', views.insurance_claim_delete, name='delete'),
 ], 'insurance_claim')
 
+# Vehicle Maintenance Type URL patterns
+vehicle_maintanance_type_patterns = ([
+    path('', views.VehicleMaintananceTypeListView.as_view(), name='list'),
+    path('create/', views.VehicleMaintananceTypeCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.VehicleMaintananceTypeUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.vehicle_maintanance_type_delete, name='delete'),
+], 'vehicle_maintanance_type')
+
 
 backend_patterns = ([
     path("api/menu-search/", views.search_backend_menus, name="search_backend_menus"),
@@ -145,6 +153,7 @@ urlpatterns = [
     path('traffic-violation/', include(traffic_violation_patterns)),
     path('traffic-violation-penalty/', include(traffic_violation_penalty_patterns)),
     path('insurance-claim/', include(insurance_claim_patterns)),
+    path('vehicle-maintenance-type/', include(vehicle_maintanance_type_patterns)),
     path('vehicle-maintenance/', include(vehicle_maintenance_patterns)),
     path('vehicle-accident/', include(vehicle_accident_patterns)),
     path('vehicle-installment/', include(vehicle_installment_patterns)),

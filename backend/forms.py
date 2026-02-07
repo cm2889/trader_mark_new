@@ -5,7 +5,7 @@ from backend.models import (
     Visitor, TrafficViolationPenalty, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment,
-    VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim
+    VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType
 )
 
 TAILWIND_TEXT = (
@@ -358,13 +358,23 @@ class VehicleInstallmentForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
+
+class VehicleMaintananceTypeForm(forms.ModelForm):
+    class Meta:
+        model = VehicleMaintananceType
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter maintenance type name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+        } 
+
 class VehicleMaintenanceForm(forms.ModelForm):
     class Meta:
         model = VehicleMaintenance
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'maintenance_type': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter maintenance type'}),
+            'maintenance_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'cost': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter cost'}),
             'status': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'maintenance_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),

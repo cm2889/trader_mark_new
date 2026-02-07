@@ -31,11 +31,12 @@ from backend.models import (
     Nationality, Employee, Employment, Passport, DrivingLicense, 
     HealthInsurance, Contact, Address, Vehicle, InsuranceClaim, 
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
-    VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType
+    VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
+    ViolationType, VehicleMaintananceType
 )
 
 from backend.forms import (
-    CustomUserLoginForm, NationalityForm, EmployeeForm, EmploymentForm, 
+    CustomUserLoginForm, NationalityForm, EmployeeForm, EmploymentForm, VehicleMaintananceTypeForm, 
     PassportForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
     AddressForm, UserCreateForm, VehicleForm, VisitorForm, InsuranceClaimForm, 
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
@@ -2160,6 +2161,93 @@ def insurance_claim_delete(request, pk):
     messages.success(request, "Insurance claim deleted successfully.")
     return redirect('insurance_claim:list') 
 
+
+@method_decorator(login_required, name='dispatch')
+class VehicleMaintananceTypeListView(ListView):
+    model = VehicleMaintananceType
+    template_name = "vehicle_maintanance_type/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/vehicle-maintenance-type/"):
+            messages.error(request, "You do not have permission to view vehicle maintenance types.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        filters = {
+            'is_active' : True,
+        }
+
+        name = self.request.GET.get('name', '')
+        
+        if name:
+            filters['name__icontains'] = name
+        return VehicleMaintananceType.objects.filter(**filters).order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['maintenance_types'] = self.get_queryset()
+        context['all_maintenance_types'] = VehicleMaintananceType.objects.filter(is_active=True).order_by('name')
+        context['page_num'] = self.request.GET.get('page', 1)
+        page_numbers, context['paginator_list'], context['last_page_number'] = paginate_data(
+            self.request, context['page_num'], context['maintenance_types']
+        )
+        context['paginator'] = context['paginator_list']
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode()
+        
+        return context 
+
+@method_decorator(login_required, name='dispatch')
+class VehicleMaintananceTypeCreateView(CreateView):
+    model = VehicleMaintananceType
+    template_name = "vehicle_maintanance_type/create.html"
+    form_class = VehicleMaintananceTypeForm
+    success_url = reverse_lazy('vehicle_maintanance_type:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/vehicle-maintenance-type/"):
+            messages.error(request, "You do not have permission to add vehicle maintenance types.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form) 
+
+
+@method_decorator(login_required, name='dispatch')
+class VehicleMaintananceTypeUpdateView(UpdateView):
+    model = VehicleMaintananceType
+    template_name = "vehicle_maintanance_type/update.html"
+    form_class = VehicleMaintananceTypeForm
+    success_url = reverse_lazy('vehicle_maintanance_type:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/vehicle-maintenance-type/"):
+            messages.error(request, "You do not have permission to edit vehicle maintenance types.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form)
+
+
+@login_required
+def vehicle_maintanance_type_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/vehicle-maintenance-type/"):
+        messages.error(request, "You do not have permission to delete vehicle maintenance types.")
+        return render(request, "403.html", status=403) 
+    maintenance_type = VehicleMaintananceType.objects.get(pk=pk)
+    maintenance_type.is_active = False
+    maintenance_type.deleted = True
+    maintenance_type.save()
+    messages.success(request, "Vehicle maintenance type deleted successfully.")
+    return redirect('vehicle_maintanance_type:list') 
 
 
 # ========================================
