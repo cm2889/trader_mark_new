@@ -4,7 +4,8 @@ from .models import (
     SiteSettings, SiteDesignSettings, EmailConfiguration, SMSConfiguration, SMSLog,
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance,
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
-    VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType 
+    VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
+    Visitor, TrafficViolationPenalty, InsuranceClaim
 )
 
 @admin.register(WebImages)
@@ -69,6 +70,12 @@ class NationalityAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'is_active')
     search_fields = ('name', 'code')
     ordering = ('name',)
+
+@admin.register(Visitor)
+class VisitorAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'phone_number', 'email', 'created_at', 'is_active')
+    search_fields = ('first_name', 'last_name', 'phone_number', 'email')
+    list_filter = ('is_active', 'created_at')
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
@@ -140,9 +147,15 @@ class ViolationTypeAdmin(admin.ModelAdmin):
 
 @admin.register(TrafficViolation)
 class TrafficViolationAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'violation_type', 'violation_date', 'fine_amount', 'is_paid')
-    search_fields = ('vehicle__plate_no', 'violation_type')
-    list_filter = ('is_paid', 'violation_date')
+    list_display = ('vehicle', 'violation_type', 'violation_date',)
+    search_fields = ('vehicle__plate_no', 'violation_type__name', )
+    list_filter = ('violation_date',)
+
+@admin.register(TrafficViolationPenalty)
+class TrafficViolationPenaltyAdmin(admin.ModelAdmin):
+    list_display = ('violation', 'fine_amount', 'payment_status', 'paid_date', 'payment_method',)
+    search_fields = ('violation__vehicle__plate_no',)
+    list_filter = ('payment_status', 'payment_method', 'paid_date')
 
 
 @admin.register(VehicleInstallment)
@@ -162,4 +175,10 @@ class VehicleAccidentAdmin(admin.ModelAdmin):
     list_display = ('vehicle', 'accident_date', 'accident_place', 'damage_cost', 'insurance_claimed')
     search_fields = ('vehicle__plate_no', 'accident_place')
     list_filter = ('insurance_claimed', 'accident_date')
+
+@admin.register(InsuranceClaim)
+class InsuranceClaimAdmin(admin.ModelAdmin):
+    list_display = ('accident', 'claim_amount', 'claim_status', 'claim_date')
+    search_fields = ('accident__vehicle__plate_no',)
+    list_filter = ('claim_status', 'claim_date')
 

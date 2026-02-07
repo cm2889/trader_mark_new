@@ -92,6 +92,23 @@ vehicle_installment_patterns = ([
     path('delete/<int:pk>/', views.vehicle_installment_delete, name='delete'),
 ], 'vehicle_installment')
 
+# Traffic Violation Penalty URL patterns
+traffic_violation_penalty_patterns = ([
+    path('', views.TrafficViolationPenaltyListView.as_view(), name='list'),
+    path('create/', views.TrafficViolationPenaltyCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.TrafficViolationPenaltyUpdateView.as_view(), name='update'),
+    path('detail/<int:pk>/', views.TrafficViolationPenaltyDetailView.as_view(), name='detail'),
+    path('delete/<int:pk>/', views.traffic_violation_penalty_delete, name='delete'),
+], 'traffic_violation_penalty')
+
+# Insurance Claim URL patterns
+insurance_claim_patterns = ([
+    path('', views.InsuranceClaimListView.as_view(), name='list'),
+    path('create/', views.InsuranceClaimCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.InsuranceClaimUpdateView.as_view(), name='update'),
+    path('detail/<int:pk>/', views.InsuranceClaimDetailView.as_view(), name='detail'),
+    path('delete/<int:pk>/', views.insurance_claim_delete, name='delete'),
+], 'insurance_claim')
 
 
 backend_patterns = ([
@@ -126,6 +143,8 @@ urlpatterns = [
     path('vehicle-handover/', include(vehicle_handover_patterns)),
     path('violation-type/', include(violation_type_patterns)),
     path('traffic-violation/', include(traffic_violation_patterns)),
+    path('traffic-violation-penalty/', include(traffic_violation_penalty_patterns)),
+    path('insurance-claim/', include(insurance_claim_patterns)),
     path('vehicle-maintenance/', include(vehicle_maintenance_patterns)),
     path('vehicle-accident/', include(vehicle_accident_patterns)),
     path('vehicle-installment/', include(vehicle_installment_patterns)),

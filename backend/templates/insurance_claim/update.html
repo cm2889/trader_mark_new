@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Insurance Claim{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+<span class="mx-1">›</span>
+<a href="{% url 'insurance_claim:list' %}">Insurance Claims</a>
+<span class="mx-1">›</span>
+<span>Edit Claim</span>
+{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'insurance_claim:list' %}"
+   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back to List
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="container px-4 py-8 ">
+    <!-- Header Section -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-[var(--text-color)]">Edit Insurance Claim</h1>
+        <p class="text-[var(--text-light-color)] mt-1">Update insurance claim information</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Accident -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.accident.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Vehicle Accident <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.accident }}
+                    {% if form.accident.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.accident.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Claim Amount -->
+                <div>
+                    <label for="{{ form.claim_amount.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Claim Amount <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.claim_amount }}
+                    {% if form.claim_amount.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.claim_amount.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Claim Date -->
+                <div>
+                    <label for="{{ form.claim_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Claim Date <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.claim_date }}
+                    {% if form.claim_date.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.claim_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Claim Status -->
+                <div>
+                    <label for="{{ form.claim_status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Claim Status <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.claim_status }}
+                    {% if form.claim_status.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.claim_status.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Remarks -->
+                <div class="md:col-span-2">
+                    <label for="{{ form.remarks.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        Remarks
+                    </label>
+                    {{ form.remarks }}
+                    {% if form.remarks.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.remarks.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
+                <a href="{% url 'insurance_claim:list' %}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-all duration-200">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                    <i class="fas fa-save"></i>
+                    <span>Update Claim</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('.select2-items').select2({
+            theme: 'default',
+            width: '100%',
+            placeholder: 'Select an option'
+        });
+    });
+</script>
+{% endblock %}

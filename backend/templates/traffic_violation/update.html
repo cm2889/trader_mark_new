@@ -8,7 +8,7 @@
 <span class="mx-1 text-gray-400">›</span>
 <a href="{% url 'traffic_violation:list' %}" class="text-blue-600 hover:underline">Traffic Violations</a>
 <span class="mx-1 text-gray-400">›</span>
-<span class="text-gray-600">Add</span>
+<span class="text-gray-600">Update</span>
 {% endblock %}
 
 {% block header_actions %}
@@ -52,6 +52,15 @@
                     {{ form.violation_type }}
                 </div>
 
+                <!--Place-->
+                <div>
+                    <label for="{{ form.place.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700 mb-2">
+                        Place <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.place }}
+                </div>
+
                 <!-- Violation Date -->
                 <div>
                     <label for="{{ form.violation_date.id_for_label }}"
@@ -59,33 +68,6 @@
                         Violation Date <span class="text-red-500">*</span>
                     </label>
                     {{ form.violation_date }}
-                </div>
-
-                <!-- Fine Amount -->
-                <div>
-                    <label for="{{ form.fine_amount.id_for_label }}"
-                           class="block text-sm font-medium text-gray-700 mb-2">
-                        Fine Amount <span class="text-red-500">*</span>
-                    </label>
-                    {{ form.fine_amount }}
-                </div>
-
-                <!-- Paid Date -->
-                <div>
-                    <label for="{{ form.paid_date.id_for_label }}"
-                           class="block text-sm font-medium text-gray-700 mb-2">
-                        Paid Date
-                    </label>
-                    {{ form.paid_date }}
-                </div>
-
-                <!-- Is Paid -->
-                <div class="flex items-center gap-3 mt-8">
-                    {{ form.is_paid }}
-                    <label for="{{ form.is_paid.id_for_label }}"
-                           class="text-sm font-medium text-gray-700">
-                        Is Paid
-                    </label>
                 </div>
 
                 <!-- Remarks -->

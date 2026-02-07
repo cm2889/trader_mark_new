@@ -29,16 +29,16 @@ from backend.models import (
     BackendMenu, 
     Visitor, 
     Nationality, Employee, Employment, Passport, DrivingLicense, 
-    HealthInsurance, Contact, Address, Vehicle, 
-    VehicleHandover, TrafficViolation,ViolationType, 
+    HealthInsurance, Contact, Address, Vehicle, InsuranceClaim, 
+    VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType
 )
 
 from backend.forms import (
     CustomUserLoginForm, NationalityForm, EmployeeForm, EmploymentForm, 
     PassportForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
-    AddressForm, UserCreateForm, VehicleForm, VisitorForm, 
-    VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm,
+    AddressForm, UserCreateForm, VehicleForm, VisitorForm, InsuranceClaimForm, 
+    VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
     VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm
 ) 
 
@@ -1953,6 +1953,215 @@ def traffic_violation_delete(request, pk):
     return redirect('traffic_violation:list')
 
 
+@method_decorator(login_required, name='dispatch')
+class TrafficViolationPenaltyListView(ListView):
+    model = TrafficViolationPenalty
+    template_name = "traffic_violation_penalty/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/traffic-violation-penalty/"):
+            messages.error(request, "You do not have permission to view traffic violation penalties.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = TrafficViolationPenalty.objects.all().order_by('-created_at')
+        
+        plate_no = self.request.GET.get('plate_no', '')
+        violation_type = self.request.GET.get('violation_type', '')
+        
+        if plate_no:
+            queryset = queryset.filter(traffic_violation__vehicle__plate_no=plate_no)
+        if violation_type:
+            queryset = queryset.filter(traffic_violation__violation_type_id=violation_type)
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['penalties'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(
+            self.request, context['page_num'], context['penalties']
+        )
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode()
+        
+        # Add data for select2 dropdowns
+        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
+        context['all_violation_types'] = ViolationType.objects.filter(is_active=True).order_by('name')
+        
+        return context 
+    
+@method_decorator(login_required, name='dispatch')
+class TrafficViolationPenaltyCreateView(CreateView):
+    model = TrafficViolationPenalty
+    template_name = "traffic_violation_penalty/create.html"
+    form_class = TrafficViolationPenaltyForm
+    success_url = reverse_lazy('traffic_violation_penalty:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/traffic-violation-penalty/"):
+            messages.error(request, "You do not have permission to add traffic violation penalties.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form) 
+    
+
+@method_decorator(login_required, name='dispatch')
+class TrafficViolationPenaltyUpdateView(UpdateView):
+    model = TrafficViolationPenalty
+    template_name = "traffic_violation_penalty/update.html"
+    form_class = TrafficViolationPenaltyForm
+    success_url = reverse_lazy('traffic_violation_penalty:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/traffic-violation-penalty/"):
+            messages.error(request, "You do not have permission to edit traffic violation penalties.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs) 
+    
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form) 
+    
+
+@login_required
+def traffic_violation_penalty_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/traffic-violation-penalty/"):
+        messages.error(request, "You do not have permission to delete traffic violation penalties.")
+        return render(request, "403.html", status=403)
+
+    penalty = get_object_or_404(TrafficViolationPenalty, pk=pk)
+    penalty.delete()
+    messages.success(request, "Traffic violation penalty deleted successfully.")
+    return redirect('traffic_violation_penalty:list')
+
+
+@method_decorator(login_required, name='dispatch')
+class TrafficViolationPenaltyDetailView(DetailView):
+    model = TrafficViolationPenalty
+    template_name = "traffic_violation_penalty/detail.html"
+    context_object_name = 'penalty'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/traffic-violation-penalty/"):
+            messages.error(request, "You do not have permission to view traffic violation penalty details.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class InsuranceClaimListView(ListView):
+    model = InsuranceClaim
+    template_name = "insurance_claim/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/insurance-claim/"):
+            messages.error(request, "You do not have permission to view insurance claims.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = InsuranceClaim.objects.all().order_by('-claim_date')
+        
+        plate_no = self.request.GET.get('plate_no', '')
+        claim_status = self.request.GET.get('claim_status', '')
+        
+        if plate_no:
+            queryset = queryset.filter(accident__vehicle__plate_no=plate_no)
+        if claim_status:
+            queryset = queryset.filter(claim_status=claim_status)
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['claims'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(
+            self.request, context['page_num'], context['claims']
+        )
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode()
+        
+        # Add data for select2 dropdowns
+        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
+        
+        return context 
+    
+
+@method_decorator(login_required, name='dispatch')
+class InsuranceClaimDetailView(DetailView):
+    model = InsuranceClaim
+    template_name = "insurance_claim/detail.html"
+    context_object_name = 'claim'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/insurance-claim/"):
+            messages.error(request, "You do not have permission to view insurance claim details.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class InsuranceClaimCreateView(CreateView):
+    model = InsuranceClaim
+    template_name = "insurance_claim/create.html"
+    form_class = InsuranceClaimForm
+    success_url = reverse_lazy('insurance_claim:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/insurance-claim/"):
+            messages.error(request, "You do not have permission to add insurance claims.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+    
+
+@method_decorator(login_required, name='dispatch')
+class InsuranceClaimUpdateView(UpdateView):
+    model = InsuranceClaim
+    template_name = "insurance_claim/update.html"
+    form_class = InsuranceClaimForm
+    success_url = reverse_lazy('insurance_claim:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/insurance-claim/"):
+            messages.error(request, "You do not have permission to edit insurance claims.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form)
+
+
+@login_required
+def insurance_claim_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/insurance-claim/"):
+        messages.error(request, "You do not have permission to delete insurance claims.")
+        return render(request, "403.html", status=403) 
+    
+    claim = get_object_or_404(InsuranceClaim, pk=pk)
+    claim.delete()
+    messages.success(request, "Insurance claim deleted successfully.")
+    return redirect('insurance_claim:list') 
+
+
+
 # ========================================
 # VEHICLE MAINTENANCE VIEWS
 # ========================================
@@ -2063,6 +2272,7 @@ def vehicle_maintenance_detail(request, pk):
 
 @login_required
 def vehicle_maintenance_delete(request, pk):
+
     if not checkUserPermission(request, "can_delete", "/backend/vehicle-maintenance/"):
         messages.error(request, "You do not have permission to delete vehicle maintenance.")
         return render(request, "403.html", status=403)

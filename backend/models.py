@@ -600,9 +600,7 @@ class VehicleHandover(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
     from_employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, related_name='handover_from')
     to_employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, related_name='handover_to')
-
     handover_date = models.DateField()
-    
     
     remarks = models.TextField(blank=True, null=True)
 
@@ -641,13 +639,10 @@ class ViolationType(models.Model):
 class TrafficViolation(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='traffic_violations')
     violation_type = models.ForeignKey(ViolationType, on_delete=models.CASCADE, related_name='traffic_violations')
+    place = models.CharField(max_length=200, blank=True, null=True)
 
     violation_date = models.DateField()
-    fine_amount = models.DecimalField(max_digits=10, decimal_places=2)
-
-    is_paid = models.BooleanField(default=False)
-    paid_date = models.DateField(null=True, blank=True)
-
+    
     remarks = models.TextField(blank=True, null=True)
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='traffic_violation_created_by')
@@ -663,6 +658,94 @@ class TrafficViolation(models.Model):
     class Meta:
         ordering = ['-violation_date', '-created_at']
 
+
+class TrafficViolationPenalty(models.Model):
+    PAYMENT_STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('PAID', 'Paid'),
+        ('OVERDUE', 'Overdue'),
+        ('CANCELLED', 'Cancelled'),
+    ) 
+
+    PAYMENT_METHOD_CHOICES = (
+        ('CASH', 'Cash'),
+        ('CARD', 'Card'),
+        ('ONLINE', 'Online'),
+        ('BANK_TRANSFER', 'Bank Transfer'),
+    ) 
+
+    violation = models.ForeignKey(TrafficViolation, on_delete=models.CASCADE, related_name='penalties')
+
+    fine_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    paid_date = models.DateField(null=True, blank=True)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING') 
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='CASH', null=True, blank=True)
+    remarks = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='violation_penalty_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='violation_penalty_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Penalty - {self.violation.vehicle.plate_no} - {self.fine_amount}"
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+
+# =========================
+# ACCIDENT HISTORY
+# =========================
+class VehicleAccident(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_accidents')
+
+    accident_date = models.DateField()
+    accident_place = models.CharField(max_length=200)
+
+    damage_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    insurance_claimed = models.BooleanField(default=False)
+
+    remarks = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accident_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accident_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Accident - {self.vehicle.plate_no}"
+
+
+class InsuranceClaim(models.Model):
+    CLAIM_STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+        ('SETTLED', 'Settled'),
+    ) 
+    accident = models.ForeignKey(VehicleAccident, on_delete=models.CASCADE, related_name='insurance_claims')
+
+    claim_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    claim_date = models.DateField()
+    claim_status = models.CharField(max_length=20, choices=CLAIM_STATUS_CHOICES, default='PENDING')
+
+    remarks = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='insurance_claim_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='insurance_claim_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Insurance Claim - {self.accident.vehicle.plate_no}" 
 
 
 # =========================
@@ -720,29 +803,4 @@ class VehicleMaintenance(models.Model):
 
     def __str__(self):
         return f"Maintenance - {self.vehicle.plate_no}"
-
-
-# =========================
-# ACCIDENT HISTORY
-# =========================
-class VehicleAccident(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_accidents')
-
-    accident_date = models.DateField()
-    accident_place = models.CharField(max_length=200)
-
-    damage_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    insurance_claimed = models.BooleanField(default=False)
-
-    remarks = models.TextField(blank=True, null=True)
-
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accident_created_by')
-    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accident_updated_by', null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
-    deleted = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"Accident - {self.vehicle.plate_no}"
 

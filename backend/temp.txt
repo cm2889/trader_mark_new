@@ -1,58 +1,355 @@
-              <div class="inline-block" data-menu-wrap>
-                <button type="button"
-                        class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                        data-menu-btn aria-haspopup="true" aria-expanded="false"
-                        onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                  ⋯
-                </button>
+[
 
-                <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
-                            ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
-
-                  <a href="{% url  %}"
-                     class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                     role="menuitem"
-                     onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                      <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
-                            stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round"/>
-                      <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33"
-                            stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Edit
-                  </a>
-
-                  <div class="border-t border-[var(--border-color)]"></div>
-
-                  <a href="{% url  %}"
-                     class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
-                     role="menuitem"
-                     onclick="if(!confirm('Are you sure you want to delete this shift?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                      <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
-                            stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                    </svg>
-                    Delete
-                  </a>
-
-                </div>
-              </div>
-
-
-
-                 
-
-                          <div class="flex items-center justify-end gap-2">
-                                {% if violation_type.pk %}
-                                <a href="{% url 'violation_type:update' violation_type.pk %}" 
-                                   class="text-blue-600 hover:text-blue-800 transition-colors" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'violation_type:delete' violation_type.pk %}" 
-                                   onclick="return confirm('Are you sure you want to delete this violation type?')"
-                                   class="text-red-600 hover:text-red-800 transition-colors" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                                {% endif %}
-                            </div>
+  {
+    "model": "backend.backendmenu",
+    "pk": 1,
+    "fields": {
+      "module_name": "User Management",
+      "menu_name": "User Management",
+      "menu_url": "user-management",
+      "menu_icon": "fa-solid fa-users",
+      "menu_description": "Manage system users and permissions.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 2,
+    "fields": {
+      "module_name": "Employee Setup",
+      "menu_name": "Employee Management",
+      "menu_url": "employee-management",
+      "menu_icon": "fa-solid fa-user-tie",
+      "menu_description": "Manage employees and employment data.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 3,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Management",
+      "menu_url": "vehicle-management",
+      "menu_icon": "fa-solid fa-car",
+      "menu_description": "Manage vehicles and assignments.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 4,
+    "fields": {
+      "module_name": "User Management",
+      "menu_name": "User Setup",
+      "menu_url": "user-setup",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "User setup options.",
+      "parent": 1,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 5,
+    "fields": {
+      "module_name": "User Management",
+      "menu_name": "User List",
+      "menu_url": "/backend/user/",
+      "menu_icon": "fa-solid fa-users",
+      "menu_description": "View users.",
+      "parent": 4,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 7,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employee Setup",
+      "menu_url": "employee-setup",
+      "menu_icon": "fa-solid fa-flag",
+      "menu_description": "Employee setup options.",
+      "parent": 2,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 8,
+    "fields": {
+      "module_name": "Nationality Management",
+      "menu_name": "Nationality",
+      "menu_url": "/backend/nationality/",
+      "menu_icon": "fa-solid fa-id-card",
+      "menu_description": "Nationality records.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 9,
+    "fields": {
+      "module_name": "Visitors",
+      "menu_name": "Visitor",
+      "menu_url": "/backend/visitor/",
+      "menu_icon": "fa-solid fa-id-card",
+      "menu_description": "Visitor records.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 10,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employee",
+      "menu_url": "employee",
+      "menu_icon": "fa-solid fa-user-plus",
+      "menu_description": "new employee.",
+      "parent": 2,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 11,
+    "fields": {
+      "module_name": "Employee Management",
+      "menu_name": "Employee List",
+      "menu_url": "/backend/employee/",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "Employee records.",
+      "parent": 10,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 12,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Setup",
+      "menu_url": "vehicle-setup",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "Vehicle setup options.",
+      "parent": 3,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 13,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Info",
+      "menu_url": "/backend/vehicle-info/",
+      "menu_icon": "fa-solid fa-car",
+      "menu_description": "Manage vehicle information.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 14,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Assignments",
+      "menu_url": "/backend/vehicle-assign/",
+      "menu_icon": "fa-solid fa-user-tag",
+      "menu_description": "Manage vehicle-to-employee assignments.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 15,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Violation Types",
+      "menu_url": "/backend/violation-type/",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "Manage traffic violation types.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 16,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Traffic Violations",
+      "menu_url": "/backend/traffic-violation/",
+      "menu_icon": "fa-solid fa-triangle-exclamation",
+      "menu_description": "Manage traffic violations.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 17,
+    "fields": {
+      "module_name": "Vehicle Maintenance",
+      "menu_name": "Vehicle Maintenance",
+      "menu_url": "vehicle-maintenance",
+      "menu_icon": "fa-solid fa-car",
+      "menu_description": "Manage vehicle information.",
+      "parent": 3,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 18,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Accidents",
+      "menu_url": "/backend/vehicle-accident/",
+      "menu_icon": "fa-solid fa-car-burst",
+      "menu_description": "Manage vehicle accidents.",
+      "parent": 17,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 19,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Installments",
+      "menu_url": "/backend/vehicle-installment/",
+      "menu_icon": "fa-solid fa-receipt",
+      "menu_description": "Manage vehicle installments.",
+      "parent": 17,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 20,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Handover",
+      "menu_url": "/backend/vehicle-handover/",
+      "menu_icon": "fa-solid fa-handshake",
+      "menu_description": "Manage vehicle handovers.",
+      "parent": 17,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 21,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Maintenance",
+      "menu_url": "/backend/vehicle-maintenance/",
+      "menu_icon": "fa-solid fa-wrench",
+      "menu_description": "Manage vehicle maintenance.",
+      "parent": 17,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 22,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Insurance Claims",
+      "menu_url": "/backend/insurance-claim/",
+      "menu_icon": "fa-solid fa-file-invoice",
+      "menu_description": "Manage insurance claims.",
+      "parent": 17,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 23,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Traffic Violation Penalties",
+      "menu_url": "/backend/traffic-violation-penalty/",
+      "menu_icon": "fa-solid fa-money-bill-wave",
+      "menu_description": "Manage traffic violation penalties.",
+      "parent": 17,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }
+]

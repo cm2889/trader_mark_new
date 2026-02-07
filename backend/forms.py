@@ -2,10 +2,10 @@ from django import forms
 from django.contrib.auth.models import User
 from django import forms 
 from backend.models import (
-    Visitor, 
+    Visitor, TrafficViolationPenalty, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment,
-    VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType
+    VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim
 )
 
 TAILWIND_TEXT = (
@@ -325,10 +325,21 @@ class TrafficViolationForm(forms.ModelForm):
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'violation_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'place': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'violation place'}), 
             'violation_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
+        }
+
+class TrafficViolationPenaltyForm(forms.ModelForm):
+    class Meta:
+        model = TrafficViolationPenalty
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'violation': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'fine_amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter fine amount'}),
-            'is_paid': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),
             'paid_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'payment_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'payment_method': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
@@ -366,13 +377,22 @@ class VehicleAccidentForm(forms.ModelForm):
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted'] 
         widgets = {
             'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'accident_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'accident_place': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter accident place'}),
             'damage_cost': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter damage cost'}),
-            'insurance_claimed': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
 
 
+class InsuranceClaimForm(forms.ModelForm):
+    class Meta:
+        model = InsuranceClaim
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'accident': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'claim_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'claim_amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter claim amount'}),
+            'claim_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
+        }
