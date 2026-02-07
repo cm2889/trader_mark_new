@@ -13,7 +13,7 @@
 
 {% block content %}
 <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
+    <div class="">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
             <div>
@@ -84,7 +84,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ maintenance_type.created_by.get_full_name|default:maintenance_type.created_by.username|default:'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ maintenance_type.created_at|date:"M d, Y H:i" }}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 text-sm text-center text-[var(--text-color)]">
 
                                 <div class="inline-block" data-menu-wrap>
                                 <button type="button"

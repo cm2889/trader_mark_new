@@ -95,7 +95,7 @@
                             <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ nationality.name }}</td>
                             <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ nationality.created_by.get_full_name|default:nationality.created_by.username|default:'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ nationality.created_at|date:"M d, Y H:i" }}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 text-sm text-center relative">
 
                                 <div class="inline-block" data-menu-wrap>
                                 <button type="button"

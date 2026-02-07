@@ -13,7 +13,7 @@
 
 {% block content %}
 <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
+    <div class="">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
             <div>
@@ -110,7 +110,7 @@
                             <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ visitor.email|default:'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ visitor.phone_number|default:'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ visitor.created_at|date:"M d, Y H:i" }}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 text-sm text-center relative">
 
                                 <div class="inline-block" data-menu-wrap>
                                 <button type="button"

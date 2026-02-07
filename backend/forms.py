@@ -185,6 +185,11 @@ class VisitorForm(forms.ModelForm):
 
 
 class EmployeeForm(forms.ModelForm):
+    gender = forms.ChoiceField(
+        choices=[('', 'Select Gender'), ('M', 'Male'), ('F', 'Female')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = Employee
         exclude = ['user', 'hr_file_no', 'joining_at', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
@@ -196,23 +201,32 @@ class EmployeeForm(forms.ModelForm):
             'phone_number': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter phone number'}),
             'email': forms.EmailInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter email address'}), 
             'nationality': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'gender': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
 
 class EmploymentForm(forms.ModelForm):
+    work_status = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('ACTIVE', 'Active'), ('INACTIVE', 'Inactive'), ('ON_LEAVE', 'On Leave'), ('TERMINATED', 'Terminated')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    qid_renew_status = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('NOT_DUE', 'Not Due'), ('PENDING', 'Pending'), ('RENEWED', 'Renewed')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    qid_lost_status = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('YES', 'Yes'), ('NO', 'No')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = Employment
         exclude = ['employee', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'joining_at': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
-            'work_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'rp_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'work_permit_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter work permit number'}),
             'work_id': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter work ID'}),
-            'qid_renew_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'qid_lost_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
         }
 
 class PassportForm(forms.ModelForm):
@@ -226,6 +240,11 @@ class PassportForm(forms.ModelForm):
         }
 
 class DrivingLicenseForm(forms.ModelForm):
+    license_renew_status = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('YES', 'Renewed'), ('NO', 'Not Renewed')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = DrivingLicense
         exclude = ['employee', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
@@ -233,17 +252,23 @@ class DrivingLicenseForm(forms.ModelForm):
             'license_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter license number'}),
             'license_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'license_renewed': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),
-            'license_renew_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
         }
 
 class HealthInsuranceForm(forms.ModelForm):
+    wm_insurance = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('YES', 'Yes'), ('NO', 'No')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    family_health_card = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('YES', 'Yes'), ('NO', 'No')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = HealthInsurance
         exclude = ['employee', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'hamad_health_card': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),
-            'wm_insurance': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'family_health_card': forms.Select(attrs={'class': TAILWIND_SELECT}),
         }
 
 class ContactForm(forms.ModelForm):
@@ -272,38 +297,65 @@ class AddressForm(forms.ModelForm):
         }
 
 class VehicleForm(forms.ModelForm):
+    vehicle_type = forms.ChoiceField(
+        choices=[('', 'Select Vehicle Type'), ('BIKE', 'Bike'), ('CAR', 'Car')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    ownership = forms.ChoiceField(
+        choices=[('', 'Select Ownership'), ('COMPANY', 'Company'), ('DRIVER', 'Driver')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = Vehicle
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'vehicle_type': forms.Select(attrs={'class': TAILWIND_SELECT, }),
             'plate_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter plate number'}),
             'istemara_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'insurance_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter insurance name'}),
             'insurance_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
-            'ownership': forms.Select(attrs={'class': TAILWIND_SELECT}),
         }
 
 
 class VehicleAssignForm(forms.ModelForm):
+    vehicle = forms.ModelChoiceField(
+        queryset=Vehicle.objects.filter(is_active=True),
+        empty_label="Select Vehicle",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+    employee = forms.ModelChoiceField(
+        queryset=Employee.objects.filter(is_active=True),
+        empty_label="Select Employee",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
     class Meta:
         model = VehicleAssign
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'assign_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
 class VehicleHandoverForm(forms.ModelForm):
+    vehicle = forms.ModelChoiceField(
+        queryset=Vehicle.objects.filter(is_active=True),
+        empty_label="Select Vehicle",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    from_employee = forms.ModelChoiceField(
+        queryset=Employee.objects.filter(is_active=True),
+        empty_label="Select From Employee",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    to_employee = forms.ModelChoiceField(
+        queryset=Employee.objects.filter(is_active=True),
+        empty_label="Select To Employee",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
     class Meta:
         model = VehicleHandover
         exclude = ['created_by', 'created_at', 'is_active']
         widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'from_employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'to_employee': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'handover_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
@@ -319,37 +371,62 @@ class ViolationTypeForm(forms.ModelForm):
         }
 
 class TrafficViolationForm(forms.ModelForm):
+    vehicle = forms.ModelChoiceField(
+        queryset=Vehicle.objects.filter(is_active=True),
+        empty_label="Select Vehicle",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    violation_type = forms.ModelChoiceField(
+        queryset=ViolationType.objects.filter(is_active=True),
+        empty_label="Select Violation Type",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
     class Meta:
         model = TrafficViolation
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'violation_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'place': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'violation place'}), 
             'violation_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
 class TrafficViolationPenaltyForm(forms.ModelForm):
+    violation = forms.ModelChoiceField(
+        queryset=TrafficViolation.objects.filter(is_active=True),
+        empty_label="Select Violation",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+    payment_status = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('PENDING', 'Pending'), ('PAID', 'Paid'), ('OVERDUE', 'Overdue'), ('CANCELLED', 'Cancelled')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    payment_method = forms.ChoiceField(
+        choices=[('', 'Select Method'), ('CASH', 'Cash'), ('CARD', 'Card'), ('ONLINE', 'Online'), ('BANK_TRANSFER', 'Bank Transfer')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = TrafficViolationPenalty
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'violation': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            # 'violation': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'fine_amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter fine amount'}),
             'paid_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
-            'payment_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'payment_method': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
 
 class VehicleInstallmentForm(forms.ModelForm):
+    vehicle = forms.ModelChoiceField(
+        queryset=Vehicle.objects.filter(is_active=True),
+        empty_label="Select Vehicle",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
     class Meta:
         model = VehicleInstallment
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            # 'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'installment_no': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter installment number'}),
             'amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter amount'}),
             'due_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
@@ -369,24 +446,43 @@ class VehicleMaintananceTypeForm(forms.ModelForm):
         } 
 
 class VehicleMaintenanceForm(forms.ModelForm):
+    vehicle = forms.ModelChoiceField(
+        queryset=Vehicle.objects.filter(is_active=True),
+        empty_label="Select Vehicle",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+    maintenance_type = forms.ModelChoiceField(
+        queryset=VehicleMaintananceType.objects.filter(is_active=True),
+        empty_label="Select Maintenance Type",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+    status = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('PENDING', 'Pending'), ('IN_PROGRESS', 'In Progress'), ('COMPLETED', 'Completed')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = VehicleMaintenance
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
-            'maintenance_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            # 'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            # 'maintenance_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'cost': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter cost'}),
-            'status': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'maintenance_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
 class VehicleAccidentForm(forms.ModelForm):
+    vehicle = forms.ModelChoiceField(
+        queryset=Vehicle.objects.filter(is_active=True),
+        empty_label="Select Vehicle",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
     class Meta:
         model = VehicleAccident
         exclude = ['insurance_claimed', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted'] 
         widgets = {
-            'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            # 'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'accident_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'accident_place': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter accident place'}),
             'damage_cost': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter damage cost'}),
@@ -396,13 +492,22 @@ class VehicleAccidentForm(forms.ModelForm):
 
 
 class InsuranceClaimForm(forms.ModelForm):
+    accident = forms.ModelChoiceField(
+        queryset=VehicleAccident.objects.filter(is_active=True),
+        empty_label="Select Accident",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    claim_status = forms.ChoiceField(
+        choices=[('', 'Select Status'), ('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('REJECTED', 'Rejected'), ('SETTLED', 'Settled')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    
     class Meta:
         model = InsuranceClaim
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
-            'accident': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            # 'accident': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'claim_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'claim_amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter claim amount'}),
-            'claim_status': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
