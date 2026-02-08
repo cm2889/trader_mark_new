@@ -118,6 +118,38 @@ vehicle_maintanance_type_patterns = ([
     path('delete/<int:pk>/', views.vehicle_maintanance_type_delete, name='delete'),
 ], 'vehicle_maintanance_type')
 
+# Uniform URL patterns
+uniform_patterns = ([
+    path('', views.UniformListView.as_view(), name='list'),
+    path('create/', views.UniformCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.UniformUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.uniform_delete, name='delete'),
+], 'uniform')
+
+# Uniform Stock URL patterns
+uniform_stock_patterns = ([
+    path('', views.UniformStockListView.as_view(), name='list'),
+    path('create/', views.UniformStockCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.UniformStockUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.uniform_stock_delete, name='delete'),
+], 'uniform_stock')
+
+# Uniform Issuance URL patterns
+uniform_issuance_patterns = ([
+    path('', views.UniformIssuanceListView.as_view(), name='list'),
+    path('create/', views.UniformIssuanceCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.UniformIssuanceUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.uniform_issuance_delete, name='delete'),
+], 'uniform_issuance')
+
+# Uniform Clearance URL patterns
+uniform_clearance_patterns = ([
+    path('', views.UniformClearanceListView.as_view(), name='list'),
+    path('create/', views.UniformClearanceCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.UniformClearanceUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.uniform_clearance_delete, name='delete'),
+], 'uniform_clearance')
+
 
 backend_patterns = ([
     path("api/menu-search/", views.search_backend_menus, name="search_backend_menus"),
@@ -157,4 +189,8 @@ urlpatterns = [
     path('vehicle-maintenance/', include(vehicle_maintenance_patterns)),
     path('vehicle-accident/', include(vehicle_accident_patterns)),
     path('vehicle-installment/', include(vehicle_installment_patterns)),
+    path('uniform/', include(uniform_patterns)),
+    path('uniform-stock/', include(uniform_stock_patterns)),
+    path('uniform-issuance/', include(uniform_issuance_patterns)),
+    path('uniform-clearance/', include(uniform_clearance_patterns)),
 ]

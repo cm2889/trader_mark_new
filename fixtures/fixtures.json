@@ -66,6 +66,22 @@
   },
   {
     "model": "backend.backendmenu",
+    "pk": 5,
+    "fields": {
+      "module_name": "Uniform Management",
+      "menu_name": "Uniform Management",
+      "menu_url": "uniform-management",
+      "menu_icon": "fa-solid fa-tshirt",
+      "menu_description": "Manage uniforms and distributions.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
     "pk": 101,
     "fields": {
       "module_name": "User Management",
@@ -371,5 +387,86 @@
       "is_sub_child_menu": true,
       "is_active": true
     }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 18,
+    "fields": {
+      "module_name": "Uniform Setup",
+      "menu_name": "Uniform Setup",
+      "menu_url": "uniform-setup",
+      "menu_icon": "fa-solid fa-cog",
+      "menu_description": "Uniform setup options.",
+      "parent": 5,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 501,
+    "fields": {
+      "module_name": "Uniform Management",
+      "menu_name": "Uniform List",
+      "menu_url": "/backend/uniform/",
+      "menu_icon": "fa-solid fa-tshirt",
+      "menu_description": "Manage uniforms.",
+      "parent": 18,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 502,
+    "fields": {
+      "module_name": "Uniform Management",
+      "menu_name": "Uniform Stock",
+      "menu_url": "/backend/uniform-stock/",
+      "menu_icon": "fa-solid fa-boxes",
+      "menu_description": "Manage uniform stock inventory.",
+      "parent": 18,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 503,
+    "fields": {
+      "module_name": "Uniform Management",
+      "menu_name": "Uniform Issuance",
+      "menu_url": "/backend/uniform-issuance/",
+      "menu_icon": "fa-solid fa-hand-holding",
+      "menu_description": "Manage uniform issuances to employees.",
+      "parent": 18,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 504,
+    "fields": {
+      "module_name": "Uniform Management",
+      "menu_name": "Uniform Clearance",
+      "menu_url": "/backend/uniform-clearance/",
+      "menu_icon": "fa-solid fa-clipboard-check",
+      "menu_description": "Manage uniform clearances from employees.",
+      "parent": 18,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
   }
 ]
+

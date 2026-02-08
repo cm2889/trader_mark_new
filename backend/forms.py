@@ -5,7 +5,8 @@ from backend.models import (
     Visitor, TrafficViolationPenalty, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment,
-    VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType
+    VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType, 
+    Uniform, UniformStock, UniformIssuance, UniformClearance
 )
 
 TAILWIND_TEXT = (
@@ -204,6 +205,124 @@ class EmployeeForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
+class UniformForm(forms.ModelForm):
+    uniform_type = forms.ChoiceField(
+        choices=[('', 'Select Uniform Type'), ('SHIRT', 'Shirt'), ('PANT', 'Pant'), ('JACKET', 'Jacket'), ('SHOES', 'Shoes'), ('CAP', 'Cap'), ('OTHER', 'Other'),],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+    class Meta:
+        model = Uniform
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter uniform name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+        }
+
+class UniformStockForm(forms.ModelForm):
+    uniform = forms.ModelChoiceField(
+        queryset=Uniform.objects.filter(is_active=True),
+        empty_label="Select Uniform",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+
+    size = forms.ChoiceField(
+        choices=[(
+            '', 'Select Size'), 
+            ('XS', 'Extra Small'),
+            ('S', 'Small'),
+            ('M', 'Medium'),
+            ('L', 'Large'),
+            ('XL', 'Extra Large'),
+            ('XXL', 'Double Extra Large'),
+            ],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+
+    class Meta:
+        model = UniformStock
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter quantity'}),
+        }
+
+class UniformIssuanceForm(forms.ModelForm):
+    employee = forms.ModelChoiceField(
+        queryset=Employee.objects.filter(is_active=True),
+        empty_label="Select Employee",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+
+    uniform_stock = forms.ModelChoiceField(
+        queryset=UniformStock.objects.filter(is_active=True),
+        empty_label="Select Uniform Stock",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+
+    # issued_by = forms.ModelChoiceField(
+    #     queryset=User.objects.filter(is_active=True),
+    #     empty_label="Select Issued By",
+    #     widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    # ) 
+
+    status = forms.ChoiceField(
+        choices=[(
+            '', 'Select Status'),  
+            ('ISSUED', 'Issued'),
+            ('RETURNED', 'Returned'),
+            ('LOST', 'Lost'),
+            ('DAMAGED', 'Damaged'),
+        ],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+
+    class Meta:
+        model = UniformIssuance
+        exclude = ['issued_by', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'issued_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'return_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'quantity': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter quantity'}),
+            'expected_return_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'remark': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
+        }
+
+class UniformClearanceForm(forms.ModelForm):
+    employee = forms.ModelChoiceField(
+        queryset=Employee.objects.filter(is_active=True),
+        empty_label="Select Employee",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+
+    uniform_stock = forms.ModelChoiceField(
+        queryset=UniformStock.objects.filter(is_active=True),
+        empty_label="Select Uniform Stock",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+
+    # cleared_by = forms.ModelChoiceField(
+    #     queryset=User.objects.filter(is_active=True),
+    #     empty_label="Select Cleared By",
+    #     widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    # ) 
+
+    status = forms.ChoiceField(
+        choices=[(
+            '', 'Select Status'),  
+            ('RETURNED', 'Returned'),
+            ('LOST', 'Lost'),
+            ('DAMAGED', 'Damaged'),
+        ],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+
+    class Meta:
+        model = UniformClearance
+        exclude = ['cleared_by', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter quantity'}),
+            'clearance_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'remark': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
+        }
 
 class EmploymentForm(forms.ModelForm):
     work_status = forms.ChoiceField(

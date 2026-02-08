@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Q
 from django.views.decorators.http import require_GET 
 from django.template.loader import render_to_string
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.conf import settings
 from django.core.cache import cache
@@ -32,7 +33,8 @@ from backend.models import (
     HealthInsurance, Contact, Address, Vehicle, InsuranceClaim, 
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
-    ViolationType, VehicleMaintananceType
+    ViolationType, VehicleMaintananceType, 
+    Uniform, UniformStock, UniformIssuance, UniformClearance
 )
 
 from backend.forms import (
@@ -40,7 +42,8 @@ from backend.forms import (
     PassportForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
     AddressForm, UserCreateForm, VehicleForm, VisitorForm, InsuranceClaimForm, 
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
-    VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm
+    VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm, 
+    UniformForm, UniformStockForm, UniformIssuanceForm, UniformClearanceForm
 ) 
 
 from backend.common_func import checkUserPermission
@@ -1357,6 +1360,402 @@ class EmployeeDetailView(DetailView):
         context['vehicle_assignments'] = VehicleAssign.objects.filter(employee=employee, deleted=False).select_related('vehicle').order_by('-created_at')
 
         return context
+
+# ============================================= 
+# Uniform ListView 
+# ============================================= 
+class UniformListView(ListView):
+    model = Uniform
+    template_name = "uniform/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/uniform/"):
+            messages.error(request, "You do not have permission to view uniforms.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        filters = {
+            'is_active': True, 
+        }
+        
+        name = self.request.GET.get('name', '') 
+        uniform_type = self.request.GET.get('uniform_type', '')
+        
+        if name:
+            filters['id'] = name
+        if uniform_type:
+            filters['uniform_type'] = uniform_type
+       
+        return Uniform.objects.filter(**filters)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['uniforms'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['uniforms'])
+
+        # Add all uniforms for select2 dropdown
+        context['all_uniforms'] = Uniform.objects.filter(is_active=True).order_by('name')
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+
+        return context
+
+# ============================================
+# Uniform CreateView
+# ============================================
+class UniformCreateView(CreateView):
+    model = Uniform
+    template_name = "uniform/create.html"
+    form_class = UniformForm
+    success_url = reverse_lazy('uniform:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/uniform/"):
+            messages.error(request, "You do not have permission to add uniforms.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form) 
+    
+
+# ============================================
+# Uniform UpdateView
+# ============================================
+class UniformUpdateView(UpdateView):
+    model = Uniform
+    template_name = "uniform/update.html"
+    form_class = UniformForm
+    success_url = reverse_lazy('uniform:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/uniform/"):
+            messages.error(request, "You do not have permission to edit uniforms.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form) 
+
+# ============================================
+# Uniform Delete View
+# ============================================
+@login_required
+def uniform_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/uniform/"):
+        messages.error(request, "You do not have permission to delete uniforms.")
+        return render(request, "403.html", status=403) 
+    uniform = Uniform.objects.get(pk=pk)
+    uniform.is_active = False
+    uniform.save()
+    return redirect('uniform:list') 
+
+
+# ============================================
+# Uniform Stock ListView
+# ============================================
+class UniformStockListView(ListView):
+    model = UniformStock
+    template_name = "uniform_stock/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/uniform-stock/"):
+            messages.error(request, "You do not have permission to view uniform stocks.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        filters = {
+            'is_active': True, 
+        }
+        
+        uniform = self.request.GET.get('uniform', '') 
+        
+        if uniform:
+            filters['uniform_id'] = uniform
+       
+        return UniformStock.objects.filter(**filters)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['uniform_stocks'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['uniform_stocks'])
+
+        # Add all uniforms for select2 dropdown
+        from backend.models import Uniform
+        context['all_uniforms'] = Uniform.objects.filter(is_active=True).order_by('name')
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+
+        return context
+
+# ============================================
+# Uniform Stock CreateView
+# ============================================
+class UniformStockCreateView(CreateView):
+    model = UniformStock
+    template_name = "uniform_stock/create.html"
+    form_class = UniformStockForm
+    success_url = reverse_lazy('uniform_stock:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/uniform-stock/"):
+            messages.error(request, "You do not have permission to add uniform stocks.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form) 
+
+# ============================================
+# Uniform Stock UpdateView
+# ============================================
+class UniformStockUpdateView(UpdateView):
+    model = UniformStock
+    template_name = "uniform_stock/update.html"
+    form_class = UniformStockForm
+    success_url = reverse_lazy('uniform_stock:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/uniform-stock/"):
+            messages.error(request, "You do not have permission to edit uniform stocks.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form) 
+    
+# ============================================
+# Uniform Stock Delete View
+# ============================================
+@login_required
+def uniform_stock_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/uniform-stock/"):
+        messages.error(request, "You do not have permission to delete uniform stocks.")
+        return render(request, "403.html", status=403) 
+    uniform_stock = UniformStock.objects.get(pk=pk)
+    uniform_stock.is_active = False
+    uniform_stock.save()
+    return redirect('uniform_stock:list') 
+
+
+# ============================================
+# Uniform Issuance ListView
+# ============================================
+class UniformIssuanceListView(ListView):
+    model = UniformIssuance
+    template_name = "uniform_issuance/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/uniform-issuance/"):
+            messages.error(request, "You do not have permission to view uniform issuances.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        filters = {
+            'is_active': True, 
+        }
+        
+        employee = self.request.GET.get('employee', '') 
+        
+        if employee:
+            filters['employee_id'] = employee
+       
+        return UniformIssuance.objects.filter(**filters)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['uniform_issuances'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['uniform_issuances'])
+
+        # Add all employees for select2 dropdown
+        context['all_employees'] = Employee.objects.filter(is_active=True).order_by('first_name', 'last_name')
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+
+        return context
+
+# ============================================
+# Uniform Issuance CreateView
+# ============================================
+class UniformIssuanceCreateView(CreateView):
+    model = UniformIssuance
+    template_name = "uniform_issuance/create.html"
+    form_class = UniformIssuanceForm
+    success_url = reverse_lazy('uniform_issuance:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/uniform-issuance/"):
+            messages.error(request, "You do not have permission to add uniform issuances.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        
+        try:
+            form.instance.created_by = self.request.user
+            response = super().form_valid(form)
+            messages.success(self.request, "Uniform issued successfully and stock updated!")
+            return response
+        except ValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+
+# ============================================
+# Uniform Issuance UpdateView
+# ============================================
+class UniformIssuanceUpdateView(UpdateView):
+    model = UniformIssuance
+    template_name = "uniform_issuance/update.html"
+    form_class = UniformIssuanceForm
+    success_url = reverse_lazy('uniform_issuance:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/uniform-issuance/"):
+            messages.error(request, "You do not have permission to edit uniform issuances.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        messages.success(self.request, "Uniform issuance updated successfully!")
+        return super().form_valid(form)
+
+# ============================================
+# Uniform Issuance Delete View
+# ============================================
+@login_required
+def uniform_issuance_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/uniform-issuance/"):
+        messages.error(request, "You do not have permission to delete uniform issuances.")
+        return render(request, "403.html", status=403) 
+    uniform_issuance = UniformIssuance.objects.get(pk=pk)
+    uniform_issuance.is_active = False
+    uniform_issuance.save()
+    return redirect('uniform_issuance:list') 
+
+
+# ============================================
+# Uniform Clearance ListView
+# ============================================
+class UniformClearanceListView(ListView):
+    model = UniformClearance
+    template_name = "uniform_clearance/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/uniform-clearance/"):
+            messages.error(request, "You do not have permission to view uniform clearances.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        filters = {
+            'is_active': True, 
+        }
+        
+        employee = self.request.GET.get('employee', '') 
+        
+        if employee:
+            filters['employee_id'] = employee
+       
+        return UniformClearance.objects.filter(**filters)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['uniform_clearances'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['uniform_clearances'])
+
+        # Add all employees for select2 dropdown
+        context['all_employees'] = Employee.objects.filter(is_active=True).order_by('first_name', 'last_name')
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+
+        return context
+
+# ============================================
+# Uniform Clearance CreateView
+# ============================================
+class UniformClearanceCreateView(CreateView):
+    model = UniformClearance
+    template_name = "uniform_clearance/create.html"
+    form_class = UniformClearanceForm
+    success_url = reverse_lazy('uniform_clearance:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/uniform-clearance/"):
+            messages.error(request, "You do not have permission to add uniform clearances.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        response = super().form_valid(form)
+        if form.instance.status == 'RETURNED':
+            messages.success(self.request, "Uniform cleared successfully and stock updated!")
+        else:
+            messages.success(self.request, f"Uniform cleared successfully with status: {form.instance.get_status_display()}!")
+        return response
+
+# ============================================
+# Uniform Clearance UpdateView
+# ============================================
+class UniformClearanceUpdateView(UpdateView):
+    model = UniformClearance
+    template_name = "uniform_clearance/update.html"
+    form_class = UniformClearanceForm
+    success_url = reverse_lazy('uniform_clearance:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/uniform-clearance/"):
+            messages.error(request, "You do not have permission to edit uniform clearances.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        messages.success(self.request, "Uniform clearance updated successfully!")
+        return super().form_valid(form)
+
+# ============================================
+# Uniform Clearance Delete View
+# ============================================
+@login_required
+def uniform_clearance_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/uniform-clearance/"):
+        messages.error(request, "You do not have permission to delete uniform clearances.")
+        return render(request, "403.html", status=403) 
+    
+    uniform_clearance = UniformClearance.objects.get(pk=pk)
+    uniform_clearance.is_active = False
+    uniform_clearance.save()
+
+    return redirect('uniform_clearance:list') 
 
 
 @method_decorator(login_required, name='dispatch')

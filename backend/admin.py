@@ -5,7 +5,8 @@ from .models import (
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance,
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
-    Visitor, TrafficViolationPenalty, InsuranceClaim
+    Visitor, TrafficViolationPenalty, InsuranceClaim, Uniform, UniformStock,
+    UniformIssuance, UniformClearance, VehicleMaintananceType
 )
 
 @admin.register(WebImages)
@@ -181,4 +182,33 @@ class InsuranceClaimAdmin(admin.ModelAdmin):
     list_display = ('accident', 'claim_amount', 'claim_status', 'claim_date')
     search_fields = ('accident__vehicle__plate_no',)
     list_filter = ('claim_status', 'claim_date')
+
+@admin.register(Uniform)
+class UniformAdmin(admin.ModelAdmin):
+    list_display = ('name', 'uniform_type', 'is_active')
+    search_fields = ('name',)
+    list_filter = ('uniform_type', 'is_active')
+
+@admin.register(UniformStock)
+class UniformStockAdmin(admin.ModelAdmin):
+    list_display = ('uniform', 'size', 'quantity', 'is_active')
+    search_fields = ('uniform__name', 'size')
+    list_filter = ('size', 'is_active')
+
+@admin.register(UniformIssuance)
+class UniformIssuanceAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'uniform_stock', 'quantity', 'status', 'issued_date')
+    search_fields = ('employee__first_name', 'employee__last_name', 'uniform_stock__uniform__name')
+    list_filter = ('status', 'issued_date', 'is_active')
+
+@admin.register(UniformClearance)
+class UniformClearanceAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'uniform_stock', 'quantity', 'status', 'clearance_date')
+    search_fields = ('employee__first_name', 'employee__last_name', 'uniform_stock__uniform__name')
+    list_filter = ('status', 'clearance_date', 'is_active')
+
+@admin.register(VehicleMaintananceType)
+class VehicleMaintananceTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active')
+    search_fields = ('name',)
 

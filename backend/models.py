@@ -360,6 +360,147 @@ class Employee(models.Model):
     class Meta:
         ordering = ['-created_at'] 
 
+# =========================================================
+# Uniform Management
+# ========================================================= 
+class Uniform(models.Model):
+    UNIFORM_TYPE_CHOICES = (
+        ('SHIRT', 'Shirt'),
+        ('PANT', 'Pant'),
+        ('JACKET', 'Jacket'),
+        ('SHOES', 'Shoes'),
+        ('CAP', 'Cap'),
+        ('OTHER', 'Other'),
+    )
+
+    name = models.CharField(max_length=100)
+    uniform_type = models.CharField(max_length=20, choices=UNIFORM_TYPE_CHOICES) 
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False) 
+
+    def __str__(self):
+        return f"{self.name} ({self.get_uniform_type_display()})"
+    
+    class Meta:
+        ordering = ['name'] 
+
+# ========================================================
+# Uniform Stock Management
+# ======================================================== 
+class UniformStock(models.Model):
+    SIZE_CHOICES = (
+        ('XS', 'Extra Small'),
+        ('S', 'Small'),
+        ('M', 'Medium'),
+        ('L', 'Large'),
+        ('XL', 'Extra Large'),
+        ('XXL', 'Double Extra Large'),
+    )
+    uniform = models.ForeignKey(Uniform, on_delete=models.CASCADE, related_name='stocks')
+    size = models.CharField(max_length=20, choices=SIZE_CHOICES)
+    quantity = models.PositiveIntegerField(default=0)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_stock_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_stock_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False) 
+
+    def __str__(self):
+        return f"{self.uniform.name} - Size: {self.size} - Qty: {self.quantity}"
+    
+    class Meta:
+        ordering = ['uniform__name', 'size'] 
+
+# ========================================================
+# Uniform Issuance Management
+# ========================================================
+class UniformIssuance(models.Model):
+
+    STATUS_CHOICES = (
+        ('ISSUED', 'Issued'),
+        ('RETURNED', 'Returned'),
+        ('LOST', 'Lost'),
+        ('DAMAGED', 'Damaged'),
+    )
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='uniform_issuances')
+    uniform_stock = models.ForeignKey(UniformStock, on_delete=models.PROTECT, related_name='issuances')
+
+    quantity = models.PositiveIntegerField(default=1)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ISSUED')
+
+    issued_date = models.DateField(default=timezone.now)
+    return_date = models.DateField(blank=True, null=True)
+    expected_return_date = models.DateField(blank=True, null=True)
+
+    remark = models.CharField(max_length=255, blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_issuance_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_issuance_updated_by', null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.uniform_stock.uniform.name} issued to {self.employee.full_name} - Status: {self.status}" 
+    
+    class Meta:
+        ordering = ['-issued_date', '-created_at']
+
+
+
+# ========================================================
+# Employee Exit Uniform Clearance
+# ========================================================
+class UniformClearance(models.Model):
+
+    STATUS_CHOICES = (
+        ('RETURNED', 'Returned'),
+        ('LOST', 'Lost'),
+        ('DAMAGED', 'Damaged'),
+    )
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='uniform_clearances')
+    uniform_stock = models.ForeignKey(
+        UniformStock,
+        on_delete=models.PROTECT,
+        related_name='clearances'
+    )
+
+    quantity = models.PositiveIntegerField(default=1)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='RETURNED')
+
+    clearance_date = models.DateField(default=timezone.now)
+    remark = models.CharField(max_length=255, blank=True, null=True)
+    
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_clearance_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_clearance_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.uniform_stock.uniform.name} cleared for {self.employee.full_name} - Status: {self.status}"
+
+    class Meta:
+        ordering = ['-clearance_date', '-created_at']
+
+
+
 
 class Employment(models.Model):
 
