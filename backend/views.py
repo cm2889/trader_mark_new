@@ -1613,6 +1613,19 @@ class UniformIssuanceCreateView(CreateView):
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
 
+    def get_initial(self):
+        initial = super().get_initial()
+
+        employee_id = self.request.GET.get('employee')
+        if employee_id:
+            try:
+                employee = Employee.objects.get(pk=employee_id, is_active=True)
+                initial['employee'] = employee
+            except Employee.DoesNotExist:
+                pass
+
+        return initial
+
     def form_valid(self, form):
         
         try:
