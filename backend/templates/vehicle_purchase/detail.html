@@ -21,11 +21,11 @@
         </div>
         <div class="flex gap-2">
             <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
-               class="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                class="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
                 <i class="fas fa-receipt"></i><span>View Installments</span>
             </a>
             <a href="{% url 'vehicle_purchase:list' %}"
-               class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i><span>Back</span>
             </a>
         </div>
@@ -148,8 +148,7 @@
             <h2 class="text-xl font-bold text-gray-900 flex items-center">
                 <i class="fas fa-list mr-2"></i>Recent Installments
             </h2>
-            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
-               class="text-gray-900 font-medium">
+            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}" class="text-gray-900 font-medium">
                 View All →
             </a>
         </div>
@@ -209,10 +208,12 @@
             <p class="text-[var(--text-light-color)] mt-1">Vehicle Purchase ID: #{{ purchase.pk }}</p>
         </div>
         <div class="flex gap-2">
-            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
                 <i class="fas fa-receipt"></i><span>View Installments</span>
             </a>
-            <a href="{% url 'vehicle_purchase:list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+            <a href="{% url 'vehicle_purchase:list' %}"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i><span>Back</span>
             </a>
         </div>
@@ -300,11 +301,13 @@
                 </div>
                 <div class="flex justify-between border-b pb-2">
                     <span class="text-gray-600">Payment Period:</span>
-                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-semibold">{{ purchase.get_payment_period_display }}</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-semibold">{{
+                        purchase.get_payment_period_display }}</span>
                 </div>
                 <div class="flex justify-between border-b pb-2">
                     <span class="text-gray-600">Payment Method:</span>
-                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-semibold">{{ purchase.get_payment_method_display }}</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-semibold">{{
+                        purchase.get_payment_method_display }}</span>
                 </div>
             </div>
         </div>
@@ -332,7 +335,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div>
                     <h3 class="text-sm text-gray-600 mb-2">Employee Information</h3>
                     <div class="space-y-2">
@@ -360,7 +363,8 @@
             <h2 class="text-xl font-bold text-gray-900 flex items-center">
                 <i class="fas fa-list mr-2 text-blue-600"></i>Recent Installments
             </h2>
-            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
+                class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                 View All <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -378,7 +382,8 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for installment in installments|slice:":5" %}
                     <tr class="{% if installment.is_paid %}bg-green-50{% endif %}">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">#{{ installment.installment_no }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">#{{ installment.installment_no }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">{{ installment.amount }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ installment.due_date|date:"d M, Y" }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">

@@ -54,7 +54,8 @@
     </div>
 
     <div class="mb-4">
-        <p class="text-gray-600">Found <span class="font-semibold text-gray-800">{{ paginator.paginator.count }}</span> installment{{ paginator.paginator.count|pluralize }}</p>
+        <p class="text-gray-600">Found <span class="font-semibold text-gray-800">{{ paginator.paginator.count }}</span>
+            installment{{ paginator.paginator.count|pluralize }}</p>
     </div>
 
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -62,14 +63,22 @@
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vehicle</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Installment No</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Amount</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Due Date</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Paid Date</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Vehicle</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Installment No</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Amount</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Due
+                            Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Paid Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Status</th>
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -80,39 +89,53 @@
                         <td class="px-6 py-4 text-sm text-gray-900">#{{ installment.installment_no }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900 font-medium">{{ installment.amount }}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ installment.due_date|date:"M d, Y" }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ installment.paid_date|date:"M d, Y"|default:"-" }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ installment.paid_date|date:"M d, Y"|default:"-"}}</td>
                         <td class="px-6 py-4 text-sm">
                             {% if installment.is_paid %}
-                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Paid</span>
+                            <span
+                                class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Paid</span>
                             {% else %}
-                            <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">Unpaid</span>
+                            <span
+                                class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">Unpaid</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-center">
 
-                                          <div class="inline-block" data-menu-wrap>
-                                    <button type="button"
-                                            class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                            data-menu-btn aria-haspopup="true" aria-expanded="false"
-                                            onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                            <div class="inline-block" data-menu-wrap>
+                                <button type="button"
+                                    class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]" data-menu-btn
+                                    aria-haspopup="true" aria-expanded="false"
+                                    onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
                                     ⋯
-                                    </button>
+                                </button>
 
-                                    <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
+                                <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
                                                 ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
 
                                     <a href="{% url 'vehicle_installment:update' installment.pk %}"
                                         class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
                                         role="menuitem"
                                         onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
-                                                stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round"/>
-                                        <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33"
-                                                stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16"
+                                            fill="none">
+                                            <path
+                                                d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
+                                                stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round" />
+                                            <path
+                                                d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33"
+                                                stroke="#4A5565" stroke-width="1.2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
                                         </svg>
                                         Edit
                                     </a>
+                                    {% if not installment.is_paid %}
+                                    <a href="{% url 'vehicle_installment:pay' installment.pk %}"
+                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-green-600"
+                                        role="menuitem">
+                                        <i class="fas fa-money-bill-wave w-4 text-center"></i>
+                                        Pay Now
+                                    </a>
+                                    {% endif %}
 
                                     <div class="border-t border-[var(--border-color)]"></div>
 
@@ -120,16 +143,20 @@
                                         class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
                                         role="menuitem"
                                         onclick="if(!confirm('Are you sure you want to delete this shift?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
-                                                stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16"
+                                            fill="none">
+                                            <path
+                                                d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
+                                                stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2"
+                                                stroke-linecap="round" />
                                         </svg>
                                         Delete
                                     </a>
 
-                                    </div>
                                 </div>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
@@ -151,19 +178,30 @@
     <div class="mt-6 flex justify-center">
         <nav class="flex items-center gap-2">
             {% if paginator.has_previous %}
-            <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-double-left"></i></a>
-            <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-left"></i></a>
+            <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}"
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i
+                    class="fas fa-angle-double-left"></i></a>
+            <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i
+                    class="fas fa-angle-left"></i></a>
             {% endif %}
             {% for page_num in paginator_list %}
             {% if page_num == paginator.number %}
-            <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ page_num }}</span>
+            <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ page_num
+                }}</span>
             {% else %}
-            <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{{ page_num }}</a>
+            <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}"
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{{ page_num
+                }}</a>
             {% endif %}
             {% endfor %}
             {% if paginator.has_next %}
-            <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-right"></i></a>
-            <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-double-right"></i></a>
+            <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i
+                    class="fas fa-angle-right"></i></a>
+            <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i
+                    class="fas fa-angle-double-right"></i></a>
             {% endif %}
         </nav>
     </div>
@@ -173,11 +211,11 @@
 
 {% block extra_js %}
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('.select2-filter').select2({
             theme: 'default',
             width: '100%',
-            placeholder: function() {
+            placeholder: function () {
                 return $(this).find('option:first').text();
             },
             allowClear: true
