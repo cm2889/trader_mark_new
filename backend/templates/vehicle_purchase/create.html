@@ -36,51 +36,90 @@
                     <h3 class="text-lg font-semibold text-gray-800">
                         <i class="fas fa-car mr-2 text-[var(--primary-color)]"></i>Vehicle Details
                     </h3>
-                    <button type="button" id="addVehicleBtn" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2">
-                        <i class="fas fa-plus"></i><span>Add Vehicle</span>
-                    </button>
                 </div>
 
-                <div id="vehicleContainer">
-                    <!-- Initial Vehicle Row -->
-                    <div class="vehicle-row bg-white border border-gray-300 rounded-lg p-4 mb-3">
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-sm font-semibold text-gray-700">Vehicle #<span class="vehicle-number">1</span></h4>
-                            <button type="button" class="remove-vehicle-btn hidden text-red-600 hover:text-red-800 transition">
-                                <i class="fas fa-times-circle text-xl"></i>
-                            </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.vehicle_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Vehicle Type <span class="text-red-500">*</span></label>
+                        {{ form.vehicle_type }}
+                        {% if form.vehicle_type.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.vehicle_type.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Vehicle <span class="text-red-500">*</span></label>
-                            <select name="vehicles[]" class="vehicle-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" required>
-                                <option value="">Select Vehicle</option>
-                                {% for vehicle in vehicles %}
-                                <option value="{{ vehicle.id }}">
-                                    {{ vehicle.plate_no }} - {{ vehicle.get_vehicle_type_display }} ({{ vehicle.ownership|title }})
-                                </option>
-                                {% endfor %}
-                            </select>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.ownership.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Ownership <span class="text-red-500">*</span></label>
+                        {{ form.ownership }}
+                        {% if form.ownership.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.ownership.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
                         </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.plate_no.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Plate Number <span class="text-red-500">*</span></label>
+                        {{ form.plate_no }}
+                        {% if form.plate_no.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.plate_no.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.chassee_no.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Chassee Number <span class="text-red-500">*</span></label>
+                        {{ form.chassee_no }}
+                        {% if form.chassee_no.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.chassee_no.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.engine_no.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Engine Number <span class="text-red-500">*</span></label>
+                        {{ form.engine_no }}
+                        {% if form.engine_no.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.engine_no.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.istemara_expiry_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Istemara Expiry Date <span class="text-red-500">*</span></label>
+                        {{ form.istemara_expiry_date }}
+                        {% if form.istemara_expiry_date.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.istemara_expiry_date.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.insurance_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Insurance Provider <span class="text-red-500">*</span></label>
+                        {{ form.insurance_name }}
+                        {% if form.insurance_name.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.insurance_name.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.insurance_expiry_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Insurance Expiry Date <span class="text-red-500">*</span></label>
+                        {{ form.insurance_expiry_date }}
+                        {% if form.insurance_expiry_date.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.insurance_expiry_date.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Employee & Payment Details -->
+            <!-- Purchase Details -->
             <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                    <i class="fas fa-user-tie mr-2 text-[var(--primary-color)]"></i>Employee & Purchase Information
+                    <i class="fas fa-user-tie mr-2 text-[var(--primary-color)]"></i>Purchase Information
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label for="{{ form.employee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Employee <span class="text-red-500">*</span></label>
-                        {{ form.employee }}
-                        {% if form.employee.errors %}
-                        <div class="mt-2 text-sm text-red-600">
-                            {% for error in form.employee.errors %}<p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>{% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-
                     <div>
                         <label for="{{ form.purchase_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Purchase Date <span class="text-red-500">*</span></label>
                         {{ form.purchase_date }}
@@ -181,22 +220,6 @@
 {% block extra_js %}
 <script>
     $(document).ready(function() {
-        let vehicleCount = 1;
-
-        // Initialize select2 for initial vehicle
-        $('.vehicle-select').select2({
-            placeholder: "Select Vehicle",
-            allowClear: true,
-            width: '100%'
-        });
-
-        // Initialize select2 for form fields
-        $('#{{ form.employee.id_for_label }}').select2({
-            placeholder: "Select Employee",
-            allowClear: true,
-            width: '100%'
-        });
-
         $('#{{ form.payment_method.id_for_label }}').select2({
             placeholder: "Select Payment Method",
             allowClear: true,
@@ -209,97 +232,22 @@
             width: '100%'
         });
 
-        // Add new vehicle row
-        $('#addVehicleBtn').click(function() {
-            vehicleCount++;
-            
-            const newRow = `
-                <div class="vehicle-row bg-white border border-gray-300 rounded-lg p-4 mb-3">
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-sm font-semibold text-gray-700">Vehicle #<span class="vehicle-number">${vehicleCount}</span></h4>
-                        <button type="button" class="remove-vehicle-btn text-red-600 hover:text-red-800 transition">
-                            <i class="fas fa-times-circle text-xl"></i>
-                        </button>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Vehicle <span class="text-red-500">*</span></label>
-                        <select name="vehicles[]" class="vehicle-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" required>
-                            <option value="">Select Vehicle</option>
-                            {% for vehicle in vehicles %}
-                            <option value="{{ vehicle.id }}">
-                                {{ vehicle.plate_no }} - {{ vehicle.get_vehicle_type_display }} ({{ vehicle.ownership|title }})
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            `;
-            
-            $('#vehicleContainer').append(newRow);
-            
-            // Initialize select2 for the new select element
-            $('#vehicleContainer .vehicle-select').last().select2({
-                placeholder: "Select Vehicle",
-                allowClear: true,
-                width: '100%'
-            });
-
-            // Show remove button for all rows if more than one
-            updateRemoveButtons();
+        $('#{{ form.vehicle_type.id_for_label }}').select2({
+            placeholder: "Select Vehicle Type",
+            allowClear: true,
+            width: '100%'
         });
 
-        // Remove vehicle row
-        $(document).on('click', '.remove-vehicle-btn', function() {
-            $(this).closest('.vehicle-row').remove();
-            updateVehicleNumbers();
-            updateRemoveButtons();
+        $('#{{ form.ownership.id_for_label }}').select2({
+            placeholder: "Select Ownership",
+            allowClear: true,
+            width: '100%'
         });
 
-        // Update vehicle numbers
-        function updateVehicleNumbers() {
-            $('.vehicle-row').each(function(index) {
-                $(this).find('.vehicle-number').text(index + 1);
-            });
-            vehicleCount = $('.vehicle-row').length;
-        }
-
-        // Update remove button visibility
-        function updateRemoveButtons() {
-            const rowCount = $('.vehicle-row').length;
-            if (rowCount > 1) {
-                $('.remove-vehicle-btn').removeClass('hidden');
-            } else {
-                $('.remove-vehicle-btn').addClass('hidden');
-            }
-        }
-
-        // Form validation
-        $('#purchaseForm').submit(function(e) {
-            const vehicles = [];
-            let hasError = false;
-
-            $('.vehicle-select').each(function() {
-                const value = $(this).val();
-                if (!value) {
-                    hasError = true;
-                    $(this).addClass('border-red-500');
-                } else {
-                    $(this).removeClass('border-red-500');
-                    if (vehicles.includes(value)) {
-                        alert('You cannot select the same vehicle multiple times!');
-                        e.preventDefault();
-                        hasError = true;
-                        return false;
-                    }
-                    vehicles.push(value);
-                }
-            });
-
-            if (hasError) {
-                e.preventDefault();
-                alert('Please fill in all required vehicle fields.');
-                return false;
-            }
+        $('#{{ form.payment_period.id_for_label }}').select2({
+            placeholder: "Select Payment Period",
+            allowClear: true,
+            width: '100%'
         });
     });
 </script>

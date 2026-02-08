@@ -2969,68 +2969,58 @@ def vehicle_purchase_create(request):
 
     if request.method == 'POST':
         form = VehiclePurchaseForm(request.POST)
-        vehicle_ids = request.POST.getlist('vehicles[]')
-        
-        if not vehicle_ids:
-            messages.error(request, "Please select at least one vehicle.")
-            context = {
-                'form': form,
-                'employees': Employee.objects.filter(is_active=True),
-                'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
-            }
-            return render(request, 'vehicle_purchase/create.html', context)
-        
         if form.is_valid():
-            # Get common data from form
-            employee = form.cleaned_data['employee']
-            purchase_date = form.cleaned_data['purchase_date']
-            total_amount = form.cleaned_data['total_amount']
-            down_payment = form.cleaned_data['down_payment']
-            installment_amount = form.cleaned_data['installment_amount']
-            start_date = form.cleaned_data['start_date']
-            payment_period = form.cleaned_data['payment_period']
-            payment_method = form.cleaned_data['payment_method']
-            
-            # Create a purchase record for each vehicle
-            created_count = 0
-            for vehicle_id in vehicle_ids:
-                try:
-                    vehicle = Vehicle.objects.get(id=vehicle_id, is_active=True, deleted=False)
-                    
-                    # Create purchase instance
-                    purchase = VehiclePurchase(
-                        employee=employee,
-                        vehicle=vehicle,
-                        purchase_date=purchase_date,
-                        total_amount=total_amount,
-                        down_payment=down_payment,
-                        installment_amount=installment_amount,
-                        start_date=start_date,
-                        payment_period=payment_period,
-                        payment_method=payment_method,
-                        created_by=request.user
-                    )
-                    purchase.save()
-                    
-                    # Auto-generate installment schedule for this vehicle
-                    purchase.generate_installment_schedule(request.user)
-                    created_count += 1
-                    
-                except Vehicle.DoesNotExist:
-                    messages.warning(request, f"Vehicle with ID {vehicle_id} not found. Skipped.")
-                    continue
-                except Exception as e:
-                    messages.error(request, f"Error creating purchase for vehicle ID {vehicle_id}: {str(e)}")
-                    continue
-            
-            if created_count > 0:
-                if created_count == 1:
-                    messages.success(request, f"Vehicle purchase created successfully with installment schedule.")
-                else:
-                    messages.success(request, f"{created_count} vehicle purchases created successfully with installment schedules.")
+            try:
+                vehicle_defaults = {
+                    'vehicle_type': form.cleaned_data['vehicle_type'],
+                    'ownership': form.cleaned_data['ownership'],
+                    'chassee_no': form.cleaned_data['chassee_no'],
+                    'engine_no': form.cleaned_data['engine_no'],
+                    'istemara_expiry_date': form.cleaned_data['istemara_expiry_date'],
+                    'insurance_name': form.cleaned_data['insurance_name'],
+                    'insurance_expiry_date': form.cleaned_data['insurance_expiry_date'],
+                    'is_active': True,
+                    'deleted': False,
+                }
+
+                # Update existing vehicle (matched by plate) or create a new one
+                vehicle, created = Vehicle.objects.get_or_create(
+                    plate_no=form.cleaned_data['plate_no'],
+                    defaults={
+                        **vehicle_defaults,
+                        'created_by': request.user,
+                    }
+                )
+
+                if not created:
+                    for field, value in vehicle_defaults.items():
+                        setattr(vehicle, field, value)
+                    vehicle.updated_by = request.user
+                    vehicle.is_active = True
+                    vehicle.deleted = False
+                    vehicle.save(update_fields=[
+                        'vehicle_type', 'ownership', 'chassee_no', 'engine_no', 'istemara_expiry_date',
+                        'insurance_name', 'insurance_expiry_date', 'updated_by', 'is_active', 'deleted'
+                    ])
+
+                purchase = VehiclePurchase(
+                    vehicle=vehicle,
+                    purchase_date=form.cleaned_data['purchase_date'],
+                    total_amount=form.cleaned_data['total_amount'],
+                    down_payment=form.cleaned_data['down_payment'],
+                    installment_amount=form.cleaned_data['installment_amount'],
+                    start_date=form.cleaned_data['start_date'],
+                    payment_period=form.cleaned_data['payment_period'],
+                    payment_method=form.cleaned_data['payment_method'],
+                    created_by=request.user
+                )
+                purchase.save()
+                purchase.generate_installment_schedule(request.user)
+
+                messages.success(request, "Vehicle purchase created successfully with installment schedule.")
                 return redirect('vehicle_purchase:list')
-            else:
-                messages.error(request, "Failed to create any vehicle purchases.")
+            except Exception as exc:
+                messages.error(request, f"Unable to create vehicle purchase: {exc}")
         else:
             messages.error(request, "Please correct the errors in the form.")
     else:
@@ -3038,8 +3028,6 @@ def vehicle_purchase_create(request):
 
     context = {
         'form': form,
-        'employees': Employee.objects.filter(is_active=True),
-        'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
     }
     return render(request, 'vehicle_purchase/create.html', context)
 

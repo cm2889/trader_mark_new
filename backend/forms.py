@@ -634,10 +634,35 @@ class InsuranceClaimForm(forms.ModelForm):
 
 
 class VehiclePurchaseForm(forms.ModelForm):
-    employee = forms.ModelChoiceField(
-        queryset=Employee.objects.filter(is_active=True),
-        empty_label="Select Employee",
+    vehicle_type = forms.ChoiceField(
+        choices=[('', 'Select Vehicle Type'), ('BIKE', 'Bike'), ('CAR', 'Car')],
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    ) 
+    ownership = forms.ChoiceField(
+        choices=[('', 'Select Ownership'), ('COMPANY', 'Company'), ('DRIVER', 'Driver')],
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )    
+    plate_no = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter plate number'})
+    ) 
+    chassee_no = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter chassee number'})
+    )
+    engine_no = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter engine number'})
+    )  
+    istemara_expiry_date = forms.DateField(
+        widget=forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'})
+    )
+    insurance_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter insurance provider'})
+    )
+    insurance_expiry_date = forms.DateField(
+        widget=forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'})
     )
     payment_method = forms.ChoiceField(
         choices=[('', 'Select Payment Method'), ('CASH', 'Cash'), ('CARD', 'Card'), ('ONLINE', 'Online'), ('BANK_TRANSFER', 'Bank Transfer'), ('OTHER', 'Other')],
@@ -650,7 +675,7 @@ class VehiclePurchaseForm(forms.ModelForm):
     
     class Meta:
         model = VehiclePurchase
-        exclude = ['vehicle', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        exclude = [ 'employee', 'vehicle', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'purchase_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'total_amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter total amount'}),
@@ -658,6 +683,12 @@ class VehiclePurchaseForm(forms.ModelForm):
             'installment_amount': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter installment amount'}),
             'start_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
         }
+
+    def clean_plate_no(self):
+        plate_no = self.cleaned_data.get('plate_no', '').strip()
+        if not plate_no:
+            raise forms.ValidationError("Plate number is required.")
+        return plate_no
 
 
 class InstallmentPaymentForm(forms.ModelForm):
