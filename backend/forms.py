@@ -430,6 +430,8 @@ class VehicleForm(forms.ModelForm):
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'plate_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter plate number'}),
+            'chassee_no': forms.TextInput(attrs={'class': TAILWIND_TEXT}),
+            'engine_no': forms.TextInput(attrs={'class': TAILWIND_TEXT}), 
             'istemara_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'insurance_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter insurance name'}),
             'insurance_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),

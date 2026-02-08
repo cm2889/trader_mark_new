@@ -80,15 +80,26 @@
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            Plate No</th>
+                            Plate No
+                        </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            Type</th>
+                            Chessee No
+                        </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            Ownership</th>
+                            Engine No
+                        </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            Istemara Expiry</th>
+                            Type
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Ownership
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Istemara Expiry
+                        </th>
                         <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            Actions</th>
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -96,6 +107,8 @@
                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ info.plate_no }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ info.chassee_no }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ info.engine_no }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ info.get_vehicle_type_display }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ info.get_ownership_display }}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ info.istemara_expiry_date|date:"M d, Y" }}</td>
