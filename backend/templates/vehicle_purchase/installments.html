@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Purchase Installments - {{ purchase.vehicle.plate_no }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}" class="text-gray-900">Vehicle Management</a>
+<span class="mx-1 text-gray-900">›</span>
+<a href="{% url 'vehicle_purchase:list' %}" class="text-gray-900">Purchases</a>
+<span class="mx-1 text-gray-900">›</span>
+<span class="text-gray-900">Installments</span>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 bg-white text-gray-900">
+
+    <div class="mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">
+                    Installments for {{ purchase.vehicle.plate_no }}
+                </h1>
+                <p class="text-gray-700 mt-1">
+                    Employee: {{ purchase.employee.full_name }}
+                </p>
+            </div>
+            <a href="{% url 'vehicle_purchase:list' %}"
+               class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Purchases</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Total Amount</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ purchase.total_amount }}</p>
+        </div>
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Total Paid</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ total_paid }}</p>
+            <p class="text-xs text-gray-700 mt-2">{{ paid_count }} installments paid</p>
+        </div>
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Total Pending</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ total_pending }}</p>
+            <p class="text-xs text-gray-700 mt-2">{{ pending_count }} installments pending</p>
+        </div>
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Down Payment</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ purchase.down_payment }}</p>
+        </div>
+
+    </div>
+
+    <!-- Installments Table -->
+    <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase text-gray-700">Installment #</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase text-gray-700">Amount</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase text-gray-700">Due Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase text-gray-700">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase text-gray-700">Paid Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase text-gray-700">Payment Method</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase text-gray-700">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for installment in installments %}
+                    <tr class="hover:bg-gray-50 transition-colors duration-150 {% if installment.is_paid %}bg-gray-50{% endif %}">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                            #{{ installment.installment_no }}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-semibold text-gray-900">
+                            {{ installment.amount }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ installment.due_date|date:"d M, Y" }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if installment.is_paid %}
+                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-gray-200 text-gray-900">
+                                <i class="fas fa-check-circle mr-1"></i> Paid
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-gray-200 text-gray-900">
+                                <i class="fas fa-clock mr-1"></i> Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {% if installment.paid_date %}
+                                {{ installment.paid_date|date:"d M, Y" }}
+                            {% else %}
+                                <span class="text-gray-500">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {% if installment.is_paid %}
+                                <span class="px-2 inline-flex text-xs font-semibold rounded-full bg-gray-200 text-gray-900">
+                                    {{ installment.get_payment_method_display }}
+                                </span>
+                            {% else %}
+                                <span class="text-gray-500">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium">
+                            {% if not installment.is_paid %}
+                            <a href="{% url 'vehicle_installment:pay' installment.pk %}"
+                               class="text-gray-900 hover:underline flex items-center gap-1">
+                                <i class="fas fa-money-bill-wave"></i> Pay
+                            </a>
+                            {% else %}
+                            <span class="text-gray-500">
+                                <i class="fas fa-check"></i> Completed
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-600">
+                            <i class="fas fa-inbox text-4xl mb-2"></i>
+                            <p>No installments found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if paginator.num_pages > 1 %}
+        <div class="bg-gray-100 px-6 py-3 flex items-center justify-between border-t border-gray-300">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if page_num > 1 %}
+                <a href="?page={{ page_num|add:'-1' }}"
+                   class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-900 bg-white hover:bg-gray-50">
+                    Previous
+                </a>
+                {% endif %}
+                {% if page_num < last_page_number %}
+                <a href="?page={{ page_num|add:'1' }}"
+                   class="ml-3 px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-900 bg-white hover:bg-gray-50">
+                    Next
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="hidden sm:flex sm:items-center sm:justify-between w-full">
+                <p class="text-sm text-gray-700">
+                    Page <span class="font-medium">{{ page_num }}</span> of
+                    <span class="font-medium">{{ last_page_number }}</span>
+                </p>
+
+                <nav class="inline-flex rounded-md shadow-sm -space-x-px">
+                    {% if page_num > 1 %}
+                    <a href="?page={{ page_num|add:'-1' }}"
+                       class="px-2 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    {% endif %}
+                    {% if page_num < last_page_number %}
+                    <a href="?page={{ page_num|add:'1' }}"
+                       class="px-2 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+{% comment %} {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Purchase Installments - {{ purchase.vehicle.plate_no }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+<span class="mx-1">›</span>
+<a href="{% url 'vehicle_purchase:list' %}">Purchases</a>
+<span class="mx-1">›</span>
+<span>Installments</span>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-[var(--text-color)]">Installments for {{ purchase.vehicle.plate_no }}</h1>
+                <p class="text-[var(--text-light-color)] mt-1">Employee: {{ purchase.employee.full_name }}</p>
+            </div>
+            <a href="{% url 'vehicle_purchase:list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i><span>Back to Purchases</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100 text-sm">Total Amount</p>
+                    <p class="text-2xl font-bold mt-1">{{ purchase.total_amount }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-dollar-sign text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm">Total Paid</p>
+                    <p class="text-2xl font-bold mt-1">{{ total_paid }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-check-circle text-2xl"></i>
+                </div>
+            </div>
+            <p class="text-green-100 text-xs mt-2">{{ paid_count }} installments paid</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm">Total Pending</p>
+                    <p class="text-2xl font-bold mt-1">{{ total_pending }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+            </div>
+            <p class="text-orange-100 text-xs mt-2">{{ pending_count }} installments pending</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100 text-sm">Down Payment</p>
+                    <p class="text-2xl font-bold mt-1">{{ purchase.down_payment }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-hand-holding-usd text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Installments Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Installment #</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Method</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for installment in installments %}
+                    <tr class="hover:bg-gray-50 transition-colors duration-150 {% if installment.is_paid %}bg-green-50{% endif %}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ installment.installment_no }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ installment.amount }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ installment.due_date|date:"d M, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if installment.is_paid %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i> Paid
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-clock mr-1"></i> Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {% if installment.paid_date %}
+                                {{ installment.paid_date|date:"d M, Y" }}
+                            {% else %}
+                                <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {% if installment.is_paid %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ installment.get_payment_method_display }}
+                                </span>
+                            {% else %}
+                                <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            {% if not installment.is_paid %}
+                            <a href="{% url 'vehicle_installment:pay' installment.pk %}" class="text-green-600 hover:text-green-900 flex items-center gap-1" title="Pay Installment">
+                                <i class="fas fa-money-bill-wave"></i> Pay
+                            </a>
+                            {% else %}
+                            <span class="text-gray-400">
+                                <i class="fas fa-check"></i> Completed
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2"></i>
+                            <p>No installments found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if paginator.num_pages > 1 %}
+        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if page_num > 1 %}
+                <a href="?page={{ page_num|add:'-1' }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                {% endif %}
+                {% if page_num < last_page_number %}
+                <a href="?page={{ page_num|add:'1' }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">Page <span class="font-medium">{{ page_num }}</span> of <span class="font-medium">{{ last_page_number }}</span></p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {% if page_num > 1 %}
+                        <a href="?page={{ page_num|add:'-1' }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-left"></i></a>
+                        {% endif %}
+                        {% if page_num < last_page_number %}
+                        <a href="?page={{ page_num|add:'1' }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-right"></i></a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} {% endcomment %}

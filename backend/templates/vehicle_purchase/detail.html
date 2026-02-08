@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Purchase Details - {{ purchase.vehicle.plate_no }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}" class="text-gray-900">Vehicle Management</a>
+<span class="mx-1 text-gray-900">›</span>
+<a href="{% url 'vehicle_purchase:list' %}" class="text-gray-900">Purchases</a>
+<span class="mx-1 text-gray-900">›</span>
+<span class="text-gray-900">Details</span>
+{% endblock %}
+
+{% block content %}
+<div class="container px-4 py-8  bg-white text-gray-900">
+
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Purchase Details</h1>
+            <p class="text-gray-700 mt-1">Vehicle Purchase ID: #{{ purchase.pk }}</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
+               class="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-receipt"></i><span>View Installments</span>
+            </a>
+            <a href="{% url 'vehicle_purchase:list' %}"
+               class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i><span>Back</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Total Amount</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ purchase.total_amount }}</p>
+        </div>
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Total Paid</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ total_paid }}</p>
+            <p class="text-xs text-gray-700 mt-2">{{ paid_count }} paid</p>
+        </div>
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Pending</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ total_pending }}</p>
+            <p class="text-xs text-gray-700 mt-2">{{ pending_count }} pending</p>
+        </div>
+
+        <div class="bg-white border rounded-lg p-6 shadow-sm">
+            <p class="text-sm text-gray-700">Down Payment</p>
+            <p class="text-2xl font-bold mt-1 text-gray-900">{{ purchase.down_payment }}</p>
+        </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Purchase Information -->
+        <div class="bg-white border rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-shopping-cart mr-2"></i>Purchase Information
+            </h2>
+
+            <div class="space-y-3">
+                <div class="flex justify-between border-b pb-2">
+                    <span>Purchase Date:</span>
+                    <span class="font-semibold">{{ purchase.purchase_date|date:"d M, Y" }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span>Total Amount:</span>
+                    <span class="font-semibold">{{ purchase.total_amount }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span>Down Payment:</span>
+                    <span class="font-semibold">{{ purchase.down_payment }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span>Installment Amount:</span>
+                    <span class="font-semibold">{{ purchase.installment_amount }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span>Start Date:</span>
+                    <span class="font-semibold">{{ purchase.start_date|date:"d M, Y" }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span>Payment Period:</span>
+                    <span class="font-semibold">{{ purchase.get_payment_period_display }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span>Payment Method:</span>
+                    <span class="font-semibold">{{ purchase.get_payment_method_display }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle & Employee Information -->
+        <div class="bg-white border rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-car mr-2"></i>Vehicle & Employee Details
+            </h2>
+
+            <div class="border-b pb-4 mb-4">
+                <h3 class="text-sm font-semibold mb-2">Vehicle Information</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Plate No:</span>
+                        <span class="font-semibold">{{ purchase.vehicle.plate_no }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Make & Model:</span>
+                        <span class="font-semibold">{{ purchase.vehicle.make }} {{ purchase.vehicle.model }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Year:</span>
+                        <span class="font-semibold">{{ purchase.vehicle.year }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold mb-2">Employee Information</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Name:</span>
+                        <span class="font-semibold">{{ purchase.employee.full_name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Employee ID:</span>
+                        <span class="font-semibold">{{ purchase.employee.employee_id }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Email:</span>
+                        <span class="font-semibold">{{ purchase.employee.email }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Installments -->
+    <div class="bg-white border rounded-lg shadow-sm p-6 mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                <i class="fas fa-list mr-2"></i>Recent Installments
+            </h2>
+            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
+               class="text-gray-900 font-medium">
+                View All →
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase">Amount</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase">Due Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold uppercase">Paid Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for installment in installments|slice:":5" %}
+                    <tr>
+                        <td class="px-6 py-4 font-medium">#{{ installment.installment_no }}</td>
+                        <td class="px-6 py-4 font-semibold">{{ installment.amount }}</td>
+                        <td class="px-6 py-4">{{ installment.due_date|date:"d M, Y" }}</td>
+                        <td class="px-6 py-4">
+                            {{ installment.is_paid|yesno:"Paid,Pending" }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ installment.paid_date|date:"d M, Y"|default:"-" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% comment %} {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Purchase Details - {{ purchase.vehicle.plate_no }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+<span class="mx-1">›</span>
+<a href="{% url 'vehicle_purchase:list' %}">Purchases</a>
+<span class="mx-1">›</span>
+<span>Details</span>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-[var(--text-color)]">Purchase Details</h1>
+            <p class="text-[var(--text-light-color)] mt-1">Vehicle Purchase ID: #{{ purchase.pk }}</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-receipt"></i><span>View Installments</span>
+            </a>
+            <a href="{% url 'vehicle_purchase:list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i><span>Back</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-dark text-sm">Total Amount</p>
+                    <p class="text-2xl font-bold mt-1">{{ purchase.total_amount }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-dollar-sign text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-dark text-sm">Total Paid</p>
+                    <p class="text-2xl font-bold mt-1">{{ total_paid }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-check-circle text-2xl"></i>
+                </div>
+            </div>
+            <p class="text-dark text-xs mt-2">{{ paid_count }} paid</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-dark text-sm">Pending</p>
+                    <p class="text-2xl font-bold mt-1">{{ total_pending }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+            </div>
+            <p class="text-dark text-xs mt-2">{{ pending_count }} pending</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-dark text-sm">Down Payment</p>
+                    <p class="text-2xl font-bold mt-1">{{ purchase.down_payment }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-hand-holding-usd text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Purchase Information -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-shopping-cart mr-2 text-blue-600"></i>Purchase Information
+            </h2>
+            <div class="space-y-3">
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-gray-600">Purchase Date:</span>
+                    <span class="font-semibold">{{ purchase.purchase_date|date:"d M, Y" }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-gray-600">Total Amount:</span>
+                    <span class="font-semibold text-lg">{{ purchase.total_amount }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-gray-600">Down Payment:</span>
+                    <span class="font-semibold">{{ purchase.down_payment }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-gray-600">Installment Amount:</span>
+                    <span class="font-semibold">{{ purchase.installment_amount }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-gray-600">Start Date:</span>
+                    <span class="font-semibold">{{ purchase.start_date|date:"d M, Y" }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-gray-600">Payment Period:</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-semibold">{{ purchase.get_payment_period_display }}</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-gray-600">Payment Method:</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-semibold">{{ purchase.get_payment_method_display }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle & Employee Information -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-car mr-2 text-blue-600"></i>Vehicle & Employee Details
+            </h2>
+            <div class="space-y-4">
+                <div class="border-b pb-3">
+                    <h3 class="text-sm text-gray-600 mb-2">Vehicle Information</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Plate No:</span>
+                            <span class="font-semibold">{{ purchase.vehicle.plate_no }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Make & Model:</span>
+                            <span class="font-semibold">{{ purchase.vehicle.make }} {{ purchase.vehicle.model }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Year:</span>
+                            <span class="font-semibold">{{ purchase.vehicle.year }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm text-gray-600 mb-2">Employee Information</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Name:</span>
+                            <span class="font-semibold">{{ purchase.employee.full_name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Employee ID:</span>
+                            <span class="font-semibold">{{ purchase.employee.employee_id }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Email:</span>
+                            <span class="font-semibold">{{ purchase.employee.email }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Installments -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                <i class="fas fa-list mr-2 text-blue-600"></i>Recent Installments
+            </h2>
+            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Paid Date</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for installment in installments|slice:":5" %}
+                    <tr class="{% if installment.is_paid %}bg-green-50{% endif %}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">#{{ installment.installment_no }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">{{ installment.amount }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ installment.due_date|date:"d M, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if installment.is_paid %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Paid</span>
+                            {% else %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {{ installment.paid_date|date:"d M, Y"|default:"-" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} {% endcomment %}

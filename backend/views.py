@@ -23,6 +23,7 @@ from django.core.cache import cache
 from PIL import Image
 from io import BytesIO
 from django.utils.text import slugify 
+from django.utils import timezone
 from datetime import datetime 
 
 from backend.models import (
@@ -34,7 +35,7 @@ from backend.models import (
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
     ViolationType, VehicleMaintananceType, 
-    Uniform, UniformStock, UniformIssuance, UniformClearance
+    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase 
 )
 
 from backend.forms import (
@@ -43,7 +44,8 @@ from backend.forms import (
     AddressForm, UserCreateForm, VehicleForm, VisitorForm, InsuranceClaimForm, 
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
     VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm, 
-    UniformForm, UniformStockForm, UniformIssuanceForm, UniformClearanceForm
+    UniformForm, UniformStockForm, UniformIssuanceForm, UniformClearanceForm,
+    VehiclePurchaseForm, InstallmentPaymentForm
 ) 
 
 from backend.common_func import checkUserPermission
@@ -2902,6 +2904,172 @@ def vehicle_accident_delete(request, pk):
     messages.success(request, "Vehicle accident deleted successfully.")
     return redirect('vehicle_accident:list')
 
+# ============================================= 
+# Vehicle Purchase 
+# ============================================= 
+@login_required
+def vehicle_purchase_list(request):
+    if not checkUserPermission(request, "can_view", "/backend/vehicle-purchase/"):
+        messages.error(request, "You do not have permission to view vehicle purchases.")
+        return render(request, "403.html", status=403)
+
+    filters = {
+        'is_active': True,
+        'deleted': False,
+    }
+
+    plate_no = request.GET.get('plate_no', '')
+    employee_name = request.GET.get('employee_name', '')
+    
+    if plate_no:
+        filters['vehicle__plate_no__icontains'] = plate_no
+    if employee_name:
+        filters['employee__first_name__icontains'] = employee_name
+
+    purchases_qs = VehiclePurchase.objects.filter(**filters).select_related('vehicle', 'employee').order_by('-purchase_date')
+
+    page_num = request.GET.get('page', 1)
+    paginator_list, page_obj, last_page_number = paginate_data(request, page_num, purchases_qs)
+    paginator = page_obj.paginator
+
+    get_param = request.GET.copy()
+    if 'page' in get_param:
+        get_param.pop('page')
+    
+    context = {
+        'purchases': page_obj,
+        'page_obj': page_obj,
+        'paginator_list': paginator_list,
+        'page_num': page_obj.number,
+        'paginator': paginator,
+        'last_page_number': last_page_number,
+        'get_param': get_param.urlencode(),
+    }
+    return render(request, 'vehicle_purchase/list.html', context)
+
+
+@login_required
+def vehicle_purchase_create(request):
+    if not checkUserPermission(request, "can_add", "/backend/vehicle-purchase/"):
+        messages.error(request, "You do not have permission to add vehicle purchases.")
+        return render(request, "403.html", status=403)
+
+    if request.method == 'POST':
+        form = VehiclePurchaseForm(request.POST)
+        vehicle_ids = request.POST.getlist('vehicles[]')
+        
+        if not vehicle_ids:
+            messages.error(request, "Please select at least one vehicle.")
+            context = {
+                'form': form,
+                'employees': Employee.objects.filter(is_active=True),
+                'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
+            }
+            return render(request, 'vehicle_purchase/create.html', context)
+        
+        if form.is_valid():
+            # Get common data from form
+            employee = form.cleaned_data['employee']
+            purchase_date = form.cleaned_data['purchase_date']
+            total_amount = form.cleaned_data['total_amount']
+            down_payment = form.cleaned_data['down_payment']
+            installment_amount = form.cleaned_data['installment_amount']
+            start_date = form.cleaned_data['start_date']
+            payment_period = form.cleaned_data['payment_period']
+            payment_method = form.cleaned_data['payment_method']
+            
+            # Create a purchase record for each vehicle
+            created_count = 0
+            for vehicle_id in vehicle_ids:
+                try:
+                    vehicle = Vehicle.objects.get(id=vehicle_id, is_active=True, deleted=False)
+                    
+                    # Create purchase instance
+                    purchase = VehiclePurchase(
+                        employee=employee,
+                        vehicle=vehicle,
+                        purchase_date=purchase_date,
+                        total_amount=total_amount,
+                        down_payment=down_payment,
+                        installment_amount=installment_amount,
+                        start_date=start_date,
+                        payment_period=payment_period,
+                        payment_method=payment_method,
+                        created_by=request.user
+                    )
+                    purchase.save()
+                    
+                    # Auto-generate installment schedule for this vehicle
+                    purchase.generate_installment_schedule(request.user)
+                    created_count += 1
+                    
+                except Vehicle.DoesNotExist:
+                    messages.warning(request, f"Vehicle with ID {vehicle_id} not found. Skipped.")
+                    continue
+                except Exception as e:
+                    messages.error(request, f"Error creating purchase for vehicle ID {vehicle_id}: {str(e)}")
+                    continue
+            
+            if created_count > 0:
+                if created_count == 1:
+                    messages.success(request, f"Vehicle purchase created successfully with installment schedule.")
+                else:
+                    messages.success(request, f"{created_count} vehicle purchases created successfully with installment schedules.")
+                return redirect('vehicle_purchase:list')
+            else:
+                messages.error(request, "Failed to create any vehicle purchases.")
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+    else:
+        form = VehiclePurchaseForm()
+
+    context = {
+        'form': form,
+        'employees': Employee.objects.filter(is_active=True),
+        'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
+    }
+    return render(request, 'vehicle_purchase/create.html', context)
+
+
+@login_required
+def vehicle_purchase_detail(request, pk):
+    if not checkUserPermission(request, "can_view", "/backend/vehicle-purchase/"):
+        messages.error(request, "You do not have permission to view vehicle purchase details.")
+        return render(request, "403.html", status=403)
+
+    purchase = get_object_or_404(VehiclePurchase, pk=pk)
+    installments_qs = purchase.installments.all().order_by('installment_no')
+    
+    # Calculate payment statistics
+    total_paid = sum(inst.amount for inst in installments_qs if inst.is_paid)
+    total_pending = sum(inst.amount for inst in installments_qs if not inst.is_paid)
+    paid_count = installments_qs.filter(is_paid=True).count()
+    pending_count = installments_qs.filter(is_paid=False).count()
+    
+    context = {
+        'purchase': purchase,
+        'installments': installments_qs,
+        'total_paid': total_paid,
+        'total_pending': total_pending,
+        'paid_count': paid_count,
+        'pending_count': pending_count,
+    }
+    return render(request, 'vehicle_purchase/detail.html', context)
+
+
+@login_required
+def vehicle_purchase_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/vehicle-purchase/"):
+        messages.error(request, "You do not have permission to delete vehicle purchases.")
+        return render(request, "403.html", status=403)
+
+    purchase = get_object_or_404(VehiclePurchase, pk=pk)
+    purchase.is_active = False
+    purchase.deleted = True
+    purchase.save()
+    messages.success(request, "Vehicle purchase deleted successfully.")
+    return redirect('vehicle_purchase:list') 
+
 
 # ========================================
 # VEHICLE INSTALLMENT VIEWS
@@ -2919,15 +3087,18 @@ class VehicleInstallmentListView(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = VehicleInstallment.objects.all().order_by('-due_date')
+        queryset = VehicleInstallment.objects.select_related('purchase', 'purchase__vehicle', 'purchase__employee').all().order_by('-due_date')
         
         plate_no = self.request.GET.get('plate_no', '')
         is_paid = self.request.GET.get('is_paid', '')
+        purchase_id = self.request.GET.get('purchase_id', '')
         
         if plate_no:
-            queryset = queryset.filter(vehicle__plate_no=plate_no)
+            queryset = queryset.filter(purchase__vehicle__plate_no__icontains=plate_no)
         if is_paid:
             queryset = queryset.filter(is_paid=(is_paid == 'true'))
+        if purchase_id:
+            queryset = queryset.filter(purchase_id=purchase_id)
         
         return queryset
 
@@ -2945,8 +3116,78 @@ class VehicleInstallmentListView(ListView):
         
         # Add data for select2 dropdowns
         context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
+        context['all_purchases'] = VehiclePurchase.objects.filter(is_active=True, deleted=False).select_related('vehicle', 'employee').order_by('-purchase_date')
         
         return context
+
+
+@login_required
+def installment_pay(request, pk):
+    """View to pay an installment - user only needs to select payment method"""
+    if not checkUserPermission(request, "can_update", "/backend/vehicle-installment/"):
+        messages.error(request, "You do not have permission to pay vehicle installments.")
+        return render(request, "403.html", status=403)
+
+    installment = get_object_or_404(VehicleInstallment, pk=pk)
+    
+    if installment.is_paid:
+        messages.warning(request, "This installment has already been paid.")
+        return redirect('vehicle_installment:list')
+    
+    if request.method == 'POST':
+        form = InstallmentPaymentForm(request.POST, instance=installment)
+        if form.is_valid():
+            installment = form.save(commit=False)
+            installment.is_paid = True
+            installment.paid_date = timezone.now().date()
+            installment.payment_status = 'PAID'
+            installment.updated_by = request.user
+            installment.save()
+            messages.success(request, f"Installment #{installment.installment_no} paid successfully.")
+            return redirect('vehicle_purchase:installments', pk=installment.purchase.pk)
+    else:
+        form = InstallmentPaymentForm(instance=installment)
+
+    context = {
+        'form': form,
+        'installment': installment,
+    }
+    return render(request, 'vehicle_installment/pay.html', context)
+
+
+@login_required
+def purchase_installments_list(request, pk):
+    """View to show all installments for a specific purchase"""
+    if not checkUserPermission(request, "can_view", "/backend/vehicle-purchase/"):
+        messages.error(request, "You do not have permission to view vehicle purchase installments.")
+        return render(request, "403.html", status=403)
+
+    purchase = get_object_or_404(VehiclePurchase, pk=pk)
+    installments_qs = purchase.installments.all().order_by('installment_no')
+    
+    # Calculate payment statistics
+    total_paid = sum(inst.amount for inst in installments_qs if inst.is_paid)
+    total_pending = sum(inst.amount for inst in installments_qs if not inst.is_paid)
+    paid_count = installments_qs.filter(is_paid=True).count()
+    pending_count = installments_qs.filter(is_paid=False).count()
+    
+    page_num = request.GET.get('page', 1)
+    paginator_list, page_obj, last_page_number = paginate_data(request, page_num, installments_qs)
+    paginator = page_obj.paginator
+
+    context = {
+        'purchase': purchase,
+        'installments': page_obj,
+        'paginator_list': paginator_list,
+        'page_num': page_obj.number,
+        'paginator': paginator,
+        'last_page_number': last_page_number,
+        'total_paid': total_paid,
+        'total_pending': total_pending,
+        'paid_count': paid_count,
+        'pending_count': pending_count,
+    }
+    return render(request, 'vehicle_purchase/installments.html', context)
 
 
 @login_required
@@ -2968,7 +3209,7 @@ def vehicle_installment_create(request):
 
     context = {
         'form': form,
-        'vehicles': Vehicle.objects.filter(is_active=True),
+        'purchases': VehiclePurchase.objects.filter(is_active=True, deleted=False),
     }
     return render(request, 'vehicle_installment/create.html', context)
 
@@ -2995,7 +3236,7 @@ def vehicle_installment_update(request, pk):
     context = {
         'form': form,
         'installment': installment,
-        'vehicles': Vehicle.objects.filter(is_active=True),
+        'purchases': VehiclePurchase.objects.filter(is_active=True, deleted=False),
     }
     return render(request, 'vehicle_installment/update.html', context)
 

@@ -358,6 +358,22 @@
   },
   {
     "model": "backend.backendmenu",
+    "pk": 407,
+    "fields": {
+      "module_name": "Vehicle Management",
+      "menu_name": "Vehicle Purchase",
+      "menu_url": "/backend/vehicle-purchase/",
+      "menu_icon": "fa-solid fa-shopping-cart",
+      "menu_description": "Manage vehicle purchases and installment plans.",
+      "parent": 17,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
     "pk": 405,
     "fields": {
       "module_name": "Vehicle Management",

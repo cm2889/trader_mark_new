@@ -500,8 +500,6 @@ class UniformClearance(models.Model):
         ordering = ['-clearance_date', '-created_at']
 
 
-
-
 class Employment(models.Model):
 
     YES_NO_CHOICES = (
@@ -650,7 +648,6 @@ class Contact(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-
 class Address(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
     present_address = models.TextField(null=True, blank=True)
@@ -688,7 +685,6 @@ class Vehicle(models.Model):
         ('DRIVER', 'Driver'),
     )
     
-
     vehicle_type = models.CharField(max_length=10, choices=VEHICLE_TYPE_CHOICES)
 
     plate_no = models.CharField(max_length=50, unique=True)
@@ -711,7 +707,6 @@ class Vehicle(models.Model):
     
     class Meta:
         ordering = ['-created_at']
-
 
 class VehicleAssign(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='vehicle_assignments')
@@ -837,7 +832,6 @@ class TrafficViolationPenalty(models.Model):
         ordering = ['-created_at']
 
 
-
 # =========================
 # ACCIDENT HISTORY
 # =========================
@@ -887,13 +881,91 @@ class InsuranceClaim(models.Model):
 
     def __str__(self):
         return f"Insurance Claim - {self.accident.vehicle.plate_no}" 
+    
+
+# ===========================================================
+# Vehicle Purchase 
+# ============================================================= 
+class VehiclePurchase(models.Model):
+    PAYMENT_METHOD_CHOICES = (
+        ('CASH', 'Cash'),
+        ('CARD', 'Card'),
+        ('ONLINE', 'Online'),
+        ('BANK_TRANSFER', 'Bank Transfer'),
+        ('OTHER', 'Other'),
+    )
+
+    PAYMENT_PERIOD_CHOICES = (
+        ("WEEKLY", "Weekly"),
+        ("MONTHLY", "Monthly"),
+    ) 
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='vehicle_purchases')
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_purchases')
+    purchase_date = models.DateField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    down_payment = models.DecimalField(max_digits=10, decimal_places=2) 
+    installment_amount = models.DecimalField(max_digits=10, decimal_places=2) 
+    start_date = models.DateField()
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
+    payment_period = models.CharField(max_length=20, choices=PAYMENT_PERIOD_CHOICES)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_purchase_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_purchase_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True) 
+    deleted = models.BooleanField(default=False) 
+
+    def generate_installment_schedule(self, created_by):
+        installments = []
+        current_date = self.start_date
+        installment_no = 1
+
+        while self.down_payment + (installment_no - 1) * self.installment_amount < self.total_amount:
+            installments.append(VehicleInstallment(
+                purchase=self,
+                installment_no=installment_no,
+                amount=self.installment_amount,
+                due_date=current_date,
+                created_by=created_by
+            ))
+            if self.payment_period == 'WEEKLY':
+                current_date += timedelta(weeks=1)
+            elif self.payment_period == 'MONTHLY':
+                current_date += timedelta(days=30) 
+            installment_no += 1
+
+        VehicleInstallment.objects.bulk_create(installments)    
+
+
+    def __str__(self):
+        return f"Purchase - {self.vehicle.plate_no} by {self.employee.full_name}" 
+    
+    class Meta:
+        ordering = ['-purchase_date', '-created_at'] 
 
 
 # =========================
 # INSTALLMENT PAID / RECEIVED
 # =========================
 class VehicleInstallment(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_installments')
+    PAYMENT_METHOD_CHOICES = (
+        ('CASH', 'Cash'),
+        ('CARD', 'Card'),
+        ('ONLINE', 'Online'),
+        ('BANK_TRANSFER', 'Bank Transfer'),
+        ('OTHER', 'Other'),
+    )
+    PAYMENT_STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('PAID', 'Paid'),
+        ('OVERDUE', 'Overdue'),
+        ('CANCELLED', 'Cancelled'),
+    ) 
+    purchase = models.ForeignKey(VehiclePurchase, on_delete=models.CASCADE, related_name='installments')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='CASH')
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
 
     installment_no = models.PositiveIntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -912,7 +984,7 @@ class VehicleInstallment(models.Model):
     deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Installment {self.installment_no} - {self.vehicle.plate_no}"
+        return f"Installment {self.installment_no} - {self.purchase.vehicle.plate_no}"
 
 
 class VehicleMaintananceType(models.Model):

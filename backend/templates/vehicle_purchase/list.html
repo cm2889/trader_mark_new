@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vehicle Purchases{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+<span class="mx-1">›</span>
+<a href="{% url 'vehicle_purchase:list' %}">Purchases</a>
+<span class="mx-1">›</span>
+<span>List</span>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-[var(--text-color)]">Vehicle Purchases</h1>
+            <p class="text-[var(--text-light-color)] mt-1">Manage vehicle purchase records and installments</p>
+        </div>
+        <a href="{% url 'vehicle_purchase:create' %}" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
+            <i class="fas fa-plus"></i><span>Add Purchase</span>
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <form method="get" class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[200px]">
+                <label for="plate_no" class="block text-sm font-medium text-gray-700 mb-2">Plate No</label>
+                <input type="text" name="plate_no" id="plate_no" value="{{ request.GET.plate_no }}" placeholder="Search by plate no" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex-1 min-w-[200px]">
+                <label for="employee_name" class="block text-sm font-medium text-gray-700 mb-2">Employee Name</label>
+                <input type="text" name="employee_name" id="employee_name" value="{{ request.GET.employee_name }}" placeholder="Search by employee name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex items-end gap-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                    <i class="fas fa-search"></i><span>Search</span>
+                </button>
+                <a href="{% url 'vehicle_purchase:list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200">
+                    <i class="fas fa-redo"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Down Payment</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Installment</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Period</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for purchase in purchases %}
+                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ purchase.pk|default:"N/A" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ purchase.vehicle.plate_no|default:"-" }}</div>
+                            <div class="text-sm text-gray-500">{{ purchase.vehicle.make|default:"" }} {{ purchase.vehicle.model|default:"" }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ purchase.employee.full_name|default:"-" }}</div>
+                            <div class="text-sm text-gray-500">{{ purchase.employee.employee_id|default:"" }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.purchase_date|date:"d M, Y"|default:"-" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ purchase.total_amount|default:"0.00" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.down_payment|default:"0.00" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.installment_amount|default:"0.00" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                {{ purchase.get_payment_period_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            {% if purchase.pk %}
+                            <div class="flex items-center gap-2">
+                                <a href="{% url 'vehicle_purchase:installments' purchase.pk %}" class="text-blue-600 hover:text-blue-900" title="View Installments">
+                                    <i class="fas fa-receipt"></i>
+                                </a>
+                                <a href="{% url 'vehicle_purchase:detail' purchase.pk %}" class="text-green-600 hover:text-green-900" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'vehicle_purchase:delete' purchase.pk %}" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this purchase?')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                            {% else %}
+                            <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2"></i>
+                            <p>No vehicle purchases found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if paginator.num_pages > 1 %}
+        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if page_num > 1 %}
+                <a href="?page={{ page_num|add:'-1' }}&{{ get_param }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                {% endif %}
+                {% if page_num < last_page_number %}
+                <a href="?page={{ page_num|add:'1' }}&{{ get_param }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">Page <span class="font-medium">{{ page_num }}</span> of <span class="font-medium">{{ last_page_number }}</span></p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {% if page_num > 1 %}
+                        <a href="?page={{ page_num|add:'-1' }}&{{ get_param }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-left"></i></a>
+                        {% endif %}
+                        {% if page_num < last_page_number %}
+                        <a href="?page={{ page_num|add:'1' }}&{{ get_param }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-right"></i></a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

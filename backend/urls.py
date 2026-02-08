@@ -90,7 +90,17 @@ vehicle_installment_patterns = ([
     path('create/', views.vehicle_installment_create, name='create'),
     path('update/<int:pk>/', views.vehicle_installment_update, name='update'),
     path('delete/<int:pk>/', views.vehicle_installment_delete, name='delete'),
+    path('pay/<int:pk>/', views.installment_pay, name='pay'),
 ], 'vehicle_installment')
+
+# Vehicle Purchase URL patterns
+vehicle_purchase_patterns = ([
+    path('', views.vehicle_purchase_list, name='list'),
+    path('create/', views.vehicle_purchase_create, name='create'),
+    path('detail/<int:pk>/', views.vehicle_purchase_detail, name='detail'),
+    path('delete/<int:pk>/', views.vehicle_purchase_delete, name='delete'),
+    path('<int:pk>/installments/', views.purchase_installments_list, name='installments'),
+], 'vehicle_purchase')
 
 # Traffic Violation Penalty URL patterns
 traffic_violation_penalty_patterns = ([
@@ -188,6 +198,7 @@ urlpatterns = [
     path('vehicle-maintenance-type/', include(vehicle_maintanance_type_patterns)),
     path('vehicle-maintenance/', include(vehicle_maintenance_patterns)),
     path('vehicle-accident/', include(vehicle_accident_patterns)),
+    path('vehicle-purchase/', include(vehicle_purchase_patterns)),
     path('vehicle-installment/', include(vehicle_installment_patterns)),
     path('uniform/', include(uniform_patterns)),
     path('uniform-stock/', include(uniform_stock_patterns)),

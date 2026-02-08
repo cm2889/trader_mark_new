@@ -6,7 +6,7 @@ from .models import (
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
     Visitor, TrafficViolationPenalty, InsuranceClaim, Uniform, UniformStock,
-    UniformIssuance, UniformClearance, VehicleMaintananceType
+    UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase
 )
 
 @admin.register(WebImages)
@@ -161,9 +161,16 @@ class TrafficViolationPenaltyAdmin(admin.ModelAdmin):
 
 @admin.register(VehicleInstallment)
 class VehicleInstallmentAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'installment_no', 'amount', 'due_date', 'is_paid')
-    search_fields = ('vehicle__plate_no',)
+    list_display = ('purchase', 'installment_no', 'amount', 'due_date', 'is_paid')
+    search_fields = ('purchase__vehicle__plate_no',)
     list_filter = ('is_paid', 'due_date')
+
+
+@admin.register(VehiclePurchase)
+class VehiclePurchaseAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'vehicle', 'purchase_date', 'total_amount', 'down_payment',)
+    search_fields = ('employee__first_name', 'employee__last_name', 'vehicle__plate_no')
+    list_filter = ('payment_method', 'payment_period', 'purchase_date')
 
 @admin.register(VehicleMaintenance)
 class VehicleMaintenanceAdmin(admin.ModelAdmin):
