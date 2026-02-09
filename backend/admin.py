@@ -6,7 +6,7 @@ from .models import (
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
     Visitor, TrafficViolationPenalty, InsuranceClaim, Uniform, UniformStock,
-    UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase
+    UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase, UniformStockTransactionLog 
 )
 
 @admin.register(WebImages)
@@ -213,6 +213,13 @@ class UniformClearanceAdmin(admin.ModelAdmin):
     list_display = ('employee', 'uniform_stock', 'quantity', 'status', 'clearance_date')
     search_fields = ('employee__first_name', 'employee__last_name', 'uniform_stock__uniform__name')
     list_filter = ('status', 'clearance_date', 'is_active')
+
+@admin.register(UniformStockTransactionLog)
+class UniformStockTransactionLogAdmin(admin.ModelAdmin):
+    list_display = ('uniform_stock', 'transaction_type', 'quantity_change', 'quantity_before', 'quantity_after',)
+    search_fields = ('uniform_stock__uniform__name',)
+    list_filter = ('transaction_type', 'created_at')
+
 
 @admin.register(VehicleMaintananceType)
 class VehicleMaintananceTypeAdmin(admin.ModelAdmin):

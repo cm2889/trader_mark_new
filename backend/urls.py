@@ -134,6 +134,7 @@ uniform_patterns = ([
     path('create/', views.UniformCreateView.as_view(), name='create'),
     path('update/<int:pk>/', views.UniformUpdateView.as_view(), name='update'),
     path('delete/<int:pk>/', views.uniform_delete, name='delete'),
+    path('report/', views.uniform_report, name='report'),
 ], 'uniform')
 
 # Uniform Stock URL patterns

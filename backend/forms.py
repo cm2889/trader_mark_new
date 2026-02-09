@@ -6,7 +6,8 @@ from backend.models import (
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment, VehiclePurchase,
     VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType, 
-    Uniform, UniformStock, UniformIssuance, UniformClearance
+    Uniform, UniformStock, UniformIssuance, UniformClearance, 
+    UniformStockTransactionLog, 
 )
 
 TAILWIND_TEXT = (
@@ -257,12 +258,6 @@ class UniformIssuanceForm(forms.ModelForm):
         empty_label="Select Uniform Stock",
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
     ) 
-
-    # issued_by = forms.ModelChoiceField(
-    #     queryset=User.objects.filter(is_active=True),
-    #     empty_label="Select Issued By",
-    #     widget=forms.Select(attrs={'class': TAILWIND_SELECT})
-    # ) 
 
     status = forms.ChoiceField(
         choices=[(

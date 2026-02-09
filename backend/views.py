@@ -25,6 +25,8 @@ from io import BytesIO
 from django.utils.text import slugify 
 from django.utils import timezone
 from datetime import datetime 
+from django.db.models import Sum, Count, Q, F
+from backend.models import UniformStockTransactionLog
 
 from backend.models import (
     WebImages, SiteSettings, LoginLog, UserMenuPermission, 
@@ -1362,6 +1364,186 @@ class EmployeeDetailView(DetailView):
         context['vehicle_assignments'] = VehicleAssign.objects.filter(employee=employee, deleted=False).select_related('vehicle').order_by('-created_at')
 
         return context
+
+# =============================================
+# Uniform Report View
+# =============================================
+@login_required
+def uniform_report(request):
+    if not checkUserPermission(request, "can_view", "/backend/uniform/report/"):
+        messages.error(request, "You do not have permission to view uniform reports.")
+        return render(request, "403.html", status=403) 
+    # Filter parameters
+    employee_id = request.GET.get('employee', '')
+    uniform_id = request.GET.get('uniform', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
+    # Employee-wise uniform issuance summary
+    employee_filter = Q(is_active=True)
+    if employee_id:
+        employee_filter &= Q(employee_id=employee_id)
+    if date_from:
+        employee_filter &= Q(issued_date__gte=date_from)
+    if date_to:
+        employee_filter &= Q(issued_date__lte=date_to)
+    if uniform_id:
+        employee_filter &= Q(uniform_stock__uniform_id=uniform_id)
+
+    employee_report = UniformIssuance.objects.filter(employee_filter).values(
+        'employee__id',
+        'employee__hr_file_no',
+        'employee__first_name',
+        'employee__last_name',
+        'uniform_stock__uniform__name',
+        'uniform_stock__uniform__uniform_type',
+        'uniform_stock__size',
+        'status'
+    ).annotate(
+        total_quantity=Sum('quantity')
+    ).order_by('employee__first_name', 'uniform_stock__uniform__name')
+
+    # Group by employee for better display
+    employees_data = {}
+    for record in employee_report:
+        emp_id = record['employee__id']
+        if emp_id not in employees_data:
+            employees_data[emp_id] = {
+                'employee_id': emp_id,
+                'hr_file_no': record['employee__hr_file_no'],
+                'full_name': f"{record['employee__first_name']} {record['employee__last_name']}",
+                'uniforms': [],
+                'total_issued': 0,
+                'total_active': 0,
+                'total_returned': 0,
+                'total_lost': 0,
+                'total_damaged': 0,
+            }
+        
+        uniform_detail = {
+            'name': record['uniform_stock__uniform__name'],
+            'type': record['uniform_stock__uniform__uniform_type'],
+            'size': record['uniform_stock__size'],
+            'quantity': record['total_quantity'],
+            'status': record['status'],
+        }
+        employees_data[emp_id]['uniforms'].append(uniform_detail)
+        employees_data[emp_id]['total_issued'] += record['total_quantity']
+        
+        if record['status'] == 'ISSUED':
+            employees_data[emp_id]['total_active'] += record['total_quantity']
+        elif record['status'] == 'RETURNED':
+            employees_data[emp_id]['total_returned'] += record['total_quantity']
+        elif record['status'] == 'LOST':
+            employees_data[emp_id]['total_lost'] += record['total_quantity']
+        elif record['status'] == 'DAMAGED':
+            employees_data[emp_id]['total_damaged'] += record['total_quantity']
+
+    # Overall statistics
+    total_uniforms_issued = UniformIssuance.objects.filter(
+        is_active=True
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+
+    total_uniforms_active = UniformIssuance.objects.filter(
+        is_active=True, status='ISSUED'
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+
+    total_uniforms_returned = UniformClearance.objects.filter(
+        is_active=True, status='RETURNED'
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+
+    total_uniforms_lost = UniformIssuance.objects.filter(
+        is_active=True, status='LOST'
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+
+    total_uniforms_damaged = UniformIssuance.objects.filter(
+        is_active=True, status='DAMAGED'
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+
+    # Stock summary by uniform type
+    stock_summary = UniformStock.objects.filter(
+        is_active=True
+    ).values(
+        'uniform__name',
+        'uniform__uniform_type',
+        'size'
+    ).annotate(
+        available_quantity=Sum('quantity')
+    ).order_by('uniform__name', 'size')
+
+    # Group stock by uniform
+    stock_by_uniform = {}
+    total_stock_quantity = 0
+    for stock in stock_summary:
+        uniform_name = stock['uniform__name']
+        if uniform_name not in stock_by_uniform:
+            stock_by_uniform[uniform_name] = {
+                'name': uniform_name,
+                'type': stock['uniform__uniform_type'],
+                'sizes': [],
+                'total_qty': 0
+            }
+        stock_by_uniform[uniform_name]['sizes'].append({
+            'size': stock['size'],
+            'quantity': stock['available_quantity']
+        })
+        stock_by_uniform[uniform_name]['total_qty'] += stock['available_quantity']
+        total_stock_quantity += stock['available_quantity']
+
+    # Recent transactions
+    transaction_filter = Q()
+    if date_from:
+        transaction_filter &= Q(created_at__date__gte=date_from)
+    if date_to:
+        transaction_filter &= Q(created_at__date__lte=date_to)
+    if uniform_id:
+        transaction_filter &= Q(uniform_stock__uniform_id=uniform_id)
+    if employee_id:
+        transaction_filter &= Q(
+            Q(issuance__employee_id=employee_id) | Q(clearance__employee_id=employee_id)
+        )
+
+    recent_transactions = UniformStockTransactionLog.objects.filter(
+        transaction_filter
+    ).select_related(
+        'uniform_stock__uniform',
+        'issuance__employee',
+        'clearance__employee',
+        'created_by'
+    ).order_by('-created_at')[:50]
+
+    # Uniform type distribution
+    uniform_type_distribution = UniformIssuance.objects.filter(
+        is_active=True, status='ISSUED'
+    ).values(
+        'uniform_stock__uniform__uniform_type'
+    ).annotate(
+        count=Sum('quantity')
+    ).order_by('-count')
+
+    context = {
+        'employees_data': list(employees_data.values()),
+        'total_employees': len(employees_data),
+        'total_uniforms_issued': total_uniforms_issued,
+        'total_uniforms_active': total_uniforms_active,
+        'total_uniforms_returned': total_uniforms_returned,
+        'total_uniforms_lost': total_uniforms_lost,
+        'total_uniforms_damaged': total_uniforms_damaged,
+        'stock_by_uniform': list(stock_by_uniform.values()),
+        'total_stock_quantity': total_stock_quantity,
+        'recent_transactions': recent_transactions,
+        'uniform_type_distribution': uniform_type_distribution,
+        'all_employees': Employee.objects.filter(is_active=True).order_by('first_name', 'last_name'),
+        'all_uniforms': Uniform.objects.filter(is_active=True).order_by('name'),
+        'filters': {
+            'employee': employee_id,
+            'uniform': uniform_id,
+            'date_from': date_from,
+            'date_to': date_to,
+        }
+    } 
+
+    return render(request, "uniform/report.html", context)
 
 # ============================================= 
 # Uniform ListView 

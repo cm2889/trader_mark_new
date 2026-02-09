@@ -499,11 +499,7 @@ class UniformClearance(models.Model):
     )
 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='uniform_clearances')
-    uniform_stock = models.ForeignKey(
-        UniformStock,
-        on_delete=models.PROTECT,
-        related_name='clearances'
-    )
+    uniform_stock = models.ForeignKey(UniformStock, on_delete=models.PROTECT, related_name='clearances' )
 
     quantity = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='RETURNED')
@@ -523,6 +519,40 @@ class UniformClearance(models.Model):
 
     class Meta:
         ordering = ['-clearance_date', '-created_at']
+
+
+# ========================================================
+# Uniform Logs 
+# ========================================================
+class UniformStockTransactionLog(models.Model):
+
+    TRANSACTION_TYPE_CHOICES = (
+        ('ISSUE', 'Issued'),
+        ('RETURN', 'Returned'),
+        ('LOST', 'Lost'),
+        ('DAMAGED', 'Damaged'),
+        ('ADJUST', 'Manual Adjustment'),
+        ('ADD', 'Stock Added'),
+    )
+
+    uniform_stock = models.ForeignKey(UniformStock, on_delete=models.PROTECT, related_name='transaction_logs')
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPE_CHOICES)
+    
+    quantity_change = models.IntegerField()
+
+    quantity_before = models.PositiveIntegerField()
+    quantity_after = models.PositiveIntegerField()
+
+    issuance = models.ForeignKey(UniformIssuance, on_delete=models.SET_NULL, null=True, blank=True)
+    clearance = models.ForeignKey(UniformClearance, on_delete=models.SET_NULL, null=True, blank=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
 
 
 class Employment(models.Model):

@@ -483,6 +483,22 @@
       "is_sub_child_menu": true,
       "is_active": true
     }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 505,
+    "fields": {
+      "module_name": "Uniform Management",
+      "menu_name": "Uniform Report",
+      "menu_url": "/backend/uniform/report/",
+      "menu_icon": "fa-solid fa-chart-bar",
+      "menu_description": "View uniform issuance and clearance reports.",
+      "parent": 18,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    } 
   }
 ]
 
