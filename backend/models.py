@@ -14,6 +14,8 @@ from django.utils import timezone
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
+from django.utils.text import slugify
+
 
 from auditlog.registry import auditlog
 
@@ -403,7 +405,10 @@ class UniformStock(models.Model):
         ('XL', 'Extra Large'),
         ('XXL', 'Double Extra Large'),
     )
+
+    code = models.CharField(max_length=50, unique=True) 
     uniform = models.ForeignKey(Uniform, on_delete=models.CASCADE, related_name='stocks')
+
     size = models.CharField(max_length=20, choices=SIZE_CHOICES)
     quantity = models.PositiveIntegerField(default=0)
 
@@ -415,8 +420,28 @@ class UniformStock(models.Model):
     is_active = models.BooleanField(default=True)
     deleted = models.BooleanField(default=False) 
 
+    def save(self, *args, **kwargs):
+        if not self.code:
+            # Short, clean uniform name
+            uniform_name = slugify(self.uniform.name).upper().replace('-', '')
+
+            # Example: UNI-SHIRT-OXFORD-M
+            base_code = f"UNI-{self.uniform.uniform_type}-{uniform_name}-{self.size}"
+
+            code = base_code
+            counter = 1
+
+            # Ensure uniqueness
+            while UniformStock.objects.filter(code=code).exists():
+                counter += 1
+                code = f"{base_code}-{counter}"
+
+            self.code = code
+
+        super().save(*args, **kwargs) 
+
     def __str__(self):
-        return f"{self.uniform.name} - Size: {self.size} - Qty: {self.quantity}"
+        return f"{self.uniform.name} - Size: {self.size} - Qty: {self.quantity} ({self.code})"
     
     class Meta:
         ordering = ['uniform__name', 'size'] 
@@ -792,7 +817,7 @@ class VehicleInstallment(models.Model):
         ('OVERDUE', 'Overdue'),
         ('CANCELLED', 'Cancelled'),
     ) 
-    
+
     purchase = models.ForeignKey(VehiclePurchase, on_delete=models.CASCADE, related_name='installments')
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='CASH')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')

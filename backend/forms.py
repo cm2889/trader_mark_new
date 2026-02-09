@@ -240,7 +240,7 @@ class UniformStockForm(forms.ModelForm):
 
     class Meta:
         model = UniformStock
-        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        exclude = ['code', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'quantity': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter quantity'}),
         }
@@ -299,11 +299,6 @@ class UniformClearanceForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
     ) 
 
-    # cleared_by = forms.ModelChoiceField(
-    #     queryset=User.objects.filter(is_active=True),
-    #     empty_label="Select Cleared By",
-    #     widget=forms.Select(attrs={'class': TAILWIND_SELECT})
-    # ) 
 
     status = forms.ChoiceField(
         choices=[(

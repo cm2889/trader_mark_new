@@ -65,6 +65,7 @@
                     <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Code</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Uniform</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Type</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Size</th>
@@ -77,6 +78,7 @@
                         {% for stock in uniform_stocks %}
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
+                            <td class="px-6 py-4 text-sm font-mono text-[var(--text-color)]">{{ stock.code }}</td>
                             <td class="px-6 py-4 text-sm font-medium text-[var(--text-color)]">{{ stock.uniform.name }}</td>
                             <td class="px-6 py-4 text-sm text-[var(--text-color)]">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
