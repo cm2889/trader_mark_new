@@ -1309,6 +1309,200 @@ class EmployeeListView(ListView):
         return context 
 
 
+@login_required 
+def employee_profile(request, pk):
+    """
+    Comprehensive employee profile view showing all details and history
+    """
+    if not checkUserPermission(request, "can_view", "/backend/employee/"):
+        messages.error(request, "You do not have permission to view employee profile.")
+        return render(request, "403.html", status=403)
+
+    employee = get_object_or_404(Employee, pk=pk, is_active=True)
+    
+    # Basic Employee Information
+    employments = Employment.objects.filter(employee=employee, is_active=True).order_by('-created_at')
+    employment_history = Employment.objects.filter(employee=employee).order_by('-created_at')
+    
+    # Passport Information
+    passports = Passport.objects.filter(employee=employee, is_active=True).order_by('-created_at')
+    passport_history = Passport.objects.filter(employee=employee).order_by('-created_at')
+    
+    # Driving License Information
+    driving_licenses = DrivingLicense.objects.filter(employee=employee, is_active=True).order_by('-created_at')
+    driving_license_history = DrivingLicense.objects.filter(employee=employee).order_by('-created_at')
+    
+    # Health Insurance & Contact
+    health_insurance = HealthInsurance.objects.filter(employee=employee, is_active=True).first()
+    contact = Contact.objects.filter(employee=employee, is_active=True).first()
+    address = Address.objects.filter(employee=employee, is_active=True).first()
+    
+    # ============================================
+    # UNIFORM STATISTICS & HISTORY
+    # ============================================
+    
+    # Total uniforms issued to employee
+    uniform_issuances = UniformIssuance.objects.filter(
+        employee=employee, is_active=True
+    ).select_related('uniform_stock__uniform').order_by('-issued_date')
+    
+    # Count uniforms by status
+    total_uniforms_issued = uniform_issuances.aggregate(total=Sum('quantity'))['total'] or 0
+    total_uniforms_active = uniform_issuances.filter(status='ISSUED').aggregate(total=Sum('quantity'))['total'] or 0
+    total_uniforms_returned = uniform_issuances.filter(status='RETURNED').aggregate(total=Sum('quantity'))['total'] or 0
+    total_uniforms_lost = uniform_issuances.filter(status='LOST').aggregate(total=Sum('quantity'))['total'] or 0
+    total_uniforms_damaged = uniform_issuances.filter(status='DAMAGED').aggregate(total=Sum('quantity'))['total'] or 0
+    
+    # Uniform breakdown by type
+    uniform_by_type = uniform_issuances.values(
+        'uniform_stock__uniform__name',
+        'uniform_stock__uniform__uniform_type',
+        'uniform_stock__size',
+        'status'
+    ).annotate(
+        total_qty=Sum('quantity')
+    ).order_by('uniform_stock__uniform__name')
+    
+    # Uniform clearance history
+    uniform_clearances = UniformClearance.objects.filter(
+        employee=employee, is_active=True
+    ).select_related('uniform_stock__uniform').order_by('-clearance_date')
+    
+    # ============================================
+    # VEHICLE STATISTICS & HISTORY
+    # ============================================
+    
+    # Current vehicle assignment
+    current_vehicle_assign = VehicleAssign.objects.filter(
+        employee=employee, is_active=True, deleted=False
+    ).select_related('vehicle').first()
+    
+    # All vehicle assignments history
+    vehicle_assignments = VehicleAssign.objects.filter(
+        employee=employee, deleted=False
+    ).select_related('vehicle').order_by('-assigned_date')
+    
+    total_vehicles_assigned = vehicle_assignments.count()
+    
+    # Vehicle handover history (both from and to)
+    vehicle_handovers_from = VehicleHandover.objects.filter(
+        from_employee=employee, is_active=True
+    ).select_related('vehicle', 'to_employee').order_by('-handover_date')
+    
+    vehicle_handovers_to = VehicleHandover.objects.filter(
+        to_employee=employee, is_active=True
+    ).select_related('vehicle', 'from_employee').order_by('-handover_date')
+    
+    # Vehicle purchases by employee
+    vehicle_purchases = VehiclePurchase.objects.filter(
+        employee=employee, is_active=True
+    ).select_related('vehicle').order_by('-purchase_date')
+    
+    total_vehicle_purchases = vehicle_purchases.count()
+    total_purchase_amount = vehicle_purchases.aggregate(total=Sum('total_amount'))['total'] or 0
+    
+    # Vehicle installments
+    vehicle_installments = VehicleInstallment.objects.filter(
+        purchase__employee=employee, is_active=True
+    ).select_related('purchase__vehicle').order_by('-due_date')
+    
+    total_installments = vehicle_installments.count()
+    paid_installments = vehicle_installments.filter(is_paid=True).count()
+    pending_installments = vehicle_installments.filter(is_paid=False).count()
+    total_installment_amount = vehicle_installments.aggregate(total=Sum('amount'))['total'] or 0
+    paid_installment_amount = vehicle_installments.filter(is_paid=True).aggregate(total=Sum('amount'))['total'] or 0
+    pending_installment_amount = total_installment_amount - (paid_installment_amount or 0)
+    
+    # Traffic violations (through assigned vehicles)
+    traffic_violations = TrafficViolation.objects.filter(
+        vehicle__vehicle_assignments__employee=employee,
+        vehicle__vehicle_assignments__is_active=True
+    ).select_related('vehicle', 'violation_type').order_by('-violation_date')
+    
+    total_traffic_violations = traffic_violations.count()
+    
+    # Vehicle maintenance history
+    vehicle_maintenances = VehicleMaintenance.objects.filter(
+        vehicle__vehicle_assignments__employee=employee,
+        vehicle__vehicle_assignments__is_active=True
+    ).select_related('vehicle', 'maintenance_type').order_by('-maintenance_date')
+    
+    total_maintenance_cost = vehicle_maintenances.aggregate(total=Sum('cost'))['total'] or 0
+    
+    # Vehicle accidents
+    vehicle_accidents = VehicleAccident.objects.filter(
+        vehicle__vehicle_assignments__employee=employee,
+        vehicle__vehicle_assignments__is_active=True
+    ).select_related('vehicle').order_by('-accident_date')
+    
+    total_accidents = vehicle_accidents.count()
+    total_accident_damage = vehicle_accidents.aggregate(total=Sum('damage_cost'))['total'] or 0
+
+    context = {
+        'employee': employee,
+        
+        # Employment Details
+        'employments': employments,
+        'employment_history': employment_history,
+        'current_employment': employments.first() if employments.exists() else None,
+        
+        # Passport & License
+        'passports': passports,
+        'passport_history': passport_history,
+        'current_passport': passports.first() if passports.exists() else None,
+        'driving_licenses': driving_licenses,
+        'driving_license_history': driving_license_history,
+        'current_license': driving_licenses.first() if driving_licenses.exists() else None,
+        
+        # Health & Contact
+        'health_insurance': health_insurance,
+        'contact': contact,
+        'address': address,
+        
+        # Uniform Statistics
+        'uniform_stats': {
+            'total_issued': total_uniforms_issued,
+            'active': total_uniforms_active,
+            'returned': total_uniforms_returned,
+            'lost': total_uniforms_lost,
+            'damaged': total_uniforms_damaged,
+        },
+        'uniform_issuances': uniform_issuances,
+        'uniform_by_type': uniform_by_type,
+        'uniform_clearances': uniform_clearances,
+        
+        # Vehicle Statistics
+        'vehicle_stats': {
+            'total_assigned': total_vehicles_assigned,
+            'current_vehicle': current_vehicle_assign.vehicle if current_vehicle_assign else None,
+            'total_purchases': total_vehicle_purchases,
+            'total_purchase_amount': total_purchase_amount,
+            'total_violations': total_traffic_violations,
+            'total_accidents': total_accidents,
+            'total_accident_damage': total_accident_damage,
+            'total_maintenance_cost': total_maintenance_cost,
+        },
+        'current_vehicle_assign': current_vehicle_assign,
+        'vehicle_assignments': vehicle_assignments,
+        'vehicle_handovers_from': vehicle_handovers_from,
+        'vehicle_handovers_to': vehicle_handovers_to,
+        'vehicle_purchases': vehicle_purchases,
+        'vehicle_installments': vehicle_installments,
+        'installment_stats': {
+            'total': total_installments,
+            'paid': paid_installments,
+            'pending': pending_installments,
+            'total_amount': total_installment_amount,
+            'paid_amount': paid_installment_amount or 0,
+            'pending_amount': pending_installment_amount,
+        },
+        'traffic_violations': traffic_violations,
+        'vehicle_maintenances': vehicle_maintenances,
+        'vehicle_accidents': vehicle_accidents,
+    }
+
+    return render(request, 'employee/profile.html', context)
+
 
 @login_required
 def employee_delete(request, pk):

@@ -23,6 +23,7 @@ employee_patterns = ([
     path('update/<int:pk>/', views.employee_update, name='update'),
     path('delete/<int:pk>/', views.employee_delete, name='delete'),
     path('detail/<int:pk>/', views.EmployeeDetailView.as_view(), name='detail'),
+    path('profile/<int:pk>/', views.employee_profile, name='profile'),
 ], 'employee')
 
 vehicle_assign_patterns = ([
