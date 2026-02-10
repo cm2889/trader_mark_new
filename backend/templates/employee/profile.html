@@ -11,9 +11,10 @@
 {% endblock %}
 
 {% block header_actions %}
-<a href="{% url 'employee:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+<a href="{% url 'employee:list' %}"
+    class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
+        <path d="M19 12H5M12 19l-7-7 7-7" />
     </svg>
     <span>Back to List</span>
 </a>
@@ -566,11 +567,13 @@
             </div>
             <div class="bg-white p-4 rounded-lg ">
                 <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Istemara Expiry</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.istemara_expiry_date|date:"d M, Y" }}</div>
+                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.istemara_expiry_date|date:"d
+                    M, Y" }}</div>
             </div>
             <div class="bg-white p-4 rounded-lg ">
                 <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Insurance Expiry</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.insurance_expiry_date|date:"d M, Y" }}</div>
+                <div class="text-black text-lg font-bold">{{
+                    current_vehicle_assign.vehicle.insurance_expiry_date|date:"d M, Y" }}</div>
             </div>
         </div>
     </div>
