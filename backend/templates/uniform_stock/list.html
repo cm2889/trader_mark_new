@@ -20,7 +20,10 @@
                 <h1 class="text-2xl font-semibold text-[var(--text-color)]">Uniform Stock</h1>
                 <p class="text-sm text-[var(--text-light-color)] mt-1">Manage all uniform stock records</p>
             </div>
-            <div class="mt-4 sm:mt-0">
+            <div class="mt-4 sm:mt-0 flex items-center gap-3">
+                <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
                 <a href="{% url 'uniform_stock:create' %}" 
                    class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
                     <i class="fas fa-plus mr-2"></i>Add Stock
@@ -28,34 +31,40 @@
             </div>
         </div>
 
-        <!-- Search/Filter Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
-            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Uniform Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Uniform</label>
-                    <select name="uniform" class="select2-items h-11 w-full appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm ring-1 ring-[var(--border-color)] outline-none focus:ring-[var(--primary-color)]/40">
-                        <option value="">All Uniforms</option>
-                        {% for uniform in all_uniforms %}
-                        <option value="{{ uniform.id }}" {% if request.GET.uniform == uniform.id|stringformat:"s" %}selected{% endif %}>
-                            {{ uniform.name }} ({{ uniform.get_uniform_type_display }})
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Filter Buttons -->
-                <div class="flex items-end gap-3 md:col-span-2">
-                    <button type="submit" 
-                            class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                        <i class="fas fa-search mr-2"></i>Search
+        <!-- Filter Modal -->
+        <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
+            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
+                <!-- Header -->
+                <div class="flex items-center justify-between p-4 border-b">
+                    <h3 class="text-lg font-semibold">Filter Uniform Stock</h3>
+                    <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
-                    <a href="{% url 'uniform_stock:list' %}" 
-                       class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-times mr-2"></i>Clear
-                    </a>
                 </div>
-            </form>
+                <!-- Body with form -->
+                <form method="get">
+                    <div class="p-6">
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Uniform</label>
+                            <select name="uniform" class="select2-items h-11 w-full appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm ring-1 ring-[var(--border-color)] outline-none focus:ring-[var(--primary-color)]/40">
+                                <option value="">All Uniforms</option>
+                                {% for uniform in all_uniforms %}
+                                <option value="{{ uniform.id }}" {% if request.GET.uniform == uniform.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ uniform.name }} ({{ uniform.get_uniform_type_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Footer -->
+                    <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
+                        <a href="{% url 'uniform_stock:list' %}" class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">Filter</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Table Section -->
@@ -219,8 +228,27 @@
 {% block extra_js %}
  <script>
   $(document).ready(function () {
-    $('.select2-items').select2();
+    $('.select2-items').select2({
+        dropdownParent: $('#filterModal')
+    });
   });
 
+  function openFilterModal() {
+      document.getElementById('filterModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+  }
+
+  function closeFilterModal(event) {
+      if (!event || event.target.id === 'filterModal') {
+          document.getElementById('filterModal').classList.add('hidden');
+          document.body.style.overflow = 'auto';
+      }
+  }
+
+  document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+          closeFilterModal();
+      }
+  });
 </script>
 {% endblock %}

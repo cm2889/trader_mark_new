@@ -20,80 +20,100 @@
                 <h1 class="text-2xl font-semibold text-[var(--text-color)]">Employees</h1>
                 <p class="text-sm text-[var(--text-light-color)] mt-1">Manage all employee records</p>
             </div>
-            <div class="mt-4 sm:mt-0">
+            <div class="mt-4 sm:mt-0 flex gap-3">
+                <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
                 <a href="{% url 'employee:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
                     <i class="fas fa-plus mr-2"></i>Add Employee
                 </a>
             </div>
         </div>
 
-        <!-- Search/Filter Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
-            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <!-- Name Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Name</label>
-                    <select name="name" class="select2-filter w-full">
-                        <option value="">All Employees</option>
-                        {% for emp in all_employees %}
-                        <option value="{{ emp.id }}" {% if request.GET.name == emp.id|stringformat:"s" %}selected{% endif %}>{{ emp.full_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- QID No Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID No</label>
-                    <select name="qid_no" class="select2-filter w-full">
-                        <option value="">All QID</option>
-                        {% for emp in all_employees %}
-                        <option value="{{ emp.qid_no }}" {% if request.GET.qid_no == emp.qid_no %}selected{% endif %}>{{ emp.qid_no }} - {{ emp.full_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- HR File No Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">HR File No</label>
-                    <select name="hr_file_no" class="select2-filter w-full">
-                        <option value="">All HR Files</option>
-                        {% for emp in all_employees %}
-                        <option value="{{ emp.hr_file_no }}" {% if request.GET.hr_file_no == emp.hr_file_no %}selected{% endif %}>{{ emp.hr_file_no }} - {{ emp.full_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Nationality Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Nationality</label>
-                    <select name="nationality" class="select2-filter w-full">
-                        <option value="">All Nationalities</option>
-                        {% for nat in nationalities %}
-                        <option value="{{ nat.id }}" {% if request.GET.nationality == nat.id|stringformat:"s" %}selected{% endif %}>{{ nat.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Gender Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Gender</label>
-                    <select name="gender" class="select2-filter w-full">
-                        <option value="">All Genders</option>
-                        <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Male</option>
-                        <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Female</option>
-                    </select>
-                </div>
-
-                <!-- Filter Buttons -->
-                <div class="md:col-span-2 lg:col-span-5 flex items-center gap-3 pt-2">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                        <i class="fas fa-search mr-2"></i>Search
+        <!-- Filter Modal -->
+        <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
+            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
+                    <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Employees</h3>
+                    <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
-                    <a href="{% url 'employee:list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-times mr-2"></i>Clear
-                    </a>
                 </div>
-            </form>
+
+                <!-- Modal Body -->
+                <form method="get" id="filterForm">
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Name Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Name</label>
+                                <select name="name" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Employees</option>
+                                    {% for emp in all_employees %}
+                                    <option value="{{ emp.id }}" {% if request.GET.name == emp.id|stringformat:"s" %}selected{% endif %}>{{ emp.full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- QID No Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">QID No</label>
+                                <select name="qid_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All QID</option>
+                                    {% for emp in all_employees %}
+                                    <option value="{{ emp.qid_no }}" {% if request.GET.qid_no == emp.qid_no %}selected{% endif %}>{{ emp.qid_no }} - {{ emp.full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- HR File No Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">HR File No</label>
+                                <select name="hr_file_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All HR Files</option>
+                                    {% for emp in all_employees %}
+                                    <option value="{{ emp.hr_file_no }}" {% if request.GET.hr_file_no == emp.hr_file_no %}selected{% endif %}>{{ emp.hr_file_no }} - {{ emp.full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Nationality Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Nationality</label>
+                                <select name="nationality" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Nationalities</option>
+                                    {% for nat in nationalities %}
+                                    <option value="{{ nat.id }}" {% if request.GET.nationality == nat.id|stringformat:"s" %}selected{% endif %}>{{ nat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Gender Filter -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Gender</label>
+                                <select name="gender" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Genders</option>
+                                    <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Male</option>
+                                    <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Female</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
+                        <a href="{% url 'employee:list' %}" class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset
+                        </a>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                            Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Table Section -->
@@ -118,15 +138,17 @@
                                 {{ employee.hr_file_no }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 bg-[var(--primary-color)] rounded-full flex items-center justify-center text-white font-medium">
-                                        {{ employee.first_name|slice:":1"|upper }}
+                                <a href="{% url "employee:profile" employee.id %}" class="flex items-center gap-3 text-sm text-[var(--text-color)] hover:underline">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-[var(--primary-color)] rounded-full flex items-center justify-center text-white font-medium">
+                                            {{ employee.first_name|slice:":1"|upper }}
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.full_name }}</p>
+                                            <p class="text-xs text-[var(--text-light-color)]">{{ employee.user.email|default:employee.user.username }}</p>
+                                        </div>
                                     </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.full_name }}</p>
-                                        <p class="text-xs text-[var(--text-light-color)]">{{ employee.user.email|default:employee.user.username }}</p>
-                                    </div>
-                                </div>
+                                </a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
                                 {{ employee.qid_no }}
@@ -352,7 +374,21 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeDeleteModal();
+            closeFilterModal();
         }
     });
+
+    // Filter Modal Functions
+    function openFilterModal() {
+        document.getElementById('filterModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFilterModal(event) {
+        if (!event || event.target.id === 'filterModal') {
+            document.getElementById('filterModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
 </script>
 {% endblock %}

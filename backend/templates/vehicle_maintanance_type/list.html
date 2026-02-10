@@ -20,7 +20,10 @@
                 <h1 class="text-2xl font-semibold text-[var(--text-color)]">Vehicle Maintenance Types</h1>
                 <p class="text-sm text-[var(--text-light-color)] mt-1">Manage all vehicle maintenance type records</p>
             </div>
-            <div class="mt-4 sm:mt-0">
+            <div class="mt-4 sm:mt-0 flex gap-3">
+                <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
                 <a href="{% url 'vehicle_maintanance_type:create' %}" 
                    class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
                     <i class="fas fa-plus mr-2"></i>Add Maintenance Type
@@ -28,32 +31,35 @@
             </div>
         </div>
 
-        <!-- Search/Filter Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
-            <form method="get" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Name Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Maintenance Type Name</label>
-                    <select name="name" class="select2-items w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="" selected>All Maintenance Types</option>
-                        {% for mt in all_maintenance_types %}
-                            <option value="{{ mt.name }}" {% if request.GET.name == mt.name %}selected{% endif %}>{{ mt.name }}</option>
-                        {% endfor %} 
-                    </select>
-                </div>
-
-                <!-- Filter Buttons -->
-                <div class="flex items-end gap-3">
-                    <button type="submit" 
-                            class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                        <i class="fas fa-search mr-2"></i>Search
+        <!-- Filter Modal -->
+        <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
+            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
+                    <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Maintenance Types</h3>
+                    <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
-                    <a href="{% url 'vehicle_maintanance_type:list' %}" 
-                       class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-times mr-2"></i>Clear
-                    </a>
                 </div>
-            </form>
+                <form method="get" id="filterForm">
+                    <div class="p-6">
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Maintenance Type Name</label>
+                            <select name="name" class="select2-items w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="" selected>All Maintenance Types</option>
+                                {% for mt in all_maintenance_types %}
+                                    <option value="{{ mt.name }}" {% if request.GET.name == mt.name %}selected{% endif %}>{{ mt.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
+                        <a href="{% url 'vehicle_maintanance_type:list' %}" class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">Reset</a>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">Filter</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Table Section -->

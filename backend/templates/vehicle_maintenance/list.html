@@ -20,42 +20,61 @@
             <h1 class="text-3xl font-bold text-[var(--text-color)]">Vehicle Maintenance</h1>
             <p class="text-[var(--text-light-color)] mt-1">Manage vehicle maintenance records</p>
         </div>
-        <a href="{% url 'vehicle_maintenance:create' %}" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
-            <i class="fas fa-plus"></i><span>Add Maintenance</span>
-        </a>
+        <div class="flex items-center gap-3">
+            <button onclick="openFilterModal()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm">
+                <i class="fas fa-filter"></i><span>Filter</span>
+            </button>
+            <a href="{% url 'vehicle_maintenance:create' %}" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
+                <i class="fas fa-plus"></i><span>Add Maintenance</span>
+            </a>
+        </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <form method="get" class="flex flex-wrap gap-4">
-            <div class="flex-1 min-w-[200px]">
-                <label for="plate_no" class="block text-sm font-medium text-gray-700 mb-2">Plate No</label>
-                <select name="plate_no" id="plate_no" class="select2-filter w-full">
-                    <option value="">All Vehicles</option>
-                    {% for vehicle in all_vehicles %}
-                    <option value="{{ vehicle.plate_no }}" {% if request.GET.plate_no == vehicle.plate_no %}selected{% endif %}>
-                        {{ vehicle.plate_no }} - {{ vehicle.employee.full_name|default:"Unassigned" }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="flex-1 min-w-[200px]">
-                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select name="status" id="status" class="select2-filter w-full">
-                    <option value="">All Status</option>
-                    <option value="PENDING" {% if request.GET.status == 'PENDING' %}selected{% endif %}>Pending</option>
-                    <option value="IN_PROGRESS" {% if request.GET.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
-                    <option value="COMPLETED" {% if request.GET.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
-                </select>
-            </div>
-            <div class="flex items-end gap-2">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
-                    <i class="fas fa-search"></i><span>Search</span>
+    <!-- Filter Modal -->
+    <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
+        <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b">
+                <h3 class="text-lg font-semibold">Filter Vehicle Maintenance</h3>
+                <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
-                <a href="{% url 'vehicle_maintenance:list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium transition-all duration-200">
-                    <i class="fas fa-redo"></i> Reset
-                </a>
             </div>
-        </form>
+            <!-- Body with form -->
+            <form method="get">
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="plate_no" class="block text-sm font-medium text-gray-700 mb-2">Plate No</label>
+                            <select name="plate_no" id="plate_no" class="select2-filter w-full">
+                                <option value="">All Vehicles</option>
+                                {% for vehicle in all_vehicles %}
+                                <option value="{{ vehicle.plate_no }}" {% if request.GET.plate_no == vehicle.plate_no %}selected{% endif %}>
+                                    {{ vehicle.plate_no }} - {{ vehicle.employee.full_name|default:"Unassigned" }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select name="status" id="status" class="select2-filter w-full">
+                                <option value="">All Status</option>
+                                <option value="PENDING" {% if request.GET.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                <option value="IN_PROGRESS" {% if request.GET.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                                <option value="COMPLETED" {% if request.GET.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
+                    <a href="{% url 'vehicle_maintenance:list' %}" class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">Filter</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="mb-4">
@@ -198,8 +217,27 @@
             placeholder: function() {
                 return $(this).find('option:first').text();
             },
-            allowClear: true
+            allowClear: true,
+            dropdownParent: $('#filterModal')
         });
+    });
+
+    function openFilterModal() {
+        document.getElementById('filterModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFilterModal(event) {
+        if (!event || event.target.id === 'filterModal') {
+            document.getElementById('filterModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeFilterModal();
+        }
     });
 </script>
 {% endblock %}

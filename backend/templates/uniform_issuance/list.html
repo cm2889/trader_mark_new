@@ -20,7 +20,10 @@
                 <h1 class="text-2xl font-semibold text-[var(--text-color)]">Uniform Issuances</h1>
                 <p class="text-sm text-[var(--text-light-color)] mt-1">Manage uniform issuance records</p>
             </div>
-            <div class="mt-4 sm:mt-0">
+            <div class="mt-4 sm:mt-0 flex gap-3">
+                <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
                 <a href="{% url 'uniform_issuance:create' %}" 
                    class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
                     <i class="fas fa-plus mr-2"></i>Issue Uniform
@@ -28,34 +31,49 @@
             </div>
         </div>
 
-        <!-- Search/Filter Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
-            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Employee Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employee</label>
-                    <select name="employee" class="select2-items h-11 w-full appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm ring-1 ring-[var(--border-color)] outline-none focus:ring-[var(--primary-color)]/40">
-                        <option value="">All Employees</option>
-                        {% for emp in all_employees %}
-                        <option value="{{ emp.id }}" {% if request.GET.employee == emp.id|stringformat:"s" %}selected{% endif %}>
-                            {{ emp.full_name }}
-                        </option>
-                        {% endfor %}
-                    </select>
+        <!-- Filter Modal -->
+        <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
+            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
+                    <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Uniform Issuances</h3>
+                    <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
 
-                <!-- Filter Buttons -->
-                <div class="flex items-end gap-3 md:col-span-2">
-                    <button type="submit" 
-                            class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                        <i class="fas fa-search mr-2"></i>Search
-                    </button>
-                    <a href="{% url 'uniform_issuance:list' %}" 
-                       class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-times mr-2"></i>Clear
-                    </a>
-                </div>
-            </form>
+                <!-- Modal Body -->
+                <form method="get" id="filterForm">
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 gap-4">
+                            <!-- Employee Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Employee</label>
+                                <select name="employee" class="select2-items w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Employees</option>
+                                    {% for emp in all_employees %}
+                                    <option value="{{ emp.id }}" {% if request.GET.employee == emp.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ emp.full_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
+                        <a href="{% url 'uniform_issuance:list' %}" class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset
+                        </a>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                            Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Table Section -->
@@ -220,6 +238,26 @@
  <script>
   $(document).ready(function () {
     $('.select2-items').select2();
+  });
+
+  // Filter Modal Functions
+  function openFilterModal() {
+      document.getElementById('filterModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+  }
+
+  function closeFilterModal(event) {
+      if (!event || event.target.id === 'filterModal') {
+          document.getElementById('filterModal').classList.add('hidden');
+          document.body.style.overflow = 'auto';
+      }
+  }
+
+  // Close modal on escape key
+  document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+          closeFilterModal();
+      }
   });
 
 </script>
