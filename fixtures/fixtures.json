@@ -499,6 +499,22 @@
       "is_sub_child_menu": true,
       "is_active": true
     } 
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 506,
+    "fields": {
+      "module_name": "Uniform Management",
+      "menu_name": "Uniform Transaction Log",
+      "menu_url": "/backend/uniform/log/",
+      "menu_icon": "fa-solid fa-file-alt",
+      "menu_description": "View uniform transaction logs.",
+      "parent": 18,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    } 
   }
 ]
 

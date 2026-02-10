@@ -1739,6 +1739,75 @@ def uniform_report(request):
 
     return render(request, "uniform/report.html", context)
 
+
+@login_required
+def uniform_log(request):
+    if not checkUserPermission(request, "can_view", "/backend/uniform/log/"):
+        messages.error(request, "You do not have permission to view uniform logs.")
+        return render(request, "403.html", status=403) 
+    
+    # Filter parameters
+    employee_id = request.GET.get('employee', '')
+    uniform_id = request.GET.get('uniform', '')
+    transaction_type = request.GET.get('transaction_type', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
+    # Build query filters
+    filters = Q()
+    
+    if employee_id:
+        filters &= Q(
+            Q(issuance__employee_id=employee_id) | Q(clearance__employee_id=employee_id)
+        )
+    
+    if uniform_id:
+        filters &= Q(uniform_stock__uniform_id=uniform_id)
+    
+    if transaction_type:
+        filters &= Q(transaction_type=transaction_type)
+    
+    if date_from:
+        filters &= Q(created_at__date__gte=date_from)
+    
+    if date_to:
+        filters &= Q(created_at__date__lte=date_to)
+
+    # Get transaction logs
+    transaction_logs = UniformStockTransactionLog.objects.filter(
+        filters
+    ).select_related(
+        'uniform_stock__uniform',
+        'issuance__employee',
+        'clearance__employee',
+        'created_by'
+    ).order_by('-created_at')
+
+    # Pagination
+    page_num = request.GET.get('page', 1)
+    paginator_list, paginator, last_page_number = paginate_data(request, page_num, transaction_logs)
+
+    context = {
+        'transaction_logs': paginator,
+        'paginator': paginator,
+        'paginator_list': paginator_list,
+        'last_page_number': last_page_number,
+        'page_num': page_num,
+        'all_employees': Employee.objects.filter(is_active=True).order_by('first_name', 'last_name'),
+        'all_uniforms': Uniform.objects.filter(is_active=True).order_by('name'),
+        'transaction_types': UniformStockTransactionLog.TRANSACTION_TYPE_CHOICES,
+        'filters': {
+            'employee': employee_id,
+            'uniform': uniform_id,
+            'transaction_type': transaction_type,
+            'date_from': date_from,
+            'date_to': date_to,
+        }
+    }
+
+    return render(request, "uniform/log.html", context)
+
+
 # ============================================= 
 # Uniform ListView 
 # ============================================= 
