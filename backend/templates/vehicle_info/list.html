@@ -40,10 +40,32 @@
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Plate No</label>
                             <select name="plate_no" class="select2-items w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                <option value="">All Vehicles</option>
+                                <option value="">Plate Number</option>
                                 {% for vehicle in all_vehicles %}
                                 <option value="{{ vehicle.plate_no }}" {% if request.GET.plate_no == vehicle.plate_no %}selected{% endif %}>
                                     {{ vehicle.plate_no }}{% if vehicle.current_employee %} - {{ vehicle.current_employee.full_name }}{% else %} - Unassigned{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="engine_no" class="block text-sm font-medium text-[var(--text-color)] mb-2">Engine No</label>
+                            <select name="engine_no" id="engine_no" class="select2-items w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">Engine Number</option>
+                                {% for vehicle in all_vehicles %}
+                                <option value="{{ vehicle.engine_no }}" {% if request.GET.engine_no == vehicle.engine_no %}selected{% endif %}>
+                                    {{ vehicle.engine_no }}{% if vehicle.current_employee %} - {{ vehicle.current_employee.full_name }}{% else %} - Unassigned{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="chassee_no" class="block text-sm font-medium text-[var(--text-color)] mb-2">Chassee No</label>
+                            <select name="chassee_no" id="chassee_no" class="select2-items w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">Chassee Number</option>
+                                {% for vehicle in all_vehicles %}
+                                <option value="{{ vehicle.chassee_no }}" {% if request.GET.chassee_no == vehicle.chassee_no %}selected{% endif %}>
+                                    {{ vehicle.chassee_no }}{% if vehicle.current_employee %} - {{ vehicle.current_employee.full_name }}{% else %} - Unassigned{% endif %}
                                 </option>
                                 {% endfor %}
                             </select>

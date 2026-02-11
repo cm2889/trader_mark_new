@@ -215,5 +215,15 @@
             allowClear: true
         });
     });
+
+    function openFilterModal() {
+        document.getElementById('filterModal').classList.remove('hidden');
+    }
+
+    function closeFilterModal(event) {
+        if (!event || event.target.id === 'filterModal') {
+            document.getElementById('filterModal').classList.add('hidden');
+        }
+    }
 </script>
 {% endblock %}

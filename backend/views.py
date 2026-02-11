@@ -2368,21 +2368,27 @@ class VehicleListView(ListView):
             'deleted': False,
         }
         
-        plate_no = self.request.GET.get('plate_no', '') 
-        vehicle_type = self.request.GET.get('vehicle_type', '')
-        ownership = self.request.GET.get('ownership', '')
+        plate_no = self.request.GET.get('plate_no', '').strip()
+        vehicle_type = self.request.GET.get('vehicle_type', '').strip()
+        chassee_no = self.request.GET.get('chassee_no', '').strip()
+        ownership = self.request.GET.get('ownership', '').strip()
+        engine_no = self.request.GET.get('engine_no', '').strip()
         
         if plate_no:
             filters['plate_no'] = plate_no
         if vehicle_type:
             filters['vehicle_type'] = vehicle_type
+        if chassee_no:
+            filters['chassee_no__icontains'] = chassee_no
+        if engine_no:
+            filters['engine_no__icontains'] = engine_no 
+
         if ownership:
             filters['ownership'] = ownership
        
         return Vehicle.objects.filter(**filters)
 
     def get_context_data(self, **kwargs):
-        from backend.models import VehicleAssign
         context = super().get_context_data(**kwargs)
         vehicle_infos = self.get_queryset()
         
@@ -2400,7 +2406,7 @@ class VehicleListView(ListView):
         context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['vehicle_infos'])
 
         # Add all vehicles for select2 dropdown with current assignment
-        all_vehicles = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
+        all_vehicles = Vehicle.objects.filter(is_active=True).order_by('plate_no')
         for vehicle in all_vehicles:
             vehicle.current_employee = vehicle_assignments.get(vehicle.id)
         context['all_vehicles'] = all_vehicles
