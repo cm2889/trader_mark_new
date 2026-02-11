@@ -259,20 +259,20 @@ class UniformIssuanceForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
     ) 
 
-    status = forms.ChoiceField(
-        choices=[(
-            '', 'Select Status'),  
-            ('ISSUED', 'Issued'),
-            ('RETURNED', 'Returned'),
-            ('LOST', 'Lost'),
-            ('DAMAGED', 'Damaged'),
-        ],
-        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
-    )
+    # status = forms.ChoiceField(
+    #     choices=[(
+    #         '', 'Select Status'),  
+    #         ('ISSUED', 'Issued'),
+    #         ('RETURNED', 'Returned'),
+    #         ('LOST', 'Lost'),
+    #         ('DAMAGED', 'Damaged'),
+    #     ],
+    #     widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    # )
 
     class Meta:
         model = UniformIssuance
-        exclude = ['issued_by', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        exclude = ['status', 'issued_by', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'issued_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'return_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
@@ -280,6 +280,14 @@ class UniformIssuanceForm(forms.ModelForm):
             'expected_return_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remark': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
+
+    def save(self, commit=False):
+        instance = super().save(commit=False) 
+        instance.status = 'ISSUED'  # Set default status to ISSUED when creating 
+        if commit:
+            instance.save()
+        return instance 
+
 
 class UniformClearanceForm(forms.ModelForm):
     employee = forms.ModelChoiceField(

@@ -2020,11 +2020,33 @@ class UniformIssuanceListView(ListView):
             'is_active': True, 
         }
         
-        employee = self.request.GET.get('employee', '') 
+        employee = self.request.GET.get('employee', '').strip()
+        status = self.request.GET.get('status', '').strip()
+        quantity = self.request.GET.get('quantity', '').strip()
+        issue_date_from = self.request.GET.get('issue_date_from', '').strip()
+        issue_date_to = self.request.GET.get('issue_date_to', '').strip() 
+        expected_return_date_from = self.request.GET.get('expected_return_date_from', '').strip()
+        expected_return_date_to = self.request.GET.get('expected_return_date_to', '').strip() 
         
         if employee:
             filters['employee_id'] = employee
-       
+
+        if status:
+            filters['status'] = status 
+        
+        if quantity:
+            filters['quantity'] = quantity
+        
+        if issue_date_from:
+            filters['issued_date__gte'] = issue_date_from
+        if issue_date_to:
+            filters['issued_date__lte'] = issue_date_to
+
+        if expected_return_date_from:
+            filters['expected_return_date__gte'] = expected_return_date_from
+        if expected_return_date_to:
+            filters['expected_return_date__lte'] = expected_return_date_to
+        
         return UniformIssuance.objects.filter(**filters)
     
     def get_context_data(self, **kwargs):
@@ -2042,6 +2064,116 @@ class UniformIssuanceListView(ListView):
         context['get_param'] = get_param.urlencode() 
 
         return context
+
+@method_decorator(login_required, name='dispatch')
+class UniformIssuanceDetailView(DetailView):
+    model = UniformIssuance
+    template_name = "uniform_issuance/detail.html"
+    context_object_name = 'uniform_issuance'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/uniform-issuance/"):
+            messages.error(request, "You do not have permission to view uniform issuance details.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        uniform_issuance = self.object
+        
+        employee = uniform_issuance.employee
+        
+        employee_issuances = UniformIssuance.objects.filter(
+            employee=employee, 
+            is_active=True
+        ).select_related('uniform_stock__uniform', 'created_by').order_by('-issued_date')
+        
+        employee_clearances = UniformClearance.objects.filter(
+            employee=employee,
+            is_active=True
+        ).select_related('uniform_stock__uniform', 'created_by').order_by('-clearance_date')
+        
+        issuance_transaction_logs = UniformStockTransactionLog.objects.filter(
+            issuance=uniform_issuance
+        ).select_related('uniform_stock__uniform', 'created_by').order_by('-created_at')
+        
+        stock_transaction_logs = UniformStockTransactionLog.objects.filter(
+            uniform_stock=uniform_issuance.uniform_stock
+        ).select_related('issuance__employee', 'clearance__employee', 'created_by').order_by('-created_at')[:20]
+        
+        uniform_stock = uniform_issuance.uniform_stock
+        
+        # Calculate employee uniform statistics
+        total_issued = UniformIssuance.objects.filter(employee=employee, is_active=True).aggregate(total=Sum('quantity'))['total'] or 0
+        
+        total_active = UniformIssuance.objects.filter(employee=employee, is_active=True, status='ISSUED').aggregate(total=Sum('quantity'))['total'] or 0
+        
+        total_returned = UniformClearance.objects.filter(employee=employee, is_active=True, status='RETURNED').aggregate(total=Sum('quantity'))['total'] or 0
+        
+        total_lost = UniformIssuance.objects.filter(employee=employee, is_active=True, status='LOST').aggregate(total=Sum('quantity'))['total'] or 0
+        
+        total_damaged = UniformIssuance.objects.filter(employee=employee, is_active=True, status='DAMAGED').aggregate(total=Sum('quantity'))['total'] or 0
+        
+        # Get uniform type breakdown for this employee
+        uniform_by_type = employee_issuances.values('uniform_stock__uniform__name', 'uniform_stock__uniform__uniform_type', 'status').annotate(total_quantity=Sum('quantity')).order_by('uniform_stock__uniform__name')
+        
+        # Check if there are any issues/alerts
+        issues = []
+        
+        # Check if expected return date has passed
+        if uniform_issuance.expected_return_date and uniform_issuance.status == 'ISSUED':
+            from datetime import date
+            if uniform_issuance.expected_return_date < date.today():
+                days_overdue = (date.today() - uniform_issuance.expected_return_date).days
+                issues.append({
+                    'type': 'overdue',
+                    'severity': 'high',
+                    'message': f'Uniform is overdue by {days_overdue} days'
+                })
+        
+        # Check if uniform is lost or damaged
+        if uniform_issuance.status == 'LOST':
+            issues.append({
+                'type': 'lost',
+                'severity': 'critical',
+                'message': 'Uniform has been marked as LOST'
+            })
+        elif uniform_issuance.status == 'DAMAGED':
+            issues.append({
+                'type': 'damaged',
+                'severity': 'high',
+                'message': 'Uniform has been marked as DAMAGED'
+            })
+        
+        # Check stock availability
+        if uniform_stock.quantity < 5:
+            issues.append({
+                'type': 'low_stock',
+                'severity': 'warning',
+                'message': f'Low stock alert: Only {uniform_stock.quantity} units remaining'
+            })
+        
+        context.update({
+            'employee': employee,
+            'employee_issuances': employee_issuances,
+            'employee_clearances': employee_clearances,
+            'issuance_transaction_logs': issuance_transaction_logs,
+            'stock_transaction_logs': stock_transaction_logs,
+            'uniform_stock': uniform_stock,
+            'employee_uniform_stats': {
+                'total_issued': total_issued,
+                'total_active': total_active,
+                'total_returned': total_returned,
+                'total_lost': total_lost,
+                'total_damaged': total_damaged,
+            },
+            'uniform_by_type': uniform_by_type,
+            'issues': issues,
+        })
+        
+        return context 
+    
+
 
 # ============================================
 # Uniform Issuance CreateView

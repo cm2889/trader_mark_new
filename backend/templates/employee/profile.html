@@ -22,12 +22,12 @@
 
 
 {% block content %}
-<div class="container mx-auto px-4 py-6 bg-white text-black">
+<div class="container mx-auto px-4 py-6 text-[var(--text-color)]   ">
 
     <!-- Profile Header -->
-    <div class="bg-white text-black  p-10 rounded-2xl mb-8 shadow-none">
-        <h1 class="text-4xl font-bold mb-2">{{ employee.full_name }}</h1>
-        <p class="text-lg mb-1">
+    <div class="p-10 rounded-2xl mb-8 shadow-none">
+        <h1 class="text-4xl text-[var(--text-color)] mb-2">{{ employee.full_name }}</h1>
+        <p class="text-lg mb-1 text-[var(--text-light-color)]">
             <strong>HR File No:</strong> {{ employee.hr_file_no }} |
             <strong>QID No:</strong> {{ employee.qid_no }} |
             <strong>Gender:</strong> {{ employee.get_gender_display }}
@@ -39,97 +39,97 @@
     </div>
 
     <!-- Personal Information -->
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-user"></i> Personal Information
     </div>
 
     <div
-        class="bg-white  rounded-xl p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
+        class="  rounded-xl text-[var(--text-color)] p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-5">
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">First Name</label>
-                <div class="text-black text-lg font-bold">{{ employee.first_name }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="  text-xs  tracking-wider mb-1">First Name</label>
+                <div class=" text-lg ">{{ employee.first_name }}</div>
             </div>
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Last Name</label>
-                <div class="text-black text-lg font-bold">{{ employee.last_name }}</div>
+                <label class="  text-xs  tracking-wider mb-1">Last Name</label>
+                <div class=" text-lg ">{{ employee.last_name }}</div>
             </div>
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Email</label>
-                <div class="text-black text-lg font-bold">{{ employee.email|default:"N/A" }}</div>
+                <label class="  text-xs font-semibold  tracking-wider mb-1">Email</label>
+                <div class=" text-lg ">{{ employee.email|default:"N/A" }}</div>
             </div>
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Phone
+                <label class="  text-xs font-semibold  tracking-wider mb-1">Phone
                     Number</label>
-                <div class="text-black text-lg font-bold">{{ employee.phone_number|default:"N/A" }}</div>
+                <div class=" text-lg ">{{ employee.phone_number|default:"N/A" }}</div>
             </div>
             {% if contact %}
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Alternative
+                <label class="  text-xs font-semibold  tracking-wider mb-1">Alternative
                     Phone</label>
-                <div class="text-black text-lg font-bold">{{ contact.phone_no_alt|default:"N/A" }}</div>
+                <div class=" text-lg ">{{ contact.phone_no_alt|default:"N/A" }}</div>
             </div>
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Roommate
+                <label class="  text-xs font-semibold  tracking-wider mb-1">Roommate
                     Phone</label>
-                <div class="text-black text-lg font-bold">{{ contact.roommate_phone|default:"N/A" }}</div>
+                <div class=" text-lg ">{{ contact.roommate_phone|default:"N/A" }}</div>
             </div>
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Relative Qatar
+                <label class="  text-xs font-semibold  tracking-wider mb-1">Relative Qatar
                     Phone</label>
-                <div class="text-black text-lg font-bold">{{ contact.relative_qatar_phone|default:"N/A" }}</div>
+                <div class=" text-lg ">{{ contact.relative_qatar_phone|default:"N/A" }}</div>
             </div>
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Home
+                <label class="  text-xs font-semibold  tracking-wider mb-1">Home
                     Phone</label>
-                <div class="text-black text-lg font-bold">{{ contact.home_phone|default:"N/A" }}</div>
+                <div class=" text-lg ">{{ contact.home_phone|default:"N/A" }}</div>
             </div>
             {% endif %}
         </div>
 
         {% if employee.remarks %}
-        <div class="bg-white p-4 rounded-lg  mt-4">
-            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Remarks</label>
-            <div class="text-black text-lg font-bold">{{ employee.remarks }}</div>
+        <div class=" p-4 rounded-lg  mt-4">
+            <label class="  text-xs font-semibold  tracking-wider mb-1">Remarks</label>
+            <div class=" text-lg ">{{ employee.remarks }}</div>
         </div>
         {% endif %}
     </div>
 
     <!-- Address Information -->
     {% if address %}
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-map-marker-alt"></i> Address Information
     </div>
 
     <div
-        class="bg-white  rounded-xl p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
+        class="  rounded-xl p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {% if address.present_address %}
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Present
+                <label class="block  text-xs font-semibold  tracking-wider mb-1">Present
                     Address</label>
-                <div class="text-black text-lg font-bold">{{ address.present_address }}</div>
+                <div class=" text-lg ">{{ address.present_address }}</div>
             </div>
             {% endif %}
             {% if address.permanent_address %}
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Permanent
+                <label class="block  text-xs font-semibold  tracking-wider mb-1">Permanent
                     Address</label>
-                <div class="text-black text-lg font-bold">{{ address.permanent_address }}</div>
+                <div class=" text-lg ">{{ address.permanent_address }}</div>
             </div>
             {% endif %}
             {% if address.national_address %}
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">National
+                <label class="block  text-xs font-semibold  tracking-wider mb-1">National
                     Address</label>
-                <div class="text-black text-lg font-bold">{{ address.national_address }}</div>
+                <div class=" text-lg ">{{ address.national_address }}</div>
             </div>
             {% endif %}
             {% if address.room_address %}
             <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">Room
+                <label class="block  text-xs font-semibold  tracking-wider mb-1">Room
                     Address</label>
-                <div class="text-black text-lg font-bold">{{ address.room_address }}</div>
+                <div class=" text-lg ">{{ address.room_address }}</div>
             </div>
             {% endif %}
         </div>
@@ -137,77 +137,77 @@
     {% endif %}
 
     <!-- Employment Information -->
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-briefcase"></i> Employment Information
     </div>
 
     {% if current_employment %}
     <div
-        class="bg-white  rounded-xl p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Current Employment Status</h3>
+        class="  rounded-xl p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Current Employment Status</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Work Status</label>
-                <div class="text-black text-lg font-bold">
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Work Status</label>
+                <div class=" text-lg ">
                     <span
-                        class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                        class="inline-block px-3 py-1 rounded-full text-sm    border ">
                         {{ current_employment.get_work_status_display }}
                     </span>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Work Permit No</label>
-                <div class="text-black text-lg font-bold">{{ current_employment.work_permit_no }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Work Permit No</label>
+                <div class=" text-lg ">{{ current_employment.work_permit_no }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Work ID</label>
-                <div class="text-black text-lg font-bold">{{ current_employment.work_id }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Work ID</label>
+                <div class=" text-lg ">{{ current_employment.work_id }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">RP Expiry Date</label>
-                <div class="text-black text-lg font-bold">{{ current_employment.rp_expiry_date|date:"d M, Y" }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">RP Expiry Date</label>
+                <div class=" text-lg ">{{ current_employment.rp_expiry_date|date:"d M, Y" }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">QID Renew Status</label>
-                <div class="text-black text-lg font-bold">{{ current_employment.get_qid_renew_status_display }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">QID Renew Status</label>
+                <div class=" text-lg ">{{ current_employment.get_qid_renew_status_display }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">QID Lost Status</label>
-                <div class="text-black text-lg font-bold">{{ current_employment.get_qid_lost_status_display }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">QID Lost Status</label>
+                <div class=" text-lg ">{{ current_employment.get_qid_lost_status_display }}</div>
             </div>
         </div>
     </div>
     {% endif %}
 
     {% if employment_history %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Employment History</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Employment History</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Joining Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Work Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Work Permit No</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Work ID</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">RP Expiry</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Created At</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Joining Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Work Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Work Permit No</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Work ID</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">RP Expiry</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Created At</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for emp in employment_history %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black">{{ emp.joining_at|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4 ">{{ emp.joining_at|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {{ emp.get_work_status_display }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ emp.work_permit_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ emp.work_id }}</td>
-                        <td class="px-4 py-4 text-black">{{ emp.rp_expiry_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ emp.created_at|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ emp.work_permit_no }}</td>
+                        <td class="px-4 py-4 ">{{ emp.work_id }}</td>
+                        <td class="px-4 py-4 ">{{ emp.rp_expiry_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ emp.created_at|date:"d M, Y" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -217,41 +217,41 @@
     {% endif %}
 
     <!-- Passport Information -->
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-passport"></i> Passport Information
     </div>
 
     {% if passport_history %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Passport No</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Expiry Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Renewed</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Created At</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Passport No</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Expiry Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Renewed</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Created At</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for passport in passport_history %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ passport.passport_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ passport.passport_expiry_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ passport.passport_no }}</td>
+                        <td class="px-4 py-4 ">{{ passport.passport_expiry_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {% if passport.passport_renewed %}Yes{% else %}No{% endif %}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {% if passport.is_active %}Active{% else %}Inactive{% endif %}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ passport.created_at|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ passport.created_at|date:"d M, Y" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -259,48 +259,48 @@
         </div>
     </div>
     {% else %}
-    <div class="text-center py-10 text-gray-600 italic bg-gray-100 rounded-xl my-5">No passport information available
+    <div class="text-center py-10  italic bg-gray-100 rounded-xl my-5">No passport information available
     </div>
     {% endif %}
 
     <!-- Driving License Information -->
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-id-card"></i> Driving License Information
     </div>
 
     {% if driving_license_history %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">License No</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Expiry Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Renewed</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Renew Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Created At</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">License No</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Expiry Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Renewed</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Renew Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Created At</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for license in driving_license_history %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ license.license_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ license.license_expiry_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ license.license_no }}</td>
+                        <td class="px-4 py-4 ">{{ license.license_expiry_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {% if license.license_renewed %}Yes{% else %}No{% endif %}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ license.get_license_renew_status_display }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4 ">{{ license.get_license_renew_status_display }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {% if license.is_active %}Active{% else %}Inactive{% endif %}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ license.created_at|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ license.created_at|date:"d M, Y" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -308,36 +308,36 @@
         </div>
     </div>
     {% else %}
-    <div class="text-center py-10 text-gray-600 italic bg-gray-100 rounded-xl my-5">No driving license information
+    <div class="text-center py-10  italic bg-gray-100 rounded-xl my-5">No driving license information
         available</div>
     {% endif %}
 
     <!-- Health Insurance -->
     {% if health_insurance %}
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-heartbeat"></i> Health Insurance
     </div>
 
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Hamad Health
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Hamad Health
                     Card</label>
-                <div class="text-black text-lg font-bold">
+                <div class=" text-lg ">
                     <span
-                        class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                        class="inline-block px-3 py-1 rounded-full text-sm    border ">
                         {% if health_insurance.hamad_health_card %}Yes{% else %}No{% endif %}
                     </span>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">WM Insurance</label>
-                <div class="text-black text-lg font-bold">{{ health_insurance.get_wm_insurance_display }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">WM Insurance</label>
+                <div class=" text-lg ">{{ health_insurance.get_wm_insurance_display }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Family Health
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Family Health
                     Card</label>
-                <div class="text-black text-lg font-bold">{{ health_insurance.get_family_health_card_display }}</div>
+                <div class=" text-lg ">{{ health_insurance.get_family_health_card_display }}</div>
             </div>
         </div>
     </div>
@@ -349,72 +349,72 @@
     <!-- ===================================== -->
     <!-- UNIFORM SECTION -->
     <!-- ===================================== -->
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-tshirt"></i> Uniform Management
     </div>
 
     <!-- Uniform Statistics Summary -->
     <!-- Uniform Statistics Summary -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-8">
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Total Issued</h4>
-            <p class="text-4xl font-bold">{{ uniform_stats.total_issued }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Total Issued</h4>
+            <p class="text-4xl ">{{ uniform_stats.total_issued }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Currently Active</h4>
-            <p class="text-4xl font-bold">{{ uniform_stats.active }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Currently Active</h4>
+            <p class="text-4xl ">{{ uniform_stats.active }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Returned</h4>
-            <p class="text-4xl font-bold">{{ uniform_stats.returned }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Returned</h4>
+            <p class="text-4xl ">{{ uniform_stats.returned }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Lost</h4>
-            <p class="text-4xl font-bold">{{ uniform_stats.lost }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Lost</h4>
+            <p class="text-4xl ">{{ uniform_stats.lost }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Damaged</h4>
-            <p class="text-4xl font-bold">{{ uniform_stats.damaged }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Damaged</h4>
+            <p class="text-4xl ">{{ uniform_stats.damaged }}</p>
         </div>
     </div>
 
     <!-- Uniform Issuance History -->
     {% if uniform_issuances %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Uniform Issuance History</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Uniform Issuance History</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Uniform Name</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Type</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Size</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Quantity</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Issued Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Expected Return</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Actual Return</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Uniform Name</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Type</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Size</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Quantity</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Issued Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Expected Return</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Actual Return</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for issue in uniform_issuances %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ issue.uniform_stock.uniform.name }}</td>
-                        <td class="px-4 py-4 text-black">{{ issue.uniform_stock.uniform.get_uniform_type_display }}</td>
-                        <td class="px-4 py-4 text-black">{{ issue.uniform_stock.get_size_display }}</td>
-                        <td class="px-4 py-4 text-black font-bold">{{ issue.quantity }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ issue.uniform_stock.uniform.name }}</td>
+                        <td class="px-4 py-4 ">{{ issue.uniform_stock.uniform.get_uniform_type_display }}</td>
+                        <td class="px-4 py-4 ">{{ issue.uniform_stock.get_size_display }}</td>
+                        <td class="px-4 py-4  ">{{ issue.quantity }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {{ issue.get_status_display }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ issue.issued_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ issue.expected_return_date|date:"d M, Y"|default:"N/A" }}
+                        <td class="px-4 py-4 ">{{ issue.issued_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ issue.expected_return_date|date:"d M, Y"|default:"N/A" }}
                         </td>
-                        <td class="px-4 py-4 text-black">{{ issue.return_date|date:"d M, Y"|default:"N/A" }}</td>
-                        <td class="px-4 py-4 text-black">{{ issue.remark|default:"-" }}</td>
+                        <td class="px-4 py-4 ">{{ issue.return_date|date:"d M, Y"|default:"N/A" }}</td>
+                        <td class="px-4 py-4 ">{{ issue.remark|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -422,38 +422,38 @@
         </div>
     </div>
     {% else %}
-    <div class="text-center py-10 text-gray-600 italic bg-gray-100 rounded-xl my-5">No uniform issuance records found
+    <div class="text-center py-10  italic bg-gray-100 rounded-xl my-5">No uniform issuance records found
     </div>
     {% endif %}
 
     <!-- Uniform by Type Breakdown -->
     {% if uniform_by_type %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Uniform Breakdown by Type</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Uniform Breakdown by Type</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Uniform Name</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Type</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Size</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Total Quantity</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Uniform Name</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Type</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Size</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Total Quantity</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for item in uniform_by_type %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ item.uniform_stock__uniform__name }}</td>
-                        <td class="px-4 py-4 text-black">{{ item.uniform_stock__uniform__uniform_type }}</td>
-                        <td class="px-4 py-4 text-black">{{ item.uniform_stock__size }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ item.uniform_stock__uniform__name }}</td>
+                        <td class="px-4 py-4 ">{{ item.uniform_stock__uniform__uniform_type }}</td>
+                        <td class="px-4 py-4 ">{{ item.uniform_stock__size }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {{ item.status }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black font-bold">{{ item.total_qty }}</td>
+                        <td class="px-4 py-4  ">{{ item.total_qty }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -464,37 +464,37 @@
 
     <!-- Uniform Clearance History -->
     {% if uniform_clearances %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Uniform Clearance History</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Uniform Clearance History</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Uniform Name</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Type</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Size</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Quantity</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Clearance Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Uniform Name</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Type</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Size</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Quantity</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Clearance Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for clearance in uniform_clearances %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ clearance.uniform_stock.uniform.name }}</td>
-                        <td class="px-4 py-4 text-black">{{ clearance.uniform_stock.uniform.get_uniform_type_display }}
+                        <td class="px-4 py-4  ">{{ clearance.uniform_stock.uniform.name }}</td>
+                        <td class="px-4 py-4 ">{{ clearance.uniform_stock.uniform.get_uniform_type_display }}
                         </td>
-                        <td class="px-4 py-4 text-black">{{ clearance.uniform_stock.get_size_display }}</td>
-                        <td class="px-4 py-4 text-black font-bold">{{ clearance.quantity }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4 ">{{ clearance.uniform_stock.get_size_display }}</td>
+                        <td class="px-4 py-4  ">{{ clearance.quantity }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {{ clearance.get_status_display }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ clearance.clearance_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ clearance.remark|default:"-" }}</td>
+                        <td class="px-4 py-4 ">{{ clearance.clearance_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ clearance.remark|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -509,69 +509,69 @@
     <!-- ===================================== -->
     <!-- VEHICLE SECTION -->
     <!-- ===================================== -->
-    <div class="bg-white text-black px-5 py-4 border-b-2 border-black my-8 text-2xl font-bold rounded-none">
+    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
         <i class="fas fa-car"></i> Vehicle Management
     </div>
 
     <!-- Vehicle Statistics Summary -->
     <!-- Vehicle Statistics Summary -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Total Vehicles</h4>
-            <p class="text-4xl font-bold">{{ vehicle_stats.total_assigned }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Total Vehicles</h4>
+            <p class="text-4xl ">{{ vehicle_stats.total_assigned }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Purchases</h4>
-            <p class="text-4xl font-bold">{{ vehicle_stats.total_purchases }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Purchases</h4>
+            <p class="text-4xl ">{{ vehicle_stats.total_purchases }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Total Spent</h4>
-            <p class="text-2xl font-bold">{{ vehicle_stats.total_purchase_amount|floatformat:2 }} QR</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Total Spent</h4>
+            <p class="text-2xl ">{{ vehicle_stats.total_purchase_amount|floatformat:2 }} QR</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Violations</h4>
-            <p class="text-4xl font-bold">{{ vehicle_stats.total_violations }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Violations</h4>
+            <p class="text-4xl ">{{ vehicle_stats.total_violations }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Accidents</h4>
-            <p class="text-4xl font-bold">{{ vehicle_stats.total_accidents }}</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Accidents</h4>
+            <p class="text-4xl ">{{ vehicle_stats.total_accidents }}</p>
         </div>
-        <div class="bg-white text-black  p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm font-bold uppercase tracking-wide mb-2">Maintenance</h4>
-            <p class="text-2xl font-bold">{{ vehicle_stats.total_maintenance_cost|floatformat:2 }} QR</p>
+        <div class="   p-6 rounded-xl shadow-none text-center">
+            <h4 class="text-sm  tracking-wide mb-2">Maintenance</h4>
+            <p class="text-2xl ">{{ vehicle_stats.total_maintenance_cost|floatformat:2 }} QR</p>
         </div>
     </div>
 
     <!-- Current Vehicle -->
     {% if current_vehicle_assign %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Current Assigned Vehicle</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Current Assigned Vehicle</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Plate Number</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.plate_no }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Plate Number</label>
+                <div class=" text-lg ">{{ current_vehicle_assign.vehicle.plate_no }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Vehicle Type</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.get_vehicle_type_display }}
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Vehicle Type</label>
+                <div class=" text-lg ">{{ current_vehicle_assign.vehicle.get_vehicle_type_display }}
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Ownership</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.get_ownership_display }}
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Ownership</label>
+                <div class=" text-lg ">{{ current_vehicle_assign.vehicle.get_ownership_display }}
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Assigned Date</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.assigned_date|date:"d M, Y" }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Assigned Date</label>
+                <div class=" text-lg ">{{ current_vehicle_assign.assigned_date|date:"d M, Y" }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Istemara Expiry</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.istemara_expiry_date|date:"d M, Y" }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Istemara Expiry</label>
+                <div class=" text-lg ">{{ current_vehicle_assign.vehicle.istemara_expiry_date|date:"d M, Y" }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Insurance Expiry</label>
-                <div class="text-black text-lg font-bold">{{ current_vehicle_assign.vehicle.insurance_expiry_date|date:"d M, Y" }}</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Insurance Expiry</label>
+                <div class=" text-lg ">{{ current_vehicle_assign.vehicle.insurance_expiry_date|date:"d M, Y" }}</div>
             </div>
         </div>
     </div>
@@ -579,34 +579,34 @@
 
     <!-- Vehicle Assignment History -->
     {% if vehicle_assignments %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Vehicle Assignment History</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Vehicle Assignment History</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Plate No</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle Type</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Ownership</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Assigned Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Plate No</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle Type</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Ownership</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Assigned Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for assign in vehicle_assignments %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ assign.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ assign.vehicle.get_vehicle_type_display }}</td>
-                        <td class="px-4 py-4 text-black">{{ assign.vehicle.get_ownership_display }}</td>
-                        <td class="px-4 py-4 text-black">{{ assign.assigned_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ assign.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ assign.vehicle.get_vehicle_type_display }}</td>
+                        <td class="px-4 py-4 ">{{ assign.vehicle.get_ownership_display }}</td>
+                        <td class="px-4 py-4 ">{{ assign.assigned_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {% if assign.is_active %}Active{% else %}Inactive{% endif %}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ assign.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 ">{{ assign.remarks|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -614,33 +614,33 @@
         </div>
     </div>
     {% else %}
-    <div class="text-center py-10 text-gray-600 italic bg-gray-100 rounded-xl my-5">No vehicle assignments found</div>
+    <div class="text-center py-10  italic bg-gray-100 rounded-xl my-5">No vehicle assignments found</div>
     {% endif %}
 
     <!-- Vehicle Handover History -->
     {% if vehicle_handovers_from or vehicle_handovers_to %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Vehicle Handover History</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Vehicle Handover History</h3>
 
         {% if vehicle_handovers_from %}
-        <h4 class="text-black text-xl font-bold mt-5 mb-3">Handed Over From</h4>
+        <h4 class=" text-xl mt-5 mb-3">Handed Over From</h4>
         <div class="overflow-x-auto mb-5">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">To Employee</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Handover Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">To Employee</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Handover Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for handover in vehicle_handovers_from %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ handover.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ handover.to_employee.full_name|default:"N/A" }}</td>
-                        <td class="px-4 py-4 text-black">{{ handover.handover_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ handover.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4  ">{{ handover.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ handover.to_employee.full_name|default:"N/A" }}</td>
+                        <td class="px-4 py-4 ">{{ handover.handover_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ handover.remarks|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -649,24 +649,24 @@
         {% endif %}
 
         {% if vehicle_handovers_to %}
-        <h4 class="text-black text-xl font-bold mt-5 mb-3">Received From</h4>
+        <h4 class=" text-xl mt-5 mb-3">Received From</h4>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">From Employee</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Handover Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">From Employee</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Handover Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for handover in vehicle_handovers_to %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ handover.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ handover.from_employee.full_name|default:"N/A" }}</td>
-                        <td class="px-4 py-4 text-black">{{ handover.handover_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ handover.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4  ">{{ handover.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ handover.from_employee.full_name|default:"N/A" }}</td>
+                        <td class="px-4 py-4 ">{{ handover.handover_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ handover.remarks|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -678,32 +678,32 @@
 
     <!-- Vehicle Purchases -->
     {% if vehicle_purchases %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Vehicle Purchase History</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Vehicle Purchase History</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Purchase Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Total Amount</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Down Payment</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Installment Amount
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Purchase Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Total Amount</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Down Payment</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Installment Amount
                         </th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Payment Method</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Payment Period</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Method</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Period</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for purchase in vehicle_purchases %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ purchase.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ purchase.purchase_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black font-bold">{{ purchase.total_amount|floatformat:2 }} QR</td>
-                        <td class="px-4 py-4 text-black">{{ purchase.down_payment|floatformat:2 }} QR</td>
-                        <td class="px-4 py-4 text-black">{{ purchase.installment_amount|floatformat:2 }} QR</td>
-                        <td class="px-4 py-4 text-black">{{ purchase.get_payment_method_display }}</td>
-                        <td class="px-4 py-4 text-black">{{ purchase.get_payment_period_display }}</td>
+                        <td class="px-4 py-4  ">{{ purchase.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ purchase.purchase_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4  ">{{ purchase.total_amount|floatformat:2 }} QR</td>
+                        <td class="px-4 py-4 ">{{ purchase.down_payment|floatformat:2 }} QR</td>
+                        <td class="px-4 py-4 ">{{ purchase.installment_amount|floatformat:2 }} QR</td>
+                        <td class="px-4 py-4 ">{{ purchase.get_payment_method_display }}</td>
+                        <td class="px-4 py-4 ">{{ purchase.get_payment_period_display }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -714,69 +714,69 @@
 
     <!-- Vehicle Installments -->
     {% if vehicle_installments %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Vehicle Installment Status</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Vehicle Installment Status</h3>
 
         <!-- Installment Summary -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-5">
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Total
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Total
                     Installments</label>
-                <div class="text-black text-lg font-bold">{{ installment_stats.total }}</div>
+                <div class=" text-lg ">{{ installment_stats.total }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Paid
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Paid
                     Installments</label>
-                <div class="text-black text-lg font-bold">{{ installment_stats.paid }}</div>
+                <div class=" text-lg ">{{ installment_stats.paid }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Pending
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Pending
                     Installments</label>
-                <div class="text-black text-lg font-bold">{{ installment_stats.pending }}</div>
+                <div class=" text-lg ">{{ installment_stats.pending }}</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Total Amount</label>
-                <div class="text-black text-lg font-bold">{{ installment_stats.total_amount|floatformat:2 }} QR</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Total Amount</label>
+                <div class=" text-lg ">{{ installment_stats.total_amount|floatformat:2 }} QR</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Paid Amount</label>
-                <div class="text-black text-lg font-bold">{{ installment_stats.paid_amount|floatformat:2 }} QR</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Paid Amount</label>
+                <div class=" text-lg ">{{ installment_stats.paid_amount|floatformat:2 }} QR</div>
             </div>
-            <div class="bg-white p-4 rounded-lg ">
-                <label class="block text-black text-xs font-bold uppercase tracking-wider mb-1">Pending Amount</label>
-                <div class="text-black text-lg font-bold">{{ installment_stats.pending_amount|floatformat:2 }} QR</div>
+            <div class=" p-4 rounded-lg ">
+                <label class="block  text-xs  tracking-wider mb-1">Pending Amount</label>
+                <div class=" text-lg ">{{ installment_stats.pending_amount|floatformat:2 }} QR</div>
             </div>
         </div>
 
         <!-- Installment Details -->
         <div class="overflow-x-auto mt-5">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Installment #</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Amount</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Due Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Paid Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Payment Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Payment Method</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Installment #</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Amount</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Due Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Paid Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Method</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for installment in vehicle_installments %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ installment.purchase.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ installment.installment_no }}</td>
-                        <td class="px-4 py-4 text-black font-bold">{{ installment.amount|floatformat:2 }} QR</td>
-                        <td class="px-4 py-4 text-black">{{ installment.due_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ installment.paid_date|date:"d M, Y"|default:"N/A" }}</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ installment.purchase.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ installment.installment_no }}</td>
+                        <td class="px-4 py-4  ">{{ installment.amount|floatformat:2 }} QR</td>
+                        <td class="px-4 py-4 ">{{ installment.due_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ installment.paid_date|date:"d M, Y"|default:"N/A" }}</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {{ installment.get_payment_status_display }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ installment.get_payment_method_display }}</td>
+                        <td class="px-4 py-4 ">{{ installment.get_payment_method_display }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -787,27 +787,27 @@
 
     <!-- Traffic Violations -->
     {% if traffic_violations %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Traffic Violation History</h3>
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Traffic Violation History</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Violation Type</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Place</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Violation Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Violation Type</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Place</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Violation Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for violation in traffic_violations %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ violation.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ violation.violation_type.name }}</td>
-                        <td class="px-4 py-4 text-black">{{ violation.place|default:"N/A" }}</td>
-                        <td class="px-4 py-4 text-black">{{ violation.violation_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ violation.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4  ">{{ violation.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ violation.violation_type.name }}</td>
+                        <td class="px-4 py-4 ">{{ violation.place|default:"N/A" }}</td>
+                        <td class="px-4 py-4 ">{{ violation.violation_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ violation.remarks|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -818,40 +818,40 @@
 
     <!-- Vehicle Maintenance -->
     {% if vehicle_maintenances %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Vehicle Maintenance History</h3>
-        <p class="mb-5 text-black">
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Vehicle Maintenance History</h3>
+        <p class="mb-5 ">
             <strong>Total Maintenance Cost:</strong>
-            <span class="text-black text-2xl font-bold ml-2">
+            <span class=" text-2xl ml-2">
                 {{ vehicle_stats.total_maintenance_cost|floatformat:2 }} QR
             </span>
         </p>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Maintenance Type</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Cost</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Maintenance Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Maintenance Type</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Cost</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Maintenance Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for maintenance in vehicle_maintenances %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ maintenance.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ maintenance.maintenance_type.name }}</td>
-                        <td class="px-4 py-4 text-black font-bold">{{ maintenance.cost|floatformat:2 }} QR</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ maintenance.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ maintenance.maintenance_type.name }}</td>
+                        <td class="px-4 py-4  ">{{ maintenance.cost|floatformat:2 }} QR</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {{ maintenance.get_status_display }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ maintenance.maintenance_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ maintenance.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 ">{{ maintenance.maintenance_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ maintenance.remarks|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -862,41 +862,41 @@
 
     <!-- Vehicle Accidents -->
     {% if vehicle_accidents %}
-    <div class="bg-white  rounded-xl p-6 mb-6 shadow-none">
-        <h3 class="text-black text-2xl font-bold border-b-2 border-black pb-3 mb-5">Vehicle Accident History</h3>
-        <p class="mb-5 text-black">
+    <div class="  rounded-xl p-6 mb-6 shadow-none">
+        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Vehicle Accident History</h3>
+        <p class="mb-5 ">
             <strong>Total Accident Damage Cost:</strong>
-            <span class="text-black text-2xl font-bold ml-2">
+            <span class=" text-2xl ml-2">
                 {{ vehicle_stats.total_accident_damage|floatformat:2 }} QR
             </span>
         </p>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-white text-black border-b-2 border-black">
+                <thead class="  border-b-2 ">
                     <tr>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Vehicle</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Accident Date</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Place</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Damage Cost</th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Insurance Claimed
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Vehicle</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Accident Date</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Place</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Damage Cost</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Insurance Claimed
                         </th>
-                        <th class="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y ">
                     {% for accident in vehicle_accidents %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4 text-black font-bold">{{ accident.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 text-black">{{ accident.accident_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 text-black">{{ accident.accident_place }}</td>
-                        <td class="px-4 py-4 text-black font-bold">{{ accident.damage_cost|floatformat:2 }} QR</td>
-                        <td class="px-4 py-4 text-black">
+                        <td class="px-4 py-4  ">{{ accident.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4 ">{{ accident.accident_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4 ">{{ accident.accident_place }}</td>
+                        <td class="px-4 py-4  ">{{ accident.damage_cost|floatformat:2 }} QR</td>
+                        <td class="px-4 py-4 ">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase bg-white text-black border border-black">
+                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
                                 {% if accident.insurance_claimed %}Yes{% else %}No{% endif %}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-black">{{ accident.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 ">{{ accident.remarks|default:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

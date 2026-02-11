@@ -3,39 +3,31 @@
 
 {% block title %}Uniform Transaction Logs{% endblock %}
 
+
+
+
 {% block header_actions %}
-<a href="{% url 'uniform:report' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-    </svg>
-    <span>View Report</span>
-</a>
-<a href="{% url 'uniform:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-    <span>Back to List</span>
-</a>
+    <a href="{% url 'uniform:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Back to List</span>
+    </a> 
+
+    <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+        <i class="fas fa-filter mr-2"></i>Filter
+    </button>
+
+    <a href="{% url 'uniform:list'  %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to List
+    </a>
 {% endblock %}
 
 {% block content %}
 <div class="space-y-6">
-    <!-- Page Header with Filter Button -->
-    <div>
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Uniform Transaction Logs</h1>
-                <p class="mt-1 text-sm text-gray-600">Complete history of uniform stock transactions</p>
-            </div>
-            <button onclick="openFilterModal()" class="inline-flex items-center px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg border-2 border-gray-900 hover:bg-gray-800 transition-all duration-300">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                </svg>
-                Filter Logs
-            </button>
-        </div>
-    </div>
-
     <!-- Filter Modal -->
     <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
         <div class="relative top-20 mx-auto p-0 border w-full max-w-4xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
@@ -80,7 +72,7 @@
                         </div>
                         <div class="space-y-2">
                             <label for="transaction_type" class="block text-sm font-medium text-gray-900">Transaction Type</label>
-                            <select id="transaction_type" name="transaction_type" class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-500 transition-all duration-200">
+                            <select id="transaction_type" name="transaction_type" class="w-full select2-items px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-500 transition-all duration-200">
                                 <option value="">All Types</option>
                                 {% for type_code, type_label in transaction_types %}
                                 <option value="{{ type_code }}" {% if filters.transaction_type == type_code %}selected{% endif %}>
