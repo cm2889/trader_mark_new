@@ -24,6 +24,21 @@
     </svg>
     <span>Filter</span>
 </button>
+<button class="ml-2">
+    <!-- Export Section -->
+    <a href="{% url 'import_export:export_excel' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Download Excel  
+    </a>
+</button>
+<a href="{% url 'import_export:import_excel' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+    </svg>
+    Import Excel
+</a>
 <a href="{% url 'employee:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -149,7 +164,13 @@
                                         </div>
                                         <div class="ml-3">
                                             <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.full_name }}</p>
-                                            <p class="text-xs text-[var(--text-light-color)]">{{ employee.user.email|default:employee.user.username }}</p>
+                                            <p class="text-xs text-[var(--text-light-color)]">
+                                                {% if employee.user %}
+                                                    {{ employee.user.email|default:employee.user.username }}
+                                                {% else %}
+                                                    {{ employee.email|default:employee.qid_no }}
+                                                {% endif %}
+                                            </p>
                                         </div>
                                     </div>
                                 </a>

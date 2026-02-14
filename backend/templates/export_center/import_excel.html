@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Employee Import / Export{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen bg-gray-50 px-6 py-10">
+  <div class="max-w-5xl mx-auto">
+
+<!-- Page Header -->
+<div class="mb-8 text-center">
+  <h1 class="text-3xl font-bold text-gray-800">Employee Data Management</h1>
+  <p class="text-gray-500 mt-2">Upload, import, and export employee records securely</p>
+</div>
+
+<!-- Upload Section -->
+<div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+  <form method="POST" enctype="multipart/form-data" id="uploadForm">
+    {% csrf_token %}
+
+    <label class="block w-full border-2 border-dashed border-gray-300 rounded-xl p-16 text-center cursor-pointer transition hover:border-blue-500 hover:bg-blue-50">
+      <input type="file" name="excel_file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden" required>
+
+      <div class="space-y-3">
+        <svg class="mx-auto w-12 h-12 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 7.5m0 0L7.5 12m4.5-4.5V16.5" />
+        </svg>
+        <p class="text-lg font-medium text-gray-700" id="fileLabel">Drag & Drop your file here</p>
+        <p class="text-sm text-gray-400">Supported formats: XLSX, XLS, CSV</p>
+      </div>
+    </label>
+
+    <div class="mt-6 flex justify-center">
+      <button type="submit" id="importBtn" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700 transition" disabled>
+        Import Employee Data
+      </button>
+    </div>
+  </form>
+</div>
+
+
+  </div>
+</div>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const fileLabel = document.getElementById('fileLabel');
+const importBtn = document.getElementById('importBtn');
+
+fileInput.addEventListener('change', () => {
+  if(fileInput.files.length){
+    fileLabel.textContent = fileInput.files[0].name;
+    importBtn.disabled = false;
+  }
+});
+</script>
+
+{% endblock %}

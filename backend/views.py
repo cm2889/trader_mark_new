@@ -767,27 +767,8 @@ def employee_create(request):
         address_form = AddressForm(request.POST, prefix='address')
 
         if employee_form.is_valid():
-            # Create User account from first_name and last_name
+            # Save employee (user account creation handled separately)
             employee = employee_form.save(commit=False)
-            username = f"{employee.first_name.lower()}.{employee.last_name.lower()}".replace(' ', '')
-            
-            # Check if username exists, add number if needed
-            base_username = username
-            counter = 1
-            while User.objects.filter(username=username).exists():
-                username = f"{base_username}{counter}"
-                counter += 1
-            
-            # Create User with default password "admin"
-            user = User.objects.create_user(
-                username=username,
-                first_name=employee.first_name,
-                last_name=employee.last_name,
-                password='admin'
-            )
-            
-            # Save employee
-            employee.user = user
             employee.created_by = request.user
             employee.updated_by = request.user
             employee.save()
@@ -1256,7 +1237,7 @@ def employee_update(request, pk):
 class EmployeeListView(ListView):
     model = Employee 
     template_name = "employee/list.html"
-    paginate_by = None 
+    paginate_by = 10 
 
     def dispatch(self, request, *args, **kwargs):
         if not checkUserPermission(request, "can_view", "/backend/employee/"):
@@ -1294,9 +1275,29 @@ class EmployeeListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['employees'] = self.get_queryset()
+        
+        # Use Django's paginated queryset instead of fetching all
+        context['employees'] = context['page_obj']  # Use the paginated object
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['employees'])
+        
+        # Get pagination info from Django's built-in paginator
+        paginator = context['paginator']
+        page_obj = context['page_obj']
+        
+        # Calculate page range for display
+        current_page = page_obj.number
+        last_page_number = paginator.num_pages
+        max_pages = 10
+        
+        start_page = max(current_page - int(max_pages / 2), 1)
+        end_page = start_page + max_pages
+        
+        if end_page > last_page_number:
+            end_page = last_page_number + 1
+            start_page = max(end_page - max_pages, 1)
+        
+        context['paginator_list'] = range(start_page, end_page)
+        context['last_page_number'] = last_page_number
 
         # Add all employees and nationalities for select2 dropdowns
         from backend.models import Nationality

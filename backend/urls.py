@@ -1,5 +1,11 @@
 from django.urls import path, include
 from . import views
+from . import view_copy 
+
+export_import_patterns = ([
+    path('import/', view_copy.import_excel, name='import_excel'),
+    path('export/', view_copy.export_excel, name='export_excel'), 
+], 'import_export')
 
 # Nationality URL patterns
 nationality_patterns = ([
@@ -207,4 +213,6 @@ urlpatterns = [
     path('uniform-stock/', include(uniform_stock_patterns)),
     path('uniform-issuance/', include(uniform_issuance_patterns)),
     path('uniform-clearance/', include(uniform_clearance_patterns)),
+    # excel data
+    path('excel/', include(export_import_patterns)), 
 ]
