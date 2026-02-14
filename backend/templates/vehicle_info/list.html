@@ -157,6 +157,19 @@
                                 <div class="hidden absolute right-4 mt-1 w-[180px] z-50 rounded-md bg-[var(--white-color)]
                                             ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
 
+                                <a href="{% url 'vehicle_info:detail' info.pk %}"
+                                    class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                    role="menuitem"
+                                    onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 5.33a2.67 2.67 0 1 0 0 5.34 2.67 2.67 0 0 0 0-5.34zM8 3.33c-3.31 0-6 2.67-6 4.67s2.69 4.67 6 4.67 6-2.67 6-4.67-2.69-4.67-6-4.67z" 
+                                          fill="none" stroke="#4A5565" stroke-width="1.2"/>
+                                    </svg>
+                                    View Details
+                                </a>
+
+                                <div class="border-t border-[var(--border-color)]"></div>
+
                                 {% if info.current_employee %}
                                 <a href="{% url 'vehicle_assign:create' %}?vehicle={{ info.pk }}&employee={{ info.current_employee.id }}"
                                     class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"

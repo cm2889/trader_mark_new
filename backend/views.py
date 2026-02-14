@@ -2535,6 +2535,273 @@ class VehicleListView(ListView):
         return context 
 
 
+@method_decorator(login_required, name="dispatch")
+class VehicleDetailView(DetailView):
+    model = Vehicle
+    template_name = "vehicle_info/detail.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/vehicle_info/"):
+            messages.error(request, "You do not have permission to view vehicle infos.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vehicle = self.object
+        
+        # Get current assignment
+        current_assignment = VehicleAssign.objects.filter(
+            vehicle=vehicle, 
+            is_active=True, 
+            deleted=False
+        ).select_related('employee').first()
+        
+        # Get all assignments history
+        all_assignments = VehicleAssign.objects.filter(
+            vehicle=vehicle
+        ).select_related('employee', 'created_by').order_by('-assigned_date')
+        
+        # Get handover history
+        handovers = VehicleHandover.objects.filter(
+            vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).select_related('from_employee', 'to_employee', 'created_by').order_by('-handover_date')
+        
+        # Get traffic violations
+        violations = TrafficViolation.objects.filter(
+            vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).select_related('violation_type', 'created_by').order_by('-violation_date')
+        
+        # Get violation penalties
+        violation_penalties = TrafficViolationPenalty.objects.filter(
+            violation__vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).select_related('violation', 'created_by').order_by('-created_at')
+        
+        # Calculate penalties summary
+        total_penalties = violation_penalties.count()
+        paid_penalties = violation_penalties.filter(payment_status='PAID').count()
+        pending_penalties = violation_penalties.filter(payment_status='PENDING').count()
+        overdue_penalties = violation_penalties.filter(payment_status='OVERDUE').count()
+        total_fine_amount = sum(p.fine_amount for p in violation_penalties)
+        paid_fine_amount = sum(p.fine_amount for p in violation_penalties.filter(payment_status='PAID'))
+        pending_fine_amount = total_fine_amount - paid_fine_amount
+        
+        # Get vehicle accidents
+        accidents = VehicleAccident.objects.filter(
+            vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).select_related('created_by').order_by('-accident_date')
+        
+        # Calculate accident summary
+        total_accidents = accidents.count()
+        total_accident_damage = sum(a.damage_cost for a in accidents)
+        accidents_with_insurance = accidents.filter(insurance_claimed=True).count()
+        
+        # Get insurance claims
+        insurance_claims = InsuranceClaim.objects.filter(
+            accident__vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).select_related('accident', 'created_by').order_by('-claim_date')
+        
+        # Calculate insurance claims summary
+        total_claims = insurance_claims.count()
+        total_claim_amount = sum(c.claim_amount for c in insurance_claims)
+        approved_claims = insurance_claims.filter(claim_status='APPROVED').count()
+        settled_claims = insurance_claims.filter(claim_status='SETTLED').count()
+        pending_claims = insurance_claims.filter(claim_status='PENDING').count()
+        rejected_claims = insurance_claims.filter(claim_status='REJECTED').count()
+        
+        # Get maintenance records
+        maintenances = VehicleMaintenance.objects.filter(
+            vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).select_related('maintenance_type', 'created_by').order_by('-maintenance_date')
+        
+        # Calculate maintenance summary
+        total_maintenances = maintenances.count()
+        total_maintenance_cost = sum(m.cost for m in maintenances)
+        pending_maintenances = maintenances.filter(status='PENDING').count()
+        in_progress_maintenances = maintenances.filter(status='IN_PROGRESS').count()
+        completed_maintenances = maintenances.filter(status='COMPLETED').count()
+        
+        # Get vehicle purchase info
+        vehicle_purchase = VehiclePurchase.objects.filter(
+            vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).select_related('employee', 'created_by').first()
+        
+        # Get installments if vehicle has purchase
+        installments = []
+        total_installments = 0
+        paid_installments = 0
+        pending_installments = 0
+        overdue_installments = 0
+        total_installment_amount = 0
+        paid_installment_amount = 0
+        pending_installment_amount = 0
+        
+        if vehicle_purchase:
+            installments = VehicleInstallment.objects.filter(
+                purchase=vehicle_purchase,
+                is_active=True,
+                deleted=False
+            ).select_related('created_by').order_by('due_date')
+            
+            total_installments = installments.count()
+            paid_installments = installments.filter(is_paid=True).count()
+            pending_installments = installments.filter(is_paid=False, payment_status='PENDING').count()
+            overdue_installments = installments.filter(payment_status='OVERDUE').count()
+            total_installment_amount = sum(i.amount for i in installments)
+            paid_installment_amount = sum(i.amount for i in installments.filter(is_paid=True))
+            pending_installment_amount = total_installment_amount - paid_installment_amount
+        
+        # Check for issues and alerts
+        issues = []
+        today = timezone.now().date()
+        
+        # Check insurance expiry
+        if vehicle.insurance_expiry_date:
+            days_until_insurance_expiry = (vehicle.insurance_expiry_date - today).days
+            if days_until_insurance_expiry < 0:
+                issues.append({
+                    'severity': 'critical',
+                    'message': f'Insurance expired {abs(days_until_insurance_expiry)} days ago!'
+                })
+            elif days_until_insurance_expiry <= 7:
+                issues.append({
+                    'severity': 'high',
+                    'message': f'Insurance expiring in {days_until_insurance_expiry} days!'
+                })
+            elif days_until_insurance_expiry <= 30:
+                issues.append({
+                    'severity': 'warning',
+                    'message': f'Insurance expiring in {days_until_insurance_expiry} days'
+                })
+        
+        # Check istemara expiry
+        if vehicle.istemara_expiry_date:
+            days_until_istemara_expiry = (vehicle.istemara_expiry_date - today).days
+            if days_until_istemara_expiry < 0:
+                issues.append({
+                    'severity': 'critical',
+                    'message': f'Istemara expired {abs(days_until_istemara_expiry)} days ago!'
+                })
+            elif days_until_istemara_expiry <= 7:
+                issues.append({
+                    'severity': 'high',
+                    'message': f'Istemara expiring in {days_until_istemara_expiry} days!'
+                })
+            elif days_until_istemara_expiry <= 30:
+                issues.append({
+                    'severity': 'warning',
+                    'message': f'Istemara expiring in {days_until_istemara_expiry} days'
+                })
+        
+        # Check pending violations
+        if pending_penalties > 0:
+            issues.append({
+                'severity': 'high',
+                'message': f'{pending_penalties} pending traffic violation penalties (Total: {pending_fine_amount} SAR)'
+            })
+        
+        # Check overdue violations
+        if overdue_penalties > 0:
+            issues.append({
+                'severity': 'critical',
+                'message': f'{overdue_penalties} overdue traffic violation penalties!'
+            })
+        
+        # Check pending maintenance
+        if pending_maintenances > 0:
+            issues.append({
+                'severity': 'warning',
+                'message': f'{pending_maintenances} pending maintenance tasks'
+            })
+        
+        # Check overdue installments
+        if overdue_installments > 0:
+            issues.append({
+                'severity': 'critical',
+                'message': f'{overdue_installments} overdue installments!'
+            })
+        
+        # Available employees for assignment (active employees not assigned to any vehicle)
+        assigned_employee_ids = VehicleAssign.objects.filter(
+            is_active=True,
+            deleted=False
+        ).values_list('employee_id', flat=True)
+        
+        available_employees = Employee.objects.filter(
+            is_active=True
+        ).exclude(id__in=assigned_employee_ids).order_by('first_name', 'last_name')
+        
+        context.update({
+            'current_assignment': current_assignment,
+            'all_assignments': all_assignments,
+            'handovers': handovers,
+            'violations': violations,
+            'violation_penalties': violation_penalties,
+            'accidents': accidents,
+            'insurance_claims': insurance_claims,
+            'maintenances': maintenances,
+            'vehicle_purchase': vehicle_purchase,
+            'installments': installments,
+            'issues': issues,
+            'available_employees': available_employees,
+            # Summary data
+            'penalties_summary': {
+                'total': total_penalties,
+                'paid': paid_penalties,
+                'pending': pending_penalties,
+                'overdue': overdue_penalties,
+                'total_amount': total_fine_amount,
+                'paid_amount': paid_fine_amount,
+                'pending_amount': pending_fine_amount,
+            },
+            'accidents_summary': {
+                'total': total_accidents,
+                'total_damage': total_accident_damage,
+                'with_insurance': accidents_with_insurance,
+            },
+            'claims_summary': {
+                'total': total_claims,
+                'total_amount': total_claim_amount,
+                'approved': approved_claims,
+                'settled': settled_claims,
+                'pending': pending_claims,
+                'rejected': rejected_claims,
+            },
+            'maintenance_summary': {
+                'total': total_maintenances,
+                'total_cost': total_maintenance_cost,
+                'pending': pending_maintenances,
+                'in_progress': in_progress_maintenances,
+                'completed': completed_maintenances,
+            },
+            'installments_summary': {
+                'total': total_installments,
+                'paid': paid_installments,
+                'pending': pending_installments,
+                'overdue': overdue_installments,
+                'total_amount': total_installment_amount,
+                'paid_amount': paid_installment_amount,
+                'pending_amount': pending_installment_amount,
+            },
+        })
+        
+        return context
+ 
+
 @method_decorator(login_required, name='dispatch')
 class VehicleCreateView(CreateView):
     model = Vehicle
@@ -2571,6 +2838,7 @@ class VehicleUpdateView(UpdateView):
         return super().form_valid(form)
 
 
+
 @login_required
 def vehicle_delete(request, pk):
     if not checkUserPermission(request, "can_delete", "/backend/vehicle_info/"):
@@ -2581,6 +2849,99 @@ def vehicle_delete(request, pk):
     vehicle_info.deleted = True
     vehicle_info.save()
     return redirect('vehicle_info:list')
+
+
+@login_required
+def vehicle_assign_quick(request, pk):
+    """Quick assign vehicle to employee from vehicle detail page"""
+    if not checkUserPermission(request, "can_add", "/backend/vehicle-assign/"):
+        messages.error(request, "You do not have permission to assign vehicles.")
+        return redirect('vehicle_info:detail', pk=pk)
+    
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        assigned_date = request.POST.get('assigned_date')
+        remarks = request.POST.get('remarks', '')
+        
+        try:
+            vehicle = Vehicle.objects.get(pk=pk, is_active=True, deleted=False)
+            employee = Employee.objects.get(pk=employee_id, is_active=True)
+            
+            # Check if vehicle is already assigned to someone else
+            existing_assignment = VehicleAssign.objects.filter(
+                vehicle=vehicle,
+                is_active=True,
+                deleted=False
+            ).first()
+            
+            if existing_assignment:
+                messages.error(request, f"Vehicle is already assigned to {existing_assignment.employee.full_name}. Please unassign first.")
+                return redirect('vehicle_info:detail', pk=pk)
+            
+            # Check if employee already has a vehicle assigned
+            employee_assignment = VehicleAssign.objects.filter(
+                employee=employee,
+                is_active=True,
+                deleted=False
+            ).first()
+            
+            if employee_assignment:
+                messages.error(request, f"{employee.full_name} already has vehicle {employee_assignment.vehicle.plate_no} assigned.")
+                return redirect('vehicle_info:detail', pk=pk)
+            
+            # Create new assignment
+            VehicleAssign.objects.create(
+                vehicle=vehicle,
+                employee=employee,
+                assigned_date=assigned_date,
+                remarks=remarks,
+                created_by=request.user
+            )
+            
+            messages.success(request, f"Vehicle {vehicle.plate_no} successfully assigned to {employee.full_name}!")
+            
+        except Vehicle.DoesNotExist:
+            messages.error(request, "Vehicle not found.")
+        except Employee.DoesNotExist:
+            messages.error(request, "Employee not found.")
+        except Exception as e:
+            messages.error(request, f"Error assigning vehicle: {str(e)}")
+    
+    return redirect('vehicle_info:detail', pk=pk)
+
+
+@login_required
+def vehicle_unassign(request, pk):
+    """Unassign vehicle from current employee"""
+    if not checkUserPermission(request, "can_delete", "/backend/vehicle-assign/"):
+        messages.error(request, "You do not have permission to unassign vehicles.")
+        return redirect('vehicle_info:detail', pk=pk)
+    
+    try:
+        vehicle = Vehicle.objects.get(pk=pk, is_active=True, deleted=False)
+        
+        # Find current active assignment
+        assignment = VehicleAssign.objects.filter(
+            vehicle=vehicle,
+            is_active=True,
+            deleted=False
+        ).first()
+        
+        if assignment:
+            assignment.is_active = False
+            assignment.deleted = True
+            assignment.updated_by = request.user
+            assignment.save()
+            messages.success(request, f"Vehicle {vehicle.plate_no} unassigned from {assignment.employee.full_name} successfully!")
+        else:
+            messages.warning(request, "Vehicle is not currently assigned to anyone.")
+            
+    except Vehicle.DoesNotExist:
+        messages.error(request, "Vehicle not found.")
+    except Exception as e:
+        messages.error(request, f"Error unassigning vehicle: {str(e)}")
+    
+    return redirect('vehicle_info:detail', pk=pk)
 
 
 @method_decorator(login_required, name='dispatch')
