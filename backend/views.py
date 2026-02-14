@@ -1,3 +1,4 @@
+from multiprocessing import context
 import os 
 import base64 
 from django.shortcuts import render, redirect
@@ -1925,11 +1926,18 @@ class UniformStockListView(ListView):
             'is_active': True, 
         }
         
-        uniform = self.request.GET.get('uniform', '') 
+        uniform = self.request.GET.get('uniform', '').strip() 
+        code = self.request.GET.get('code', '').strip()
+        size = self.request.GET.get("size", "").strip()
+
         
         if uniform:
             filters['uniform_id'] = uniform
-       
+        if code:
+            filters['code'] = code
+        if size:
+            filters['size'] = size
+        
         return UniformStock.objects.filter(**filters)
     
     def get_context_data(self, **kwargs):
@@ -1939,8 +1947,9 @@ class UniformStockListView(ListView):
         context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['uniform_stocks'])
 
         # Add all uniforms for select2 dropdown
-        from backend.models import Uniform
         context['all_uniforms'] = Uniform.objects.filter(is_active=True).order_by('name')
+        context['all_code'] = UniformStock.objects.filter(is_active=True).values_list('code', flat=True).distinct()
+        context['all_sizes'] = UniformStock.objects.filter(is_active=True).values_list('size', flat=True).distinct()
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -2842,12 +2851,18 @@ class TrafficViolationListView(ListView):
     def get_queryset(self):
         queryset = TrafficViolation.objects.all().order_by('-violation_date')
         
-        plate_no = self.request.GET.get('plate_no', '')
+        plate_no = self.request.GET.get('plate_no', '').strip()
+        chassee_no = self.request.GET.get('chassee_no', '').strip()
+        engine_no = self.request.GET.get('engine_no', '').strip()
         violation_type = self.request.GET.get('violation_type', '')
         is_paid = self.request.GET.get('is_paid', '')
         
         if plate_no:
             queryset = queryset.filter(vehicle__plate_no=plate_no)
+        if chassee_no:
+            queryset = queryset.filter(vehicle__chassee_no=chassee_no)
+        if engine_no:
+            queryset = queryset.filter(vehicle__engine_no=engine_no) 
         if violation_type:
             queryset = queryset.filter(violation_type_id=violation_type)
         if is_paid:
@@ -2868,7 +2883,10 @@ class TrafficViolationListView(ListView):
         context['get_param'] = get_param.urlencode()
         
         # Add data for select2 dropdowns
-        context['all_vehicles'] = Vehicle.objects.filter(is_active=True, deleted=False).order_by('plate_no')
+        vehicles = Vehicle.objects.filter(is_active=True)
+        context['all_plate_no'] = vehicles.exclude(plate_no__isnull=True).exclude(plate_no="").values_list('plate_no', flat=True).distinct().order_by('plate_no')
+        context['all_chassee_no'] = vehicles.exclude(chassee_no__isnull=True).exclude(chassee_no="").values_list('chassee_no', flat=True).distinct().order_by('chassee_no')
+        context['all_engine_no'] = vehicles.exclude(engine_no__isnull=True).exclude(engine_no="").values_list('engine_no', flat=True).distinct().order_by('engine_no')
         context['all_violation_types'] = ViolationType.objects.filter(is_active=True).order_by('name')
         
         return context

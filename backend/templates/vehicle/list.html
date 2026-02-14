@@ -1,14 +1,22 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Vehicle Records - {{ site_setting.site_title|default:'' }}{% endblock %}
+{% block meta_description %}Manage employee vehicle information and records{% endblock %}
+
+{% block title %}Vehicle Records{% endblock %}
+
+{% block subtitle %}
+<p class="text-sm text-[var(--text-light-color)] mt-1">Manage employee vehicle information</p>
+{% endblock %}
+
+{% block breadcrumb %}
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<span class="font-medium text-[var(--primary-color)]">Vehicles</span>
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800">Vehicle Records</h1>
-            <p class="text-gray-600 mt-1">Manage employee vehicle information</p>
-        </div>
-    </div>
 
     <!-- Results Count -->
     <div class="mb-4">

@@ -1,34 +1,42 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block page_title %}Traffic Violations - {{ site_setting.site_title|default:'' }}{% endblock %}
+{% block meta_description %}Manage traffic violation records and penalties{% endblock %}
+
 {% block title %}Traffic Violations{% endblock %}
 
+{% block subtitle %}
+<p class="text-sm text-[var(--text-light-color)] mt-1">Manage traffic violation records</p>
+{% endblock %}
+
 {% block breadcrumb %}
-<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
-<span class="mx-1">›</span>
-<a href="{% url 'traffic_violation:list' %}">Traffic Violations</a>
-<span class="mx-1">›</span>
-<span>List</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<a href="{% url 'backend:vehicle_management' %}" class="hover:text-[var(--primary-color)] transition-colors">Vehicle Management</a>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<span class="font-medium text-[var(--primary-color)]">Traffic Violations</span>
+{% endblock %}
+
+{% block header_actions %}
+<button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm" aria-label="Filter violations">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+    </svg>
+    <span>Filter</span>
+</button>
+<a href="{% url 'traffic_violation:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    <span>Add Violation</span>
+</a>
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-[var(--text-color)]">Traffic Violations</h1>
-            <p class="text-[var(--text-light-color)] mt-1">Manage traffic violation records</p>
-        </div>
-        <div class="flex gap-3">
-            <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
-                <i class="fas fa-filter mr-2"></i>Filter
-            </button>
-            <a href="{% url 'traffic_violation:create' %}" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
-                <i class="fas fa-plus"></i>
-                <span>Add Violation</span>
-            </a>
-        </div>
-    </div>
 
     <!-- Filter Modal -->
     <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
@@ -52,8 +60,36 @@
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Plate No</label>
                             <select name="plate_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                                 <option value="">All Vehicles</option>
-                                {% for vehicle in all_vehicles %}
-                                <option value="{{ vehicle.plate_no }}" {% if request.GET.plate_no == vehicle.plate_no %}selected{% endif %}>{{ vehicle.plate_no }}</option>
+                                {% for plate in all_plate_no %}
+                                <option value="{{ plate }}" {% if request.GET.plate_no == plate %}selected{% endif %}>
+                                    {{ plate }}
+                                </option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Plate No</label>
+                            <select name="chassee_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All Vehicles</option>
+                                {% for ch in all_chassee_no %}
+                                <option value="{{ ch }}" {% if request.GET.chassee_no == ch %}selected{% endif %}>
+                                    {{ ch }}
+                                </option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Plate No</label>
+                            <select name="engine_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All Vehicles</option>
+                                {% for eng in all_engine_no %}
+                                <option value="{{ eng }}" {% if request.GET.engine_no == eng %}selected{% endif %}>
+                                    {{ eng }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>

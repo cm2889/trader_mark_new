@@ -1,32 +1,42 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block page_title %}Vehicle Purchases - {{ site_setting.site_title|default:'' }}{% endblock %}
+{% block meta_description %}Manage vehicle purchase records and installment payments{% endblock %}
+
 {% block title %}Vehicle Purchases{% endblock %}
 
+{% block subtitle %}
+<p class="text-sm text-[var(--text-light-color)] mt-1">Manage vehicle purchase records and installments</p>
+{% endblock %}
+
 {% block breadcrumb %}
-<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
-<span class="mx-1">›</span>
-<a href="{% url 'vehicle_purchase:list' %}">Purchases</a>
-<span class="mx-1">›</span>
-<span>List</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<a href="{% url 'backend:vehicle_management' %}" class="hover:text-[var(--primary-color)] transition-colors">Vehicle Management</a>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<span class="font-medium text-[var(--primary-color)]">Purchases</span>
+{% endblock %}
+
+{% block header_actions %}
+<button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm" aria-label="Filter purchases">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+    </svg>
+    <span>Filter</span>
+</button>
+<a href="{% url 'vehicle_purchase:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    <span>Add Purchase</span>
+</a>
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-[var(--text-color)]">Vehicle Purchases</h1>
-            <p class="text-[var(--text-light-color)] mt-1">Manage vehicle purchase records and installments</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <button onclick="openFilterModal()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm">
-                <i class="fas fa-filter"></i><span>Filter</span>
-            </button>
-            <a href="{% url 'vehicle_purchase:create' %}" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
-                <i class="fas fa-plus"></i><span>Add Purchase</span>
-            </a>
-        </div>
-    </div>
 
     <!-- Filter Modal -->
     <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">

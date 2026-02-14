@@ -44,11 +44,28 @@
                     </button>
                 </div>
                 <!-- Body with form -->
-                <form method="get">
-                    <div class="p-6">
+                <form method="get" class="bg-white rounded-2xl shadow-sm border border-[var(--border-color)] overflow-hidden">
+
+                <!-- Header -->
+                <div class="px-6 py-4 border-b bg-gray-50">
+                    <h3 class="text-sm font-semibold text-[var(--text-color)]">
+                        Filter Uniform Stock
+                    </h3>
+                </div>
+
+                <!-- Body -->
+                <div class="p-6 space-y-5">
+
+                    <!-- Row 1 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                        <!-- Uniform -->
                         <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Uniform</label>
-                            <select name="uniform" class="select2-items h-11 w-full appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm ring-1 ring-[var(--border-color)] outline-none focus:ring-[var(--primary-color)]/40">
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">
+                                Uniform
+                            </label>
+                            <select name="uniform"
+                                class="select2-items h-11 w-full rounded-lg bg-[var(--bg-color)] px-3 text-sm ring-1 ring-[var(--border-color)] focus:ring-[var(--primary-color)]/40 outline-none">
                                 <option value="">All Uniforms</option>
                                 {% for uniform in all_uniforms %}
                                 <option value="{{ uniform.id }}" {% if request.GET.uniform == uniform.id|stringformat:"s" %}selected{% endif %}>
@@ -57,13 +74,54 @@
                                 {% endfor %}
                             </select>
                         </div>
+
+                        <!-- Code -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">
+                                Code
+                            </label>
+                            <select name="code" id="codeSelect"
+                                class="select2-items h-11 w-full rounded-lg bg-[var(--bg-color)] px-3 text-sm ring-1 ring-[var(--border-color)] focus:ring-[var(--primary-color)]/40 outline-none">
+                                <option value="">All Codes</option>
+                                {% for code in all_code %}
+                                <option value="{{ code }}" {% if request.GET.code == code %}selected{% endif %}>
+                                    {{ code }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
                     </div>
-                    <!-- Footer -->
-                    <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
-                        <a href="{% url 'uniform_stock:list' %}" class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">Filter</button>
+
+                    <!-- Row 2 -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">
+                            Size
+                        </label>
+                        <select name="size" id="sizeSelect"
+                            class="select2-items h-11 w-full rounded-lg bg-[var(--bg-color)] px-3 text-sm ring-1 ring-[var(--border-color)] focus:ring-[var(--primary-color)]/40 outline-none">
+                            <option value="">All Sizes</option>
+                            {% for size in all_sizes %}
+                            <option value="{{ size }}" {% if request.GET.size == size %}selected{% endif %}>
+                                {{ size }}
+                            </option>
+                            {% endfor %}
+                        </select>
                     </div>
-                </form>
+
+                </div>
+
+            <!-- Footer --> 
+                <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50"> 
+                    <a href="{% url 'uniform_stock:list' %}" class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">
+                        Reset
+                    </a> 
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">
+                        Filter
+                    </button> 
+                </div>
+            </form>
+
             </div>
         </div>
 

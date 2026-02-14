@@ -1,34 +1,38 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}
-    Employee - Create
+
+{% block page_title %}Employees - {{ site_setting.site_title|default:'' }}{% endblock %}
+{% block meta_description %}Manage employee records, view employee details, and track workforce information{% endblock %}
+
+{% block title %}Employees{% endblock %}
+
+{% block subtitle %}
+<p class="text-sm text-[var(--text-light-color)] mt-1">Manage all employee records and information</p>
 {% endblock %}
 
 {% block breadcrumb %}
-    <span class="mx-1">›</span>
-    <a href="{% url 'employee:list' %}" class="hover:underline">Employee</a>
-    <span class="mx-1">›</span>
-    <span>Add</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<span class="font-medium text-[var(--primary-color)]">Employees</span>
+{% endblock %}
+
+{% block header_actions %}
+<button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm" aria-label="Filter employees">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+    </svg>
+    <span>Filter</span>
+</button>
+<a href="{% url 'employee:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    <span>Add Employee</span>
+</a>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
-    <div class="">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-semibold text-[var(--text-color)]">Employees</h1>
-                <p class="text-sm text-[var(--text-light-color)] mt-1">Manage all employee records</p>
-            </div>
-            <div class="mt-4 sm:mt-0 flex gap-3">
-                <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-filter mr-2"></i>Filter
-                </button>
-                <a href="{% url 'employee:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                    <i class="fas fa-plus mr-2"></i>Add Employee
-                </a>
-            </div>
-        </div>
 
         <!-- Filter Modal -->
         <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
@@ -117,8 +121,8 @@
         </div>
 
         <!-- Table Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
-            <div class="overflow-x-auto">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] ">
+            <div class="">
                 <table class="w-full">
                     <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                         <tr>
@@ -170,92 +174,92 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
                                 {{ employee.joining_at|date:"M d, Y" }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <div class="inline-block" data-menu-wrap>
+                            <td class="px-6 py-4 text-sm text-center">
+                                <div class="relative inline-block" data-menu-wrap>
                                     <button type="button"
-                                            class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                            data-menu-btn aria-haspopup="true" aria-expanded="false"
+                                            class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)] transition-colors"
+                                            data-menu-btn aria-haspopup="true" aria-expanded="false" aria-label="Employee actions"
                                             onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
                                     ⋯
                                     </button>
 
-                                    <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
+                                    <div class="hidden absolute right-0 mt-1 w-[180px] z-50 rounded-lg bg-white
                                                 ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
 
                                     <a href="{% url 'employee:detail' employee.pk %}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50 first:rounded-t-lg"
                                         role="menuitem"
                                         onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 2.66C4.66 2.66 2.66 4.66 2.66 8C2.66 11.34 4.66 13.34 8 13.34C11.34 13.34 13.34 11.34 13.34 8C13.34 4.66 11.34 2.66 8 2.66ZM8 3.33C10.33 3.33 12.66 5.66 12.66 8C12.66 10.33 10.33 12.66 8 12.66C5.66 12.66 3.33 10.33 3.33 8C3.33 5.66 5.66 3.33 8 3.33ZM8 5.33C6.9 5.33 6 6.23 6 7.33C6 8.43 6.9 9.33 8 9.33C9.1 9.33 10 8.43 10 7.33C10 6.23 9.1 5.33 8 5.33ZM8 6C8.55 6 9 6.45 9 7.33C9 8.22 8.55 8.66 8 8.66C7.45 8.66 7 8.22 7 7.33C7 6.45 7.45 6 8 6Z" fill="#4A5565"/>
+                                        <path d="M8 2.66C4.66 2.66 2.66 4.66 2.66 8C2.66 11.34 4.66 13.34 8 13.34C11.34 13.34 13.34 11.34 13.34 8C13.34 4.66 11.34 2.66 8 2.66Z" stroke="#4A5565" stroke-width="1.2"/>
+                                        <path d="M8 5.33C6.9 5.33 6 6.23 6 7.33C6 8.43 6.9 9.33 8 9.33C9.1 9.33 10 8.43 10 7.33C10 6.23 9.1 5.33 8 5.33Z" stroke="#4A5565" stroke-width="1.2"/>
                                         </svg>
-                                        View
+                                        View Details
                                     </a>
 
-                                    <div class="border-t border-[var(--border-color)]"></div>
-                                    <a href="{% url 'employee:update' employee.pk %}">
-                                        <div class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                            role="menuitem"
-                                            onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                            <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
+                                    <a href="{% url 'employee:profile' employee.pk %}"
+                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
+                                        role="menuitem"
+                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z" stroke="#4A5565" stroke-width="1.2"/>
+                                        </svg>
+                                        View Profile
+                                    </a>
+
+                                    <div class="border-t border-[var(--border-color)] my-1"></div>
+
+                                    <a href="{% url 'employee:update' employee.pk %}"
+                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
+                                        role="menuitem"
+                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                                        <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
                                                 stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round"/>
-                                            <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7,3,33"
+                                        <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33"
                                                 stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                            Edit
-                                        </div>
+                                        </svg>
+                                        Edit Employee
                                     </a>
-                                    <a href="{% url 'employee:profile' employee.pk %}">
-                                        <div class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                            role="menuitem"
-                                            onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                            <path d="M8 2.66C4.66 2.66 2.66 4.66 2.66 8C2.66 11.34 4.66 13.34 8 13.34C11.34 13.34 13.34 11.34 13.34 8C13.34 4.66 11.34 2.66 8 2.66ZM8 3.33C10.33 3.33 12.66 5.66 12.66 8C12.66 10.33 10.33 12.66 8 12.66C5.66 12.66 3.33 10.33 3.33 8C3.33 5.66 5.66 3.33 8 3.33ZM8 5.33C6.9 5.33 6 6.23 6 7.33C6 8.43 6.9 9.33 8 9.33C9.1 9.33 10 8.43 10 7.33C10 6.23 9.1 5.33 8 5.33Z" fill="#4A5565"/>
-                                            </svg>
-                                            Profile
-                                        </div>
-                                    </a>
+
+                                    <div class="border-t border-[var(--border-color)] my-1"></div>
 
                                     <a href="{% url 'uniform_issuance:create' %}?employee={{ employee.pk }}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
                                         role="menuitem"
                                         onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M5.5 2.66h5c1.05 0 1.9.85 1.9 1.9v6.88c0 1.05-.85 1.9-1.9 1.9h-5c-1.05 0-1.9-.85-1.9-1.9V4.56c0-1.05.85-1.9 1.9-1.9Z" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M6.66 7.66H8M8 7.66h1.33M8 7.66V6.33M8 7.66v1.34" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M5.5 2.66h5c1.05 0 1.9.85 1.9 1.9v6.88c0 1.05-.85 1.9-1.9 1.9h-5c-1.05 0-1.9-.85-1.9-1.9V4.56c0-1.05.85-1.9 1.9-1.9Z" stroke="#4A5565" stroke-width="1.2"/>
                                         </svg>
                                         Issue Uniform
                                     </a>
 
                                     <a href="{% url 'vehicle_assign:create' %}?employee={{ employee.pk }}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
                                         role="menuitem"
                                         onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3.66 9.66h8.68c.38 0 .7-.27.77-.64l.43-2.2c.08-.4-.23-.77-.64-.77H4.03c-.3 0-.57.2-.65.49L2.66 9.02c-.1.33.16.64.5.64Z" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M5.33 9.66v1.01c0 .74.6 1.33 1.34 1.33h2.66c.74 0 1.34-.59 1.34-1.33V9.66M5.33 9.66l-.8-3.32M10.66 9.66l.8-3.32M5.66 12.66h-.33c-.74 0-1.33-.6-1.33-1.33v-1.34" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M3.66 9.66h8.68c.38 0 .7-.27.77-.64l.43-2.2" stroke="#4A5565" stroke-width="1.2"/>
                                         </svg>
                                         Assign Vehicle
                                     </a>
 
-                                    <div class="border-t border-[var(--border-color)]"></div>
-                                    <a href=""
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
-                                        role="menuitem"
-                                        onclick="if(!confirm('Are you sure you want to delete this nationality?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                    <div class="border-t border-[var(--border-color)] my-1"></div>
+
+                                    <button type="button"
+                                        onclick="confirmDelete({{ employee.pk }}, '{{ employee.full_name|escapejs }}')"
+                                        class="w-full block px-3 py-2 text-sm text-left flex items-center gap-2 text-red-600 hover:bg-red-50 last:rounded-b-lg"
+                                        role="menuitem">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
                                         <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
                                                 stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                                         <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                                         </svg>
                                         Delete
-                                    </a>
+                                    </button>
 
                                     </div>
                                 </div>
-
-                              
                             </td>
                         </tr>
                         {% empty %}

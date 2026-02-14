@@ -4,10 +4,25 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>{{ site_setting.site_title|default:'' }}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="{% block meta_description %}{{ site_setting.site_title|default:'' }} - Modern HR and Vehicle Management System{% endblock %}" />
+    <meta name="keywords" content="{% block meta_keywords %}HR management, vehicle management, employee tracking{% endblock %}" />
+    <meta name="author" content="{{ site_setting.site_title|default:'' }}" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{% block og_title %}{{ site_setting.site_title|default:'' }}{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Modern HR and Vehicle Management System{% endblock %}" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{% block twitter_title %}{{ site_setting.site_title|default:'' }}{% endblock %}" />
+    
+    <title>{% block page_title %}{{ site_setting.site_title|default:'' }}{% endblock %}</title>
     <link rel="icon" type="image/png" href="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=favicon">
     <link rel="icon" type="image/webp" href="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=favicon">
+    <link rel="apple-touch-icon" href="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=logo">
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -254,11 +269,40 @@
                         </div>
 
                         <!-- right icons -->
-                        <button class="p-2.5 rounded-md hover:bg-[var(--bg-color)]">
+                        <button class="p-2.5 rounded-md hover:bg-[var(--bg-color)] relative" aria-label="Notifications">
                             <svg class="h-6 w-6 text-[var(--primary-color)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9" />
                             </svg>
                         </button>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="relative">
+                            <button id="profileMenuBtn" onclick="toggleProfileMenu()" 
+                                    class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-[var(--bg-color)] transition-colors"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <div class="w-8 h-8 bg-[var(--primary-color)] rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                    {{ user.username|slice:":1"|upper }}
+                                </div>
+                                <svg class="w-4 h-4 text-[var(--text-light-color)] hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div id="profileMenu" class="hidden absolute right-0 mt-2 w-56 rounded-lg bg-white ring-1 ring-[var(--border-color)] shadow-lg z-50">
+                                <div class="px-4 py-3 border-b border-[var(--border-color)]">
+                                    <p class="text-sm font-medium text-[var(--text-color)]">{{ user.get_full_name|default:user.username }}</p>
+                                    <p class="text-xs text-[var(--text-light-color)] mt-0.5">{{ user.email|default:'' }}</p>
+                                </div>
+                                <div class="py-1">
+                                    <a href="{% url 'backend:backend_dashboard' %}" class="block px-4 py-2 text-sm text-[var(--text-color)] hover:bg-gray-50">
+                                        <i class="fas fa-home mr-2 w-4"></i>Dashboard
+                                    </a>
+                                    <a href="{% url 'backend:backend_logout' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        <i class="fas fa-sign-out-alt mr-2 w-4"></i>Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -279,59 +323,135 @@
 
         <!-- Django messages -->
         {% if messages %}
-            <ul class="mt-4 p-2 space-y-2">
-                {% for message in messages %}
-                    <li class="text-sm rounded-md px-3 py-2 
-                        {% if message.tags == 'error' %}
-                            bg-red-50 text-red-700 ring-1 ring-red-200
-                        {% elif message.tags == 'success' %}
-                            bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200
-                        {% else %}
-                            bg-slate-50 text-slate-700 ring-1 ring-slate-200
-                        {% endif %}"
-                    >
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                <div class="space-y-2">
+                    {% for message in messages %}
+                        <div role="alert" class="flex items-start gap-3 rounded-lg px-4 py-3 shadow-sm
+                            {% if message.tags == 'error' or message.tags == 'danger' %}
+                                bg-red-50 text-red-800 ring-1 ring-red-200
+                            {% elif message.tags == 'success' %}
+                                bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200
+                            {% elif message.tags == 'warning' %}
+                                bg-amber-50 text-amber-800 ring-1 ring-amber-200
+                            {% elif message.tags == 'info' %}
+                                bg-blue-50 text-blue-800 ring-1 ring-blue-200
+                            {% else %}
+                                bg-gray-50 text-gray-800 ring-1 ring-gray-200
+                            {% endif %}"
+                        >
+                            <div class="flex-shrink-0 mt-0.5">
+                                {% if message.tags == 'error' or message.tags == 'danger' %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                {% elif message.tags == 'success' %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                {% elif message.tags == 'warning' %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                {% else %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <p class="text-sm flex-1">{{ message }}</p>
+                            <button type="button" onclick="this.closest('[role=alert]').remove()" class="flex-shrink-0 ml-2 text-current opacity-50 hover:opacity-100 transition-opacity" aria-label="Close">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         {% endif %}
 
-        <main class=" mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <!-- New Header -->
-            <div class="flex items-center justify-between">
-                <!-- Breadcrumb + Title -->
-                <div class="mt-4">
-                    <div class="mt-1 flex items-center gap-3">
-                        <h1 id="page_title" class="text-2xl lg:text-[32px] font-semibold">{% block title %} {{ site_setting.site_title|default:'' }} {% endblock %}</h1>
+        <main class="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- Page Header -->
+            <div class="mb-6">
+                <!-- Breadcrumb Navigation -->
+                <nav class="flex items-center gap-2 text-sm text-[var(--text-light-color)] mb-3" aria-label="Breadcrumb">
+                    <a href="{% url 'backend:backend_dashboard' %}" class="hover:text-[var(--primary-color)] transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span>Home</span>
+                    </a>
+                    {% for breadcrumb in breadcrumb_menu %}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <a {% if breadcrumb.menu_url %}href="{% if '/' in breadcrumb.menu_url %}{{ breadcrumb.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' breadcrumb.menu_url %}{% endif %}" {% else %}href="#"{% endif %} 
+                           class="hover:text-[var(--primary-color)] transition-colors{% if forloop.last %} font-medium text-[var(--primary-color)]{% endif %}">
+                            {{ breadcrumb.menu_name }}
+                        </a>
+                    {% endfor %}
+                    {% block breadcrumb %}{% endblock %}
+                </nav>
+
+                <!-- Page Title and Actions -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        {% block back_button %}{% endblock %}
+                        <div>
+                            <h1 id="page_title" class="text-2xl lg:text-3xl font-bold text-[var(--text-color)]">
+                                {% block title %}{{ site_setting.site_title|default:'' }}{% endblock %}
+                            </h1>
+                            {% block subtitle %}{% endblock %}
+                        </div>
                     </div>
-
-                    <!-- desktop breadcrumb -->
-                    <nav class="mt-4 text-sm text-[var(--primary-color)]">
-                        <a href="{% url 'backend:backend_dashboard' %}" class="hover:underline">Home</a><span class="mx-1">›</span>
-                        {% for breadcrumb in breadcrumb_menu %}
-                            <a {% if breadcrumb.menu_url %}href="{% if '/' in breadcrumb.menu_url %}{{ breadcrumb.menu_url }}{% else %}{% url 'backend:menu_wise_dashboard' breadcrumb.menu_url %}{% endif %}" {% else %}href="#"{% endif %} class="hover:underline">{{ breadcrumb.menu_name }}</a>{% if not forloop.last %}<span class="mx-1">›</span>{% endif %}
-                        {% endfor %}
-                        {% block breadcrumb %}{% endblock %}
-                    </nav>
-                </div>
-
-                <!-- Top bar: Filter + Add New -->
-                <div class="mt-4 flex items-center justify-end gap-3">
-                    {% block header_actions %}
-
-                    {% endblock %}
+                    
+                    <!-- Header Actions -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        {% block header_actions %}{% endblock %}
+                    </div>
                 </div>
             </div>
 
-            <!-- Cards -->
+            <!-- Main Content -->
             {% block content %}{% endblock %}
         </main>
     </div>
 
     <!--  JS -->
     <script>
-        const pageTitle = document.getElementById('page_title').textContent.trim();
-        document.title = pageTitle;
+        const pageTitle = document.getElementById('page_title');
+        if (pageTitle) {
+            document.title = pageTitle.textContent.trim() + ' - {{ site_setting.site_title|default:"" }}';
+        }
+    </script>
+
+    <!-- Loading State -->
+    <script>
+        // Show loading on form submissions
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            if (form.tagName === 'FORM') {
+                const submitBtn = form.querySelector('[type="submit"]');
+                if (submitBtn && !submitBtn.dataset.noLoading) {
+                    submitBtn.disabled = true;
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...';
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }, 5000);
+                }
+            }
+        });
+
+        // Auto-hide messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('[role="alert"]').forEach(alert => {
+                alert.style.transition = 'opacity 0.3s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
     </script>
 
     <script>
