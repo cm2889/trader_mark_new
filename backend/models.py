@@ -276,6 +276,38 @@ class SMSLog(models.Model):
     def __str__(self):
         return str(self.mobile_number)
     
+class Company(models.Model):
+    name = models.CharField(max_length=200, unique=True, db_index=True)
+    code = models.CharField(max_length=20, unique=True)
+    address = models.TextField(blank=True, null=True)
+    phone = models.CharField(max_length=50, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='company_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='company_updated_by', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False) 
+  
+    def save(self, *args, **kwargs):
+        if not self.code:
+            last_company = Company.objects.all().order_by('id').last()
+            if last_company:
+                last_code = int(last_company.code.split('COM')[-1])
+                new_code = f"COM{last_code + 1:05d}"
+            else:
+                new_code = "COM00001"
+            self.code = new_code
+        super().save(*args, **kwargs)
+
+    class Meta:
+        db_table = "org_companies"
+
+    def __str__(self):
+        return self.name
+
+    
 
 class Nationality(models.Model):
     code = models.CharField(max_length=10, unique=True)
@@ -320,6 +352,7 @@ class Employee(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True) 
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True) 
     hr_file_no = models.CharField(max_length=50, unique=True)
     qid_no = models.CharField(max_length=20, unique=True)
     first_name = models.CharField(max_length=200)

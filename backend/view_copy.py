@@ -38,7 +38,8 @@ from backend.models import (
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
     ViolationType, VehicleMaintananceType, 
-    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase 
+    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase,
+    Company
 )
 
 from backend.forms import (
@@ -48,7 +49,7 @@ from backend.forms import (
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
     VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm, 
     UniformForm, UniformStockForm, UniformIssuanceForm, UniformClearanceForm,
-    VehiclePurchaseForm, InstallmentPaymentForm
+    VehiclePurchaseForm, InstallmentPaymentForm, CompanyForm
 ) 
 
 from backend.common_func import checkUserPermission
@@ -92,248 +93,300 @@ def import_excel(request):
             return redirect('backend:import_excel')
 
         # Validate file extension
-        if not file.name.endswith(('.xlsx', '.xls', '.csv')):
-            messages.error(request, "Please upload a valid Excel file (.xlsx, .xls, or .csv)")
+        if not file.name.endswith(('.xlsx', '.xls')):
+            messages.error(request, "Please upload a valid Excel file (.xlsx or .xls)")
             return redirect('backend:import_excel')
 
         try:
-            # Read Excel file
-            if file.name.endswith('.csv'):
-                df = pd.read_csv(file)
-            else:
-                df = pd.read_excel(file)
+            # Read Excel file with all sheets
+            excel_file = pd.ExcelFile(file)
+            sheet_names = excel_file.sheet_names
 
-            # Clean column names - remove extra spaces
-            df.columns = df.columns.str.strip()
+            total_success_count = 0
+            total_error_count = 0
+            all_errors = []
+            companies_processed = []
 
-            success_count = 0
-            error_count = 0
-            errors = []
-
-            for index, row in df.iterrows():
+            # Process each sheet (each sheet represents a company)
+            for sheet_name in sheet_names:
                 try:
-                    # Skip empty rows
-                    if pd.isna(row.get('HR File No')) or pd.isna(row.get('Qid No')):
-                        continue
+                    # Read the current sheet
+                    df = pd.read_excel(excel_file, sheet_name=sheet_name)
+                    
+                    # Clean column names - remove extra spaces
+                    df.columns = df.columns.str.strip()
 
-                    # Parse name into first_name and last_name
-                    full_name = str(row.get('Name', '')).strip()
-                    name_parts = full_name.split(maxsplit=1)
-                    first_name = name_parts[0] if len(name_parts) > 0 else ''
-                    last_name = name_parts[1] if len(name_parts) > 1 else ''
-
-                    # Parse nationality
-                    nationality_name = str(row.get('Nationality', '')).strip()
-                    nationality = None
-                    if nationality_name:
-                        nationality, _ = Nationality.objects.get_or_create(
-                            name=nationality_name,
-                            defaults={'code': nationality_name[:3].upper(), 'created_by': request.user}
-                        )
-
-                    # Parse gender
-                    gender_val = str(row.get('Gender', '')).strip().upper()
-                    gender = 'M' if gender_val == 'MALE' else 'F' if gender_val == 'FEMALE' else 'M'
-
-                    # Parse dates
-                    def parse_date(date_val):
-                        """Parse date from Excel with multiple format support"""
-                        if pd.isna(date_val):
-                            return None
-                        if isinstance(date_val, datetime):
-                            return date_val.date()
-                        try:
-                            return pd.to_datetime(date_val).date()
-                        except:
-                            return None
-
-                    joining_date = parse_date(row.get('Joing Date'))
-                    rp_exp_date = parse_date(row.get('RP Exp date'))
-                    passport_expiry = parse_date(row.get('Passport Exipry'))
-                    license_expiry = parse_date(row.get('Driving license Expiry'))
-                    istemara_expiry = parse_date(row.get('Istemara Expiry'))
-
-                    # Get or create Employee
-                    hr_file_no = str(row.get('HR File No', '')).strip()
-                    qid_no = str(row.get('Qid No', '')).strip()
-
-                    employee, created = Employee.objects.get_or_create(
-                        qid_no=qid_no,
+                    # Get or create company based on sheet name
+                    company_name = sheet_name.strip()
+                    company, company_created = Company.objects.get_or_create(
+                        name=company_name,
                         defaults={
-                            'hr_file_no': hr_file_no,
-                            'first_name': first_name,
-                            'last_name': last_name,
-                            'nationality': nationality,
-                            'gender': gender,
-                            'joining_at': joining_date or timezone.now(),
-                            'remarks': str(row.get('Remarks', '')).strip() or None,
                             'created_by': request.user,
                         }
                     )
-
-                    # Update employee if already exists
-                    if not created:
-                        employee.hr_file_no = hr_file_no
-                        employee.first_name = first_name
-                        employee.last_name = last_name
-                        employee.nationality = nationality
-                        employee.gender = gender
-                        if joining_date:
-                            employee.joining_at = joining_date
-                        employee.remarks = str(row.get('Remarks', '')).strip() or None
-                        employee.updated_by = request.user
-                        employee.save()
-
-                    # Create or update Employment
-                    work_permit_no = str(row.get('Work Permit NO', '')).strip()
-                    work_id = str(row.get('Work ID', '')).strip()
                     
-                    if work_permit_no and work_id and rp_exp_date:
-                        # Parse work status
-                        work_sts = str(row.get('Work Sts', '')).strip().upper()
-                        work_status_map = {
-                            'TALABAT': 'ACTIVE',
-                            'SAK': 'ACTIVE',
-                            'ACTIVE': 'ACTIVE',
-                            'INACTIVE': 'INACTIVE',
-                            'ON LEAVE': 'ON_LEAVE',
-                            'TERMINATED': 'TERMINATED',
-                        }
-                        work_status = work_status_map.get(work_sts, 'ACTIVE')
+                    if company_created:
+                        companies_processed.append(f"Created new company: {company_name}")
+                    else:
+                        companies_processed.append(f"Processing company: {company_name}")
 
-                        # Parse QID renew/lost status
-                        qid_renew = str(row.get('QID Renew', '')).strip().upper()
-                        qid_lost = str(row.get('QID Lost', '')).strip().upper()
+                    success_count = 0
+                    error_count = 0
+                    errors = []
 
-                        employment, _ = Employment.objects.update_or_create(
-                            employee=employee,
-                            defaults={
-                                'rp_expiry_date': rp_exp_date,
-                                'work_permit_no': work_permit_no,
-                                'work_id': work_id,
-                                'work_status': work_status,
-                                'qid_renew_status': 'RENEWED' if qid_renew == 'YES' else 'NOT_DUE',
-                                'qid_lost_status': 'YES' if qid_lost == 'YES' else 'NO',
-                                'created_by': request.user,
-                                'updated_by': request.user,
-                            }
-                        )
+                    for index, row in df.iterrows():
+                        try:
+                            # Skip empty rows
+                            if pd.isna(row.get('HR File No')) or pd.isna(row.get('Qid No')):
+                                continue
 
-                    # Create or update Passport
-                    passport_no = str(row.get('Passport No', '')).strip()
-                    if passport_no and passport_expiry:
-                        passport_renew = str(row.get('Passport Renew', '')).strip().upper()
-                        Passport.objects.update_or_create(
-                            employee=employee,
-                            defaults={
-                                'passport_no': passport_no,
-                                'passport_expiry_date': passport_expiry,
-                                'passport_renewed': passport_renew == 'YES',
-                                'created_by': request.user,
-                                'updated_by': request.user,
-                            }
-                        )
+                            # Parse name into first_name and last_name
+                            full_name = str(row.get('Name', '')).strip()
+                            name_parts = full_name.split(maxsplit=1)
+                            first_name = name_parts[0] if len(name_parts) > 0 else ''
+                            last_name = name_parts[1] if len(name_parts) > 1 else ''
 
-                    # Create or update Driving License
-                    license_no = str(row.get('Driving License', '')).strip()
-                    if license_no and license_expiry:
-                        license_renew = str(row.get('Driving License Renew', '')).strip().upper()
-                        DrivingLicense.objects.update_or_create(
-                            employee=employee,
-                            defaults={
-                                'license_no': license_no,
-                                'license_expiry_date': license_expiry,
-                                'license_renewed': license_renew == 'YES',
-                                'license_renew_status': 'YES' if license_renew == 'YES' else 'NO',
-                                'created_by': request.user,
-                                'updated_by': request.user,
-                            }
-                        )
+                            # Parse nationality
+                            nationality_name = str(row.get('Nationality', '')).strip()
+                            nationality = None
+                            if nationality_name:
+                                nationality, _ = Nationality.objects.get_or_create(
+                                    name=nationality_name,
+                                    defaults={'code': nationality_name[:3].upper(), 'created_by': request.user}
+                                )
 
-                    # Create or update Health Insurance
-                    hamad_health = str(row.get('Hamad Health Card', '')).strip().upper()
-                    wm_insurance = str(row.get('WM Insurance', '')).strip().upper()
-                    fhc = str(row.get('FHC', '')).strip().upper()
+                            # Parse gender
+                            gender_val = str(row.get('Gender', '')).strip().upper()
+                            gender = 'M' if gender_val == 'MALE' else 'F' if gender_val == 'FEMALE' else 'M'
 
-                    if hamad_health or wm_insurance or fhc:
-                        HealthInsurance.objects.update_or_create(
-                            employee=employee,
-                            defaults={
-                                'hamad_health_card': hamad_health == 'YES',
-                                'wm_insurance': 'YES' if wm_insurance == 'YES' else 'NO',
-                                'family_health_card': 'YES' if fhc == 'YES' else 'NO',
-                                'created_by': request.user,
-                                'updated_by': request.user,
-                            }
-                        )
+                            # Parse dates
+                            def parse_date(date_val):
+                                """Parse date from Excel with multiple format support"""
+                                if pd.isna(date_val):
+                                    return None
+                                if isinstance(date_val, datetime):
+                                    return date_val.date()
+                                try:
+                                    return pd.to_datetime(date_val).date()
+                                except:
+                                    return None
 
-                    # Create or update Contact
-                    phone_no = str(row.get('Phone No', '')).strip()
-                    if phone_no:
-                        Contact.objects.update_or_create(
-                            employee=employee,
-                            defaults={
-                                'phone_no': phone_no,
-                                'phone_no_alt': str(row.get('Phone No 01', '')).strip() or None,
-                                'roommate_phone': str(row.get('Friends/ Room Mate Phone no', '')).strip() or None,
-                                'relative_qatar_phone': str(row.get('Relative Qatar Phone No', '')).strip() or None,
-                                'home_phone': str(row.get('Home Phone No', '')).strip() or None,
-                                'home_phone_alt': str(row.get('Home Phone No 01', '')).strip() or None,
-                                'home_email': str(row.get('Home Email', '')).strip() or None,
-                                'created_by': request.user,
-                                'updated_by': request.user,
-                            }
-                        )
+                            joining_date = parse_date(row.get('Joing Date'))
+                            rp_exp_date = parse_date(row.get('RP Exp date'))
+                            passport_expiry = parse_date(row.get('Passport Exipry'))
+                            license_expiry = parse_date(row.get('Driving license Expiry'))
+                            istemara_expiry = parse_date(row.get('Istemara Expiry'))
 
-                    # Create or update Address
-                    national_address = str(row.get('N. Address', '')).strip().upper()
-                    room_address = str(row.get('Room Address', '')).strip()
+                            # Get or create Employee
+                            hr_file_no = str(row.get('HR File No', '')).strip()
+                            qid_no = str(row.get('Qid No', '')).strip()
 
-                    if national_address or room_address:
-                        Address.objects.update_or_create(
-                            employee=employee,
-                            defaults={
-                                'national_address': national_address if national_address == 'YES' else None,
-                                'room_address': room_address or None,
-                                'created_by': request.user,
-                                'updated_by': request.user,
-                            }
-                        )
+                            employee, created = Employee.objects.get_or_create(
+                                qid_no=qid_no,
+                                defaults={
+                                    'hr_file_no': hr_file_no,
+                                    'company': company,
+                                    'first_name': first_name,
+                                    'last_name': last_name,
+                                    'nationality': nationality,
+                                    'gender': gender,
+                                    'joining_at': joining_date or timezone.now(),
+                                    'remarks': str(row.get('Remarks', '')).strip() or None,
+                                    'created_by': request.user,
+                                }
+                            )
 
-                    # Create or update Vehicle (if applicable)
-                    plate_no = str(row.get('Bike / Car No', '')).strip()
-                    if plate_no and plate_no != '*' and istemara_expiry:
-                        vehicle_type = 'BIKE'  # Default, can be enhanced
-                        Vehicle.objects.update_or_create(
-                            plate_no=plate_no,
-                            defaults={
-                                'vehicle_type': vehicle_type,
-                                'istemara_expiry_date': istemara_expiry,
-                                'insurance_name': 'Default Insurance',
-                                'insurance_expiry_date': istemara_expiry,
-                                'ownership': 'DRIVER',
-                                'created_by': request.user,
-                                'updated_by': request.user,
-                            }
-                        )
+                            # Update employee if already exists
+                            if not created:
+                                employee.hr_file_no = hr_file_no
+                                employee.company = company
+                                employee.first_name = first_name
+                                employee.last_name = last_name
+                                employee.nationality = nationality
+                                employee.gender = gender
+                                if joining_date:
+                                    employee.joining_at = joining_date
+                                employee.remarks = str(row.get('Remarks', '')).strip() or None
+                                employee.updated_by = request.user
+                                employee.save()
 
-                    success_count += 1
+                            # Create or update Employment
+                            work_permit_no = str(row.get('Work Permit NO', '')).strip()
+                            work_id = str(row.get('Work ID', '')).strip()
+                            
+                            if work_permit_no and work_id and rp_exp_date:
+                                # Parse work status
+                                work_sts = str(row.get('Work Sts', '')).strip().upper()
+                                work_status_map = {
+                                    'TALABAT': 'ACTIVE',
+                                    'SAK': 'ACTIVE',
+                                    'ACTIVE': 'ACTIVE',
+                                    'INACTIVE': 'INACTIVE',
+                                    'ON LEAVE': 'ON_LEAVE',
+                                    'TERMINATED': 'TERMINATED',
+                                }
+                                work_status = work_status_map.get(work_sts, 'ACTIVE')
 
-                except Exception as e:
-                    error_count += 1
-                    errors.append(f"Row {index + 2}: {str(e)}")
+                                # Parse QID renew/lost status
+                                qid_renew = str(row.get('QID Renew', '')).strip().upper()
+                                qid_lost = str(row.get('QID Lost', '')).strip().upper()
+
+                                employment, _ = Employment.objects.update_or_create(
+                                    employee=employee,
+                                    defaults={
+                                        'rp_expiry_date': rp_exp_date,
+                                        'work_permit_no': work_permit_no,
+                                        'work_id': work_id,
+                                        'work_status': work_status,
+                                        'qid_renew_status': 'RENEWED' if qid_renew == 'YES' else 'NOT_DUE',
+                                        'qid_lost_status': 'YES' if qid_lost == 'YES' else 'NO',
+                                        'created_by': request.user,
+                                        'updated_by': request.user,
+                                    }
+                                )
+
+                            # Create or update Passport
+                            passport_no = str(row.get('Passport No', '')).strip()
+                            if passport_no and passport_expiry:
+                                passport_renew = str(row.get('Passport Renew', '')).strip().upper()
+                                Passport.objects.update_or_create(
+                                    employee=employee,
+                                    defaults={
+                                        'passport_no': passport_no,
+                                        'passport_expiry_date': passport_expiry,
+                                        'passport_renewed': passport_renew == 'YES',
+                                        'created_by': request.user,
+                                        'updated_by': request.user,
+                                    }
+                                )
+
+                            # Create or update Driving License
+                            license_no = str(row.get('Driving License', '')).strip()
+                            if license_no and license_expiry:
+                                license_renew = str(row.get('Driving License Renew', '')).strip().upper()
+                                DrivingLicense.objects.update_or_create(
+                                    employee=employee,
+                                    defaults={
+                                        'license_no': license_no,
+                                        'license_expiry_date': license_expiry,
+                                        'license_renewed': license_renew == 'YES',
+                                        'license_renew_status': 'YES' if license_renew == 'YES' else 'NO',
+                                        'created_by': request.user,
+                                        'updated_by': request.user,
+                                    }
+                                )
+
+                            # Create or update Health Insurance
+                            hamad_health = str(row.get('Hamad Health Card', '')).strip().upper()
+                            wm_insurance = str(row.get('WM Insurance', '')).strip().upper()
+                            fhc = str(row.get('FHC', '')).strip().upper()
+
+                            if hamad_health or wm_insurance or fhc:
+                                HealthInsurance.objects.update_or_create(
+                                    employee=employee,
+                                    defaults={
+                                        'hamad_health_card': hamad_health == 'YES',
+                                        'wm_insurance': 'YES' if wm_insurance == 'YES' else 'NO',
+                                        'family_health_card': 'YES' if fhc == 'YES' else 'NO',
+                                        'created_by': request.user,
+                                        'updated_by': request.user,
+                                    }
+                                )
+
+                            # Create or update Contact
+                            phone_no = str(row.get('Phone No', '')).strip()
+                            if phone_no:
+                                Contact.objects.update_or_create(
+                                    employee=employee,
+                                    defaults={
+                                        'phone_no': phone_no,
+                                        'phone_no_alt': str(row.get('Phone No 01', '')).strip() or None,
+                                        'roommate_phone': str(row.get('Friends/ Room Mate Phone no', '')).strip() or None,
+                                        'relative_qatar_phone': str(row.get('Relative Qatar Phone No', '')).strip() or None,
+                                        'home_phone': str(row.get('Home Phone No', '')).strip() or None,
+                                        'home_phone_alt': str(row.get('Home Phone No 01', '')).strip() or None,
+                                        'home_email': str(row.get('Home Email', '')).strip() or None,
+                                        'created_by': request.user,
+                                        'updated_by': request.user,
+                                    }
+                                )
+
+                            # Create or update Address
+                            national_address = str(row.get('N. Address', '')).strip().upper()
+                            room_address = str(row.get('Room Address', '')).strip()
+
+                            if national_address or room_address:
+                                Address.objects.update_or_create(
+                                    employee=employee,
+                                    defaults={
+                                        'national_address': national_address if national_address == 'YES' else None,
+                                        'room_address': room_address or None,
+                                        'created_by': request.user,
+                                        'updated_by': request.user,
+                                    }
+                                )
+
+                            # Create or update Vehicle (if applicable)
+                            plate_no = str(row.get('Bike / Car No', '')).strip()
+                            if plate_no and plate_no != '*' and istemara_expiry:
+                                vehicle_type = 'BIKE'  # Default, can be enhanced
+                                Vehicle.objects.update_or_create(
+                                    plate_no=plate_no,
+                                    defaults={
+                                        'vehicle_type': vehicle_type,
+                                        'istemara_expiry_date': istemara_expiry,
+                                        'insurance_name': 'Default Insurance',
+                                        'insurance_expiry_date': istemara_expiry,
+                                        'ownership': 'DRIVER',
+                                        'created_by': request.user,
+                                        'updated_by': request.user,
+                                    }
+                                )
+
+                            success_count += 1
+
+                        except Exception as e:
+                            error_count += 1
+                            errors.append(f"Row {index + 2}: {str(e)}")
+                            continue
+
+                    # Add sheet-level summary
+                    total_success_count += success_count
+                    total_error_count += error_count
+                    
+                    if success_count > 0:
+                        companies_processed.append(f"  ✓ {success_count} employees imported for {company_name}")
+                    
+                    if error_count > 0:
+                        companies_processed.append(f"  ✗ {error_count} errors for {company_name}")
+                        all_errors.extend([f"{company_name} - {err}" for err in errors])
+
+                except Exception as sheet_error:
+                    error_msg = f"Error processing sheet '{sheet_name}': {str(sheet_error)}"
+                    all_errors.append(error_msg)
+                    companies_processed.append(f"  ✗ Failed to process {sheet_name}")
                     continue
 
-            # Display summary messages
-            if success_count > 0:
-                messages.success(request, f"Successfully imported {success_count} employee records!")
+            # Display overall summary messages
+            messages.success(request, f"Processed {len(sheet_names)} company sheet(s)")
             
-            if error_count > 0:
-                messages.warning(request, f"Failed to import {error_count} records. Check errors below.")
-                for error in errors[:10]:  # Show first 10 errors
+            for company_msg in companies_processed:
+                if '✓' in company_msg:
+                    messages.success(request, company_msg)
+                elif '✗' in company_msg:
+                    messages.warning(request, company_msg)
+                else:
+                    messages.info(request, company_msg)
+            
+            if total_success_count > 0:
+                messages.success(request, f"Total: Successfully imported {total_success_count} employee records!")
+            
+            if total_error_count > 0:
+                messages.warning(request, f"Total: Failed to import {total_error_count} records.")
+                for error in all_errors[:10]:  # Show first 10 errors
                     messages.error(request, error)
-                if len(errors) > 10:
-                    messages.error(request, f"...and {len(errors) - 10} more errors")
+                if len(all_errors) > 10:
+                    messages.error(request, f"...and {len(all_errors) - 10} more errors")
 
         except Exception as e:
             messages.error(request, f"Error processing Excel file: {str(e)}") 
@@ -346,14 +399,14 @@ def import_excel(request):
 def export_excel(request):
     """
     Export employee data to Excel file with all related information.
-    Generates a comprehensive spreadsheet matching the import format.
+    Generates a comprehensive spreadsheet with separate tabs for each company.
     """
     
     try:
         # Create a new workbook
         wb = Workbook()
-        ws = wb.active
-        ws.title = "Employee Data"
+        # Remove default sheet
+        wb.remove(wb.active)
 
         # Define headers (matching import format)
         headers = [
@@ -367,59 +420,94 @@ def export_excel(request):
             'Home Phone No 01', 'Home Email', 'Bike / Car No', 'Istemara Expiry'
         ]
 
-        # Style header row
+        # Style definitions
         header_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
         header_font = Font(bold=True, color='FFFFFF', size=11)
         header_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
 
-        for col_num, header in enumerate(headers, 1):
-            cell = ws.cell(row=1, column=col_num)
-            cell.value = header
-            cell.fill = header_fill
-            cell.font = header_font
-            cell.alignment = header_alignment
+        # Helper function to format dates
+        def format_date(date_obj):
+            if date_obj:
+                return date_obj.strftime('%m/%d/%Y')
+            return ''
 
-        # Fetch all active employees with related data
-        employees = Employee.objects.filter(
-            deleted=False
-        ).select_related(
-            'nationality'
-        ).prefetch_related(
-            'employments',
-            'passports',
-            'driving_licenses',
-            'health_insurance',
-            'contact',
-            'address'
-        ).order_by('hr_file_no')
+        # Helper function to convert boolean to Yes/No
+        def bool_to_yn(val):
+            return 'Yes' if val else 'No'
 
-        # Populate data rows
-        row_num = 2
-        for employee in employees:
-            # Get related objects (handle missing data gracefully)
-            employment = employee.employments.filter(deleted=False).first()
-            passport = employee.passports.filter(deleted=False).first()
-            license = employee.driving_licenses.filter(deleted=False).first()
-            health = getattr(employee, 'health_insurance', None)
-            contact = getattr(employee, 'contact', None)
-            address = getattr(employee, 'address', None)
-            vehicle = Vehicle.objects.filter(
-                ownership='DRIVER',
-                deleted=False
-            ).first()  # This could be improved with better vehicle-employee relationship
+        # Get all active companies
+        companies = Company.objects.filter(is_active=True).order_by('name')
 
-            # Helper function to format dates
-            def format_date(date_obj):
-                if date_obj:
-                    return date_obj.strftime('%m/%d/%Y')
-                return ''
+        if not companies.exists():
+            # If no companies, create one default sheet with all employees
+            companies = [None]
 
-            # Helper function to convert boolean to Yes/No
-            def bool_to_yn(val):
-                return 'Yes' if val else 'No'
+        for company in companies:
+            # Create sheet for each company
+            if company:
+                # Sanitize sheet name (Excel has restrictions)
+                sheet_name = company.name[:31]  # Excel limit is 31 characters
+                # Remove invalid characters
+                for char in ['\\', '/', '*', '?', ':', '[', ']']:
+                    sheet_name = sheet_name.replace(char, '')
+                ws = wb.create_sheet(title=sheet_name)
+                
+                # Fetch employees for this company
+                employees = Employee.objects.filter(
+                    company=company,
+                    deleted=False
+                ).select_related(
+                    'nationality'
+                ).prefetch_related(
+                    'employments',
+                    'passports',
+                    'driving_licenses',
+                    'health_insurance',
+                    'contact',
+                    'address'
+                ).order_by('hr_file_no')
+            else:
+                # Default sheet for employees without company
+                ws = wb.create_sheet(title="Unassigned")
+                employees = Employee.objects.filter(
+                    company__isnull=True,
+                    deleted=False
+                ).select_related(
+                    'nationality'
+                ).prefetch_related(
+                    'employments',
+                    'passports',
+                    'driving_licenses',
+                    'health_insurance',
+                    'contact',
+                    'address'
+                ).order_by('hr_file_no')
 
-            # Prepare row data
-            row_data = [
+            # Add headers to sheet
+            for col_num, header in enumerate(headers, 1):
+                cell = ws.cell(row=1, column=col_num)
+                cell.value = header
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = header_alignment
+
+            # Populate data rows for this company
+            row_num = 2
+            for employee in employees:
+                # Get related objects (handle missing data gracefully)
+                employment = employee.employments.filter(deleted=False).first()
+                passport = employee.passports.filter(deleted=False).first()
+                license = employee.driving_licenses.filter(deleted=False).first()
+                health = getattr(employee, 'health_insurance', None)
+                contact = getattr(employee, 'contact', None)
+                address = getattr(employee, 'address', None)
+                vehicle = Vehicle.objects.filter(
+                    ownership='DRIVER',
+                    deleted=False
+                ).first()  # This could be improved with better vehicle-employee relationship
+
+                # Prepare row data
+                row_data = [
                 employee.hr_file_no,
                 employee.qid_no,
                 employee.full_name,
@@ -451,24 +539,24 @@ def export_excel(request):
                 contact.home_phone if contact else '',
                 contact.home_phone_alt if contact else '',
                 contact.home_email if contact else '',
-                vehicle.plate_no if vehicle else '',
-                format_date(vehicle.istemara_expiry_date) if vehicle else '',
-            ]
+                    vehicle.plate_no if vehicle else '',
+                    format_date(vehicle.istemara_expiry_date) if vehicle else '',
+                ]
 
-            # Write row data
-            for col_num, value in enumerate(row_data, 1):
-                ws.cell(row=row_num, column=col_num, value=value)
+                # Write row data
+                for col_num, value in enumerate(row_data, 1):
+                    ws.cell(row=row_num, column=col_num, value=value)
 
-            row_num += 1
+                row_num += 1
 
-        # Auto-adjust column widths
-        for col_num in range(1, len(headers) + 1):
-            column_letter = get_column_letter(col_num)
-            max_length = len(headers[col_num - 1])
-            ws.column_dimensions[column_letter].width = min(max_length + 5, 40)
+            # Auto-adjust column widths for this sheet
+            for col_num in range(1, len(headers) + 1):
+                column_letter = get_column_letter(col_num)
+                max_length = len(headers[col_num - 1])
+                ws.column_dimensions[column_letter].width = min(max_length + 5, 40)
 
-        # Set row height for header
-        ws.row_dimensions[1].height = 30
+            # Set row height for header
+            ws.row_dimensions[1].height = 30
 
         # Prepare HTTP response
         response = HttpResponse(
@@ -485,4 +573,7 @@ def export_excel(request):
 
     except Exception as e:
         messages.error(request, f"Error exporting data: {str(e)}")
-        return redirect('backend:import_excel') 
+        return redirect('backend:import_excel')
+
+
+ 

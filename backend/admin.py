@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import (
     WebImages, PasswordResetCode, LoginLog, BackendMenu, UserMenuPermission,
     SiteSettings, SiteDesignSettings, EmailConfiguration, SMSConfiguration, SMSLog,
+    Company, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance,
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
@@ -66,6 +67,11 @@ class SMSLogAdmin(admin.ModelAdmin):
     search_fields = ('mobile_number',)
     list_filter = ('status',)
 
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'phone', 'email', 'is_active')
+    search_fields = ('name', 'code', 'phone', 'email')
+ 
 @admin.register(Nationality)
 class NationalityAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'is_active')

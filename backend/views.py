@@ -1,6 +1,7 @@
 from multiprocessing import context
 import os 
-import base64 
+import base64
+from typing import Any 
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.core.paginator import PageNotAnInteger, EmptyPage
@@ -33,6 +34,7 @@ from backend.models import (
     WebImages, SiteSettings, LoginLog, UserMenuPermission, 
     BackendMenu, 
     Visitor, 
+    Company, 
     Nationality, Employee, Employment, Passport, DrivingLicense, 
     HealthInsurance, Contact, Address, Vehicle, InsuranceClaim, 
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
@@ -42,7 +44,7 @@ from backend.models import (
 )
 
 from backend.forms import (
-    CustomUserLoginForm, NationalityForm, EmployeeForm, EmploymentForm, VehicleMaintananceTypeForm, 
+    CustomUserLoginForm,CompanyForm,  NationalityForm, EmployeeForm, EmploymentForm, VehicleMaintananceTypeForm, 
     PassportForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
     AddressForm, UserCreateForm, VehicleForm, VisitorForm, InsuranceClaimForm, 
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
@@ -535,6 +537,112 @@ def user_permission(request, user_id):
     }
     return render(request, 'user/user_permission.html', context)
 
+
+# =========================================================
+# Company Management Views
+# =========================================================
+
+@method_decorator(login_required, name='dispatch')
+class CompanyListView(ListView):
+    model = Company
+    template_name = "company/list.html"
+    paginate_by = None 
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/company/"):
+            messages.error(request, "You do not have permission to view companies.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs) 
+    
+    def get_queryset(self):
+        queryset = Company.objects.filter(is_active=True)
+
+        name = self.request.GET.get('name', '').strip()
+        code = self.request.GET.get('code', '').strip()
+        phone = self.request.GET.get('phone', '').strip()
+        email = self.request.GET.get('email', '').strip()
+
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        if code:
+            queryset = queryset.filter(code__icontains=code)
+        if phone:
+            queryset = queryset.filter(phone__icontains=phone)
+        if email:
+            queryset = queryset.filter(email__icontains=email)
+
+        return queryset.order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["name"] = self.request.GET.get('name', '')
+        context["code"] = self.request.GET.get('code', '')
+        context["phone"] = self.request.GET.get('phone', '')
+        context["email"] = self.request.GET.get('email', '')
+        context['all_names'] = Company.objects.filter(is_active=True).order_by('name')
+        context['all_codes'] = Company.objects.filter(is_active=True).order_by('code')
+        context['all_phones'] = Company.objects.filter(is_active=True).values_list('phone', flat=True).distinct().order_by('phone')
+        context['all_emails'] = Company.objects.filter(is_active=True).values_list('email', flat=True).distinct().order_by('email') 
+        get_params = self.request.GET.copy()
+        if 'page' in get_params:
+            get_params.pop('page')
+        context['get_params'] = get_params.urlencode() 
+
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyCreateView(CreateView):
+    model = Company
+    template_name = "company/create.html"
+    form_class = CompanyForm
+    success_url = reverse_lazy('company:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_create", "/backend/company/"):
+            messages.error(request, "You do not have permission to create companies.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        messages.success(self.request, f"Company '{form.instance.name}' has been created successfully.")
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyUpdateView(UpdateView):
+    model = Company
+    template_name = "company/update.html"
+    form_class = CompanyForm
+    success_url = reverse_lazy('company:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/company/"):
+            messages.error(request, "You do not have permission to update companies.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        messages.success(self.request, f"Company '{form.instance.name}' has been updated successfully.")
+        return super().form_valid(form) 
+
+
+@login_required
+def company_delete(request, pk):
+    company = get_object_or_404(Company, pk=pk)
+    if not checkUserPermission(request, "can_delete", "/backend/company/"):
+        messages.error(request, "You do not have permission to delete companies.")
+        return render(request, "403.html", status=403)
+    
+    company_name = company.name
+    company.is_active = False
+    company.save()
+
+    messages.success(request, f"Company '{company_name}' has been deleted successfully.")
+    return redirect('company:list')
+
 @method_decorator(login_required, name='dispatch')
 class NationalityListView(ListView):
     model = Nationality
@@ -588,7 +696,6 @@ class NationalityCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        form.instance.updated_by = self.request.user
         return super().form_valid(form) 
     
 @method_decorator(login_required, name='dispatch')

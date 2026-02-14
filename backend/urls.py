@@ -7,6 +7,14 @@ export_import_patterns = ([
     path('export/', view_copy.export_excel, name='export_excel'), 
 ], 'import_export')
 
+# Company URL patterns
+company_patterns = ([
+    path('', views.CompanyListView.as_view(), name='list'),
+    path('create/', views.CompanyCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.CompanyUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.company_delete, name='delete'),
+], 'company')
+
 # Nationality URL patterns
 nationality_patterns = ([
     path('', views.NationalityListView.as_view(), name='list'),
@@ -194,6 +202,7 @@ backend_patterns = ([
 
 urlpatterns = [
     path('', include(backend_patterns)),
+    path('company/', include(company_patterns)),
     path('nationality/', include(nationality_patterns)), 
     path('visitor/', include(visitor_patterns)), 
     path('employee/', include(employee_patterns)),

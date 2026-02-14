@@ -145,6 +145,22 @@
       "is_active": true
     }
   },
+  {
+    "model": "backend.backendmenu",
+    "pk": 203,
+    "fields": {
+      "module_name": "Company Management",
+      "menu_name": "Company",
+      "menu_url": "/backend/company/",
+      "menu_icon": "fa-solid fa-building",
+      "menu_description": "Manage company records.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
 
   {
     "model": "backend.backendmenu",

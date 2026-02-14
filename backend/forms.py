@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django import forms 
 from backend.models import (
     Visitor, TrafficViolationPenalty, 
+    Company, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment, VehiclePurchase,
     VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType, 
@@ -150,6 +151,18 @@ class UserCreateForm(forms.ModelForm):
             # handle file after save_m2m if you add more relations later
 
         return admin_user
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ['name', 'code', 'address', 'phone', 'email']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter company name'}),
+            'code': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter company code'}),
+            'address': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter address'}),
+            'phone': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter phone number'}),
+            'email': forms.EmailInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter email address'}), 
+        }
 
 
 class NationalityForm(forms.ModelForm):
