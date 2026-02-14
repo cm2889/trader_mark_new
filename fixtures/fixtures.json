@@ -115,7 +115,7 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 201,
+    "pk": 150,
     "fields": {
       "module_name": "Nationality Management",
       "menu_name": "Nationality",
@@ -131,7 +131,7 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 202,
+    "pk": 151,
     "fields": {
       "module_name": "Visitors",
       "menu_name": "Visitor",
@@ -147,7 +147,7 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 203,
+    "pk": 153,
     "fields": {
       "module_name": "Company Management",
       "menu_name": "Company",

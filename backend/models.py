@@ -15,7 +15,8 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
-
+from django.db import transaction
+from django.utils import timezone
 
 from auditlog.registry import auditlog
 
@@ -372,18 +373,30 @@ class Employee(models.Model):
     deleted = models.BooleanField(default=False) 
 
     # auto generate full number  
+    
+
     def save(self, *args, **kwargs):
-        if not self.hr_file_no:
-            last_employee = Employee.objects.all().order_by('id').last()
-            if last_employee:
-                last_hr_file_no = int(last_employee.hr_file_no)
-                self.hr_file_no = str(last_hr_file_no + 1).zfill(8)
-            else:
-                self.hr_file_no = '00000001'
+        # Only auto-generate HR File No if not provided
+        if not self.pk and not self.hr_file_no:
+            from django.db import transaction
+            with transaction.atomic():
+                last_employee = (
+                    Employee.objects
+                    .select_for_update()
+                    .order_by('-id')
+                    .first()
+                )
+
+                if last_employee and last_employee.hr_file_no.isdigit():
+                    last_hr = int(last_employee.hr_file_no)
+                    self.hr_file_no = str(last_hr + 1).zfill(8)
+                else:
+                    self.hr_file_no = '00000001'
 
         if not self.joining_at:
-            self.joining_at = timezone.now() 
-        super().save(*args, **kwargs) 
+            self.joining_at = timezone.now()
+
+        super().save(*args, **kwargs)
 
     @property
     def full_name(self):
