@@ -11,33 +11,20 @@
 <span class="text-gray-600">Detail</span>
 {% endblock %}
 
+
+{% block header_actions %}
+<a href="{% url 'traffic_violation:list' %}"
+   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back to List
+</a>
+{% endblock %}
+
+
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8">
-
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-4">
-            <a href="{% url 'traffic_violation:list' %}"
-               class="h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition">
-                <i class="fas fa-arrow-left text-gray-600"></i>
-            </a>
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">Traffic Violation Details</h1>
-                <p class="text-sm text-gray-500">View complete violation information</p>
-            </div>
-        </div>
-
-        <!-- Quick Status -->
-        {% if violation.is_paid %}
-        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-800 font-medium">
-            <i class="fas fa-check-circle"></i> Paid
-        </span>
-        {% else %}
-        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 text-red-800 font-medium">
-            <i class="fas fa-times-circle"></i> Unpaid
-        </span>
-        {% endif %}
-    </div>
+<div class="px-4 py-8">
 
     <!-- Card -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
@@ -129,7 +116,7 @@
         </div>
         {% endif %}
 
-        <!-- Actions -->
+        {% comment %} <!-- Actions -->
         <div class="flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-200">
 
             <a href="{% url 'traffic_violation:list' %}"
@@ -137,7 +124,7 @@
                 <i class="fas fa-arrow-left"></i>
                 Back to List
             </a>
-        </div>
+        </div> {% endcomment %}
 
     </div>
 </div>
