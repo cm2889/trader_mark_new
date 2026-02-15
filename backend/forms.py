@@ -606,7 +606,7 @@ class VehicleMaintenanceForm(forms.ModelForm):
     
     class Meta:
         model = VehicleMaintenance
-        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        exclude = ['status', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             # 'vehicle': forms.Select(attrs={'class': TAILWIND_SELECT}),
             # 'maintenance_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
@@ -614,6 +614,23 @@ class VehicleMaintenanceForm(forms.ModelForm):
             'maintenance_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
+    
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.status = 'COMPLETED'
+        if commit:
+            instance.save()
+        return instance 
+
+    def __init__(self, *args, **kwargs):
+        vehicle_locked = kwargs.pop('vehicle_locked', False)
+        super().__init__(*args, **kwargs)
+
+        if vehicle_locked:
+            self.fields['vehicle'].widget.attrs.update({
+                'readonly': True,
+                'class': TAILWIND_SELECT + ' bg-gray-100 pointer-events-none'
+            })
 
 class VehicleAccidentForm(forms.ModelForm):
     vehicle = forms.ModelChoiceField(

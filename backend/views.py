@@ -3899,29 +3899,48 @@ class VehicleMaintenanceListView(ListView):
         
         return context
 
-
 @login_required
 def vehicle_maintenance_create(request):
     if not checkUserPermission(request, "can_add", "/backend/vehicle-maintenance/"):
         messages.error(request, "You do not have permission to add vehicle maintenance.")
         return render(request, "403.html", status=403)
 
+    vehicle_id = request.GET.get('vehicle')
+
     if request.method == 'POST':
-        form = VehicleMaintenanceForm(request.POST)
+        form = VehicleMaintenanceForm(
+            request.POST,
+            vehicle_locked=bool(vehicle_id)
+        )
+
         if form.is_valid():
             maintenance = form.save(commit=False)
+
+            if vehicle_id:
+                maintenance.vehicle_id = vehicle_id
+
             maintenance.created_by = request.user
             maintenance.save()
+
             messages.success(request, "Vehicle maintenance created successfully.")
             return redirect('vehicle_maintenance:list')
-    else:
-        form = VehicleMaintenanceForm()
 
-    context = {
+    else:
+        initial_data = {}
+
+        if vehicle_id:
+            initial_data['vehicle'] = vehicle_id
+
+        form = VehicleMaintenanceForm(
+            initial=initial_data,
+            vehicle_locked=bool(vehicle_id)
+        )
+
+    return render(request, 'vehicle_maintenance/create.html', {
         'form': form,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-    }
-    return render(request, 'vehicle_maintenance/create.html', context)
+        'vehicle_id': vehicle_id
+    })
+
 
 
 @login_required
