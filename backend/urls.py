@@ -177,8 +177,6 @@ uniform_issuance_patterns = ([
 # Uniform Clearance URL patterns
 uniform_clearance_patterns = ([
     path('', views.UniformClearanceListView.as_view(), name='list'),
-    path('create/', views.UniformClearanceCreateView.as_view(), name='create'),
-    path('update/<int:pk>/', views.UniformClearanceUpdateView.as_view(), name='update'),
     path('delete/<int:pk>/', views.uniform_clearance_delete, name='delete'),
 ], 'uniform_clearance')
 
