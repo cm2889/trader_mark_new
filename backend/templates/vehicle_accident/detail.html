@@ -11,17 +11,19 @@
 <span>Detail</span>
 {% endblock %}
 
+{% block header_actions %}
+<a href="{% url 'vehicle_accident:list' %}"
+   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back to List
+</a>
+{% endblock %}
+
 {% block content %}
 <div class="container  px-4 py-8 ">
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-2">
-            <a href="{% url 'vehicle_accident:list' %}" class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-gray-800">Accident Details</h1>
-        </div>
-    </div>
-
+  
     <div class="bg-white rounded-lg shadow-sm p-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
@@ -29,10 +31,7 @@
                     <label class="text-sm font-medium text-gray-500">Vehicle</label>
                     <p class="text-lg font-semibold text-gray-800">{{ accident.vehicle.plate_no }}</p>
                 </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-500">Employee</label>
-                    <p class="text-lg text-gray-800">{{ accident.employee.full_name|default:"-" }}</p>
-                </div>
+                
                 <div>
                     <label class="text-sm font-medium text-gray-500">Accident Date</label>
                     <p class="text-lg text-gray-800">{{ accident.accident_date|date:"F d, Y" }}</p>
@@ -66,11 +65,7 @@
             {% endif %}
         </div>
 
-        <div class="flex gap-4 pt-6 mt-6 border-t border-gray-200">
-            <a href="{% url 'vehicle_accident:list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i><span>Back to List</span>
-            </a>
-        </div>
+       
     </div>
 </div>
 {% endblock %}

@@ -47,12 +47,7 @@
                     </p>
                 </div>
 
-                <div>
-                    <p class="text-sm text-gray-500">Employee</p>
-                    <p class="text-lg text-gray-800">
-                        {{ violation.employee.full_name|default:"—" }}
-                    </p>
-                </div>
+               
 
                 <div>
                     <p class="text-sm text-gray-500">Violation Type</p>
@@ -76,7 +71,11 @@
                 <div>
                     <p class="text-sm text-gray-500">Fine Amount</p>
                     <p class="text-xl font-bold text-gray-900">
-                        ₦{{ violation.fine_amount|floatformat:2 }}
+                        {% if violation.fine_amount %}
+                            {{ violation.fine_amount|floatformat:2 }}
+                        {% else %}
+                            0.00
+                        {% endif %}
                     </p>
                 </div>
 
@@ -88,7 +87,7 @@
                     </span>
                     {% else %}
                     <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 text-red-800 text-sm font-medium">
-                        <i class="fas fa-exclamation-circle"></i> Unpaid
+                         Unpaid
                     </span>
                     {% endif %}
                 </div>

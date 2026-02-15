@@ -4035,26 +4035,41 @@ class VehicleAccidentListView(ListView):
 @login_required
 def vehicle_accident_create(request):
     if not checkUserPermission(request, "can_add", "/backend/vehicle-accident/"):
-        messages.error(request, "You do not have permission to add vehicle accidents.")
+        messages.error(request, "You do not have permission.")
         return render(request, "403.html", status=403)
 
+    vehicle_id = request.GET.get('vehicle')
+
     if request.method == 'POST':
-        form = VehicleAccidentForm(request.POST)
+        form = VehicleAccidentForm(
+            request.POST,
+            vehicle_locked=bool(vehicle_id)
+        )
+
         if form.is_valid():
             accident = form.save(commit=False)
+
+            if vehicle_id:
+                accident.vehicle_id = vehicle_id
+
             accident.created_by = request.user
             accident.save()
-            messages.success(request, "Vehicle accident created successfully.")
-            return redirect('vehicle_accident:list')
-    else:
-        form = VehicleAccidentForm()
 
-    context = {
-        'form': form,
-        'vehicles': Vehicle.objects.filter(is_active=True),
-        'employees': Employee.objects.filter(is_active=True),
-    }
-    return render(request, 'vehicle_accident/create.html', context)
+            messages.success(request, "Accident created successfully.")
+            return redirect('vehicle_accident:list')
+
+    else:
+        initial_data = {}
+
+        if vehicle_id:
+            initial_data['vehicle'] = vehicle_id
+
+        form = VehicleAccidentForm(
+            initial=initial_data,
+            vehicle_locked=bool(vehicle_id)
+        )
+
+    return render(request, 'vehicle_accident/create.html', {'form': form, 'vehicle_id': vehicle_id})
 
 
 @login_required

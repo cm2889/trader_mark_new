@@ -632,6 +632,15 @@ class VehicleAccidentForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        vehicle_locked = kwargs.pop('vehicle_locked', False)
+        super().__init__(*args, **kwargs)
+        
+        if vehicle_locked:
+            self.fields['vehicle'].widget.attrs.update({
+                'readonly': True,
+                'class': TAILWIND_SELECT + ' bg-gray-100 pointer-events-none'
+            }) 
 
 
 class InsuranceClaimForm(forms.ModelForm):
