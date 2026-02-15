@@ -2321,14 +2321,16 @@ class UniformIssuanceCreateView(CreateView):
         return initial
 
     def form_valid(self, form):
-        
         try:
             form.instance.created_by = self.request.user
             response = super().form_valid(form)
             messages.success(self.request, "Uniform issued successfully and stock updated!")
             return response
         except ValidationError as e:
-            messages.error(self.request, str(e))
+            form.add_error(None, str(e))
+            return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f"Error issuing uniform: {str(e)}")
             return self.form_invalid(form)
 
 # ============================================
@@ -2482,7 +2484,6 @@ class VehicleListView(ListView):
     def get_queryset(self):
         filters = {
             'is_active': True, 
-            'deleted': False,
         }
         
         plate_no = self.request.GET.get('plate_no', '').strip()
@@ -2509,14 +2510,23 @@ class VehicleListView(ListView):
         context = super().get_context_data(**kwargs)
         vehicle_infos = self.get_queryset()
         
-        # Get current vehicle assignments
+        # Get current vehicle assignments (only ASSIGNED status)
         vehicle_assignments = {}
-        for assignment in VehicleAssign.objects.filter(is_active=True, deleted=False).select_related('employee', 'vehicle'):
-            vehicle_assignments[assignment.vehicle_id] = assignment.employee
+        for assignment in VehicleAssign.objects.filter(is_active=True, deleted=False, status='ASSIGNED').select_related('employee', 'vehicle'):
+            vehicle_assignments[assignment.vehicle_id] = {
+                'employee': assignment.employee,
+                'status': assignment.get_status_display()
+            }
         
-        # Add current_employee to each vehicle
+        # Add current_employee and current_status to each vehicle
         for vehicle in vehicle_infos:
-            vehicle.current_employee = vehicle_assignments.get(vehicle.id)
+            assignment_info = vehicle_assignments.get(vehicle.id)
+            if assignment_info:
+                vehicle.current_employee = assignment_info['employee']
+                vehicle.current_status = assignment_info['status']
+            else:
+                vehicle.current_employee = None
+                vehicle.current_status = 'Unassigned'
         
         context['vehicle_infos'] = vehicle_infos
         context['page_num'] = self.request.GET.get('page', 1)
@@ -2525,7 +2535,11 @@ class VehicleListView(ListView):
         # Add all vehicles for select2 dropdown with current assignment
         all_vehicles = Vehicle.objects.filter(is_active=True).order_by('plate_no')
         for vehicle in all_vehicles:
-            vehicle.current_employee = vehicle_assignments.get(vehicle.id)
+            assignment_info = vehicle_assignments.get(vehicle.id)
+            if assignment_info:
+                vehicle.current_employee = assignment_info['employee']
+            else:
+                vehicle.current_employee = None
         context['all_vehicles'] = all_vehicles
 
         get_param = self.request.GET.copy()
@@ -2893,6 +2907,7 @@ def vehicle_assign_quick(request, pk):
             VehicleAssign.objects.create(
                 vehicle=vehicle,
                 employee=employee,
+                status='ASSIGNED',
                 assigned_date=assigned_date,
                 remarks=remarks,
                 created_by=request.user
@@ -2924,12 +2939,11 @@ def vehicle_unassign(request, pk):
         assignment = VehicleAssign.objects.filter(
             vehicle=vehicle,
             is_active=True,
-            deleted=False
         ).first()
         
         if assignment:
             assignment.is_active = False
-            assignment.deleted = True
+            assignment.status = 'UNASSIGNED'
             assignment.updated_by = request.user
             assignment.save()
             messages.success(request, f"Vehicle {vehicle.plate_no} unassigned from {assignment.employee.full_name} successfully!")

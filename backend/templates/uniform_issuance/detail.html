@@ -211,89 +211,6 @@
             </div>
         </div>
 
-        <!-- Two Column Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <!-- Transaction Logs for This Issuance -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="border-b border-[var(--border-color)] px-6 py-4">
-                    <h2 class="text-lg font-semibold text-[var(--text-color)]">Transaction History (This Issuance)</h2>
-                </div>
-                <div class="p-6">
-                    {% if issuance_transaction_logs %}
-                    <div class="space-y-4">
-                        {% for log in issuance_transaction_logs %}
-                        <div class="flex items-start p-3 bg-gray-50 rounded-lg border border-[var(--border-color)]">
-                            <div class="flex-shrink-0 mr-3">
-                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full 
-                                    {% if log.transaction_type == 'ISSUE' %}bg-blue-100 text-blue-600
-                                    {% elif log.transaction_type == 'RETURN' %}bg-green-100 text-green-600
-                                    {% elif log.transaction_type == 'LOST' %}bg-red-100 text-red-600
-                                    {% elif log.transaction_type == 'DAMAGED' %}bg-yellow-100 text-yellow-600
-                                    {% else %}bg-gray-100 text-gray-600{% endif %}">
-                                    <i class="fas fa-exchange-alt text-sm"></i>
-                                </span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-semibold text-[var(--text-color)]">{{ log.get_transaction_type_display }}</p>
-                                <p class="text-xs text-[var(--text-light-color)] mt-1">
-                                    Quantity Change: 
-                                    <span class="font-medium {% if log.quantity_change > 0 %}text-green-600{% else %}text-red-600{% endif %}">
-                                        {{ log.quantity_change|stringformat:"+d" }}
-                                    </span>
-                                </p>
-                                <p class="text-xs text-[var(--text-light-color)]">
-                                    Stock: {{ log.quantity_before }} → {{ log.quantity_after }}
-                                </p>
-                                {% if log.created_by %}
-                                <p class="text-xs text-[var(--text-light-color)]">
-                                    By: {{ log.created_by.get_full_name|default:log.created_by.username }}
-                                </p>
-                                {% endif %}
-                                <p class="text-xs text-[var(--text-light-color)]">{{ log.created_at|date:"M d, Y h:i A" }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p class="text-center text-[var(--text-light-color)] py-8">No transaction logs found</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Uniform Type Breakdown -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="border-b border-[var(--border-color)] px-6 py-4">
-                    <h2 class="text-lg font-semibold text-[var(--text-color)]">Employee Uniform Breakdown</h2>
-                </div>
-                <div class="p-6">
-                    {% if uniform_by_type %}
-                    <div class="space-y-3">
-                        {% for item in uniform_by_type %}
-                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-[var(--border-color)]">
-                            <div>
-                                <p class="text-sm font-semibold text-[var(--text-color)]">{{ item.uniform_stock__uniform__name }}</p>
-                                <p class="text-xs text-[var(--text-light-color)]">{{ item.uniform_stock__uniform__uniform_type }}</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
-                                    {% if item.status == 'ISSUED' %}bg-blue-100 text-blue-800
-                                    {% elif item.status == 'RETURNED' %}bg-green-100 text-green-800
-                                    {% elif item.status == 'LOST' %}bg-red-100 text-red-800
-                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                                    {{ item.status }}
-                                </span>
-                                <p class="text-sm font-bold text-[var(--text-color)] mt-1">Qty: {{ item.total_quantity }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p class="text-center text-[var(--text-light-color)] py-8">No uniform data found</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
         <!-- Employee Uniform History -->
         <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
             <div class="border-b border-[var(--border-color)] px-6 py-4">
@@ -330,14 +247,8 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ issuance.issued_date|date:"M d, Y" }}</td>
                             <td class="px-4 py-3 text-sm">
-                                {% if issuance.pk != uniform_issuance.pk %}
-                                <a href="{% url 'uniform_issuance:detail' issuance.pk %}" 
-                                   class="text-[var(--primary-color)] hover:underline text-xs">
-                                    View Details
-                                </a>
-                                {% else %}
-                                <span class="text-xs font-medium text-blue-600">Current</span>
-                                {% endif %}
+                                <span class="text-xs font-medium text-blue-600">Current</span
+                                <span>Return</> 
                             </td>
                         </tr>
                         {% empty %}
@@ -393,75 +304,6 @@
             </div>
         </div>
         {% endif %}
-
-        <!-- Stock Transaction History -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
-            <div class="border-b border-[var(--border-color)] px-6 py-4">
-                <h2 class="text-lg font-semibold text-[var(--text-color)]">Recent Stock Transactions ({{ uniform_stock.uniform.name }} - {{ uniform_stock.get_size_display }})</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Transaction</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Employee</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Change</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Before</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">After</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">By</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--border-color)]">
-                        {% for log in stock_transaction_logs %}
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-3 text-sm">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {% if log.transaction_type == 'ISSUE' %}bg-blue-100 text-blue-800
-                                    {% elif log.transaction_type == 'RETURN' %}bg-green-100 text-green-800
-                                    {% elif log.transaction_type == 'LOST' %}bg-red-100 text-red-800
-                                    {% elif log.transaction_type == 'DAMAGED' %}bg-yellow-100 text-yellow-800
-                                    {% elif log.transaction_type == 'ADD' %}bg-purple-100 text-purple-800
-                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
-                                    {{ log.get_transaction_type_display }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">
-                                {% if log.issuance %}
-                                    <a href="{% url 'employee:profile' log.issuance.employee.pk %}" class="text-[var(--primary-color)] hover:underline">
-                                        {{ log.issuance.employee.full_name }}
-                                    </a>
-                                {% elif log.clearance %}
-                                    <a href="{% url 'employee:profile' log.clearance.employee.pk %}" class="text-[var(--primary-color)] hover:underline">
-                                        {{ log.clearance.employee.full_name }}
-                                    </a>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-sm font-semibold {% if log.quantity_change > 0 %}text-green-600{% else %}text-red-600{% endif %}">
-                                {{ log.quantity_change|stringformat:"+d" }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ log.quantity_before }}</td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ log.quantity_after }}</td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">
-                                {% if log.created_by %}
-                                    {{ log.created_by.get_full_name|default:log.created_by.username }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ log.created_at|date:"M d, Y h:i A" }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-[var(--text-light-color)]">No transaction logs found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
     </div>
 </div>

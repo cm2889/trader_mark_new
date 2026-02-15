@@ -164,7 +164,7 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
                             <td class="px-6 py-4 text-sm font-medium">
-                                <a href="{% url 'employee:profile' issuance.employee.pk %}" 
+                                <a href="{% url 'uniform_issuance:detail' issuance.pk %}" 
                                    class="text-[var(--primary-color)] hover:underline">
                                     {{ issuance.employee.full_name }}
                                 </a>

@@ -21,13 +21,7 @@
 <span class="font-medium text-[var(--primary-color)]">{{ employee.full_name }}</span>
 {% endblock %}
 
-{% block back_button %}
-<a href="{% url 'employee:list' %}" class="p-2 text-[var(--text-light-color)] hover:text-[var(--primary-color)] hover:bg-white rounded-lg transition-colors" aria-label="Back to employees list">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-    </svg>
-</a>
-{% endblock %}
+
 
 {% block header_actions %}
 <a href="{% url 'employee:update' employee.pk %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
@@ -36,6 +30,15 @@
     </svg>
     <span>Edit Employee</span>
 </a>
+
+<a href="{% url 'employee:list' %}"
+   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back to List
+</a>
+
 {% endblock %}
 
 {% block content %}

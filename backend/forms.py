@@ -294,7 +294,7 @@ class UniformIssuanceForm(forms.ModelForm):
             'remark': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
-    def save(self, commit=False):
+    def save(self, commit=True):
         instance = super().save(commit=False) 
         instance.status = 'ISSUED'  # Set default status to ISSUED when creating 
         if commit:
@@ -438,7 +438,7 @@ class VehicleForm(forms.ModelForm):
     
     class Meta:
         model = Vehicle
-        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        exclude = ['status', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'plate_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter plate number'}),
             'chassee_no': forms.TextInput(attrs={'class': TAILWIND_TEXT}),
@@ -462,7 +462,7 @@ class VehicleAssignForm(forms.ModelForm):
     ) 
     class Meta:
         model = VehicleAssign
-        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        exclude = ['status','created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'assign_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),

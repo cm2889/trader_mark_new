@@ -7,7 +7,7 @@
 <span class="mx-1">›</span>
 <a href="{% url 'employee:list' %}" class="hover:underline">Employee</a>
 <span class="mx-1">›</span>
-<span>Add</span>
+<span>Profile</span>
 {% endblock %}
 
 {% block header_actions %}
@@ -38,107 +38,10 @@
         </p>
     </div>
 
-    <!-- Personal Information -->
-    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-        <i class="fas fa-user"></i> Personal Information
-    </div>
-
-    <div
-        class="  rounded-xl text-[var(--text-color)] p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-5">
-            <div class=" p-4 rounded-lg ">
-                <label class="  text-xs  tracking-wider mb-1">First Name</label>
-                <div class=" text-lg ">{{ employee.first_name }}</div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="  text-xs  tracking-wider mb-1">Last Name</label>
-                <div class=" text-lg ">{{ employee.last_name }}</div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="  text-xs font-semibold  tracking-wider mb-1">Email</label>
-                <div class=" text-lg ">{{ employee.email|default:"N/A" }}</div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="  text-xs font-semibold  tracking-wider mb-1">Phone
-                    Number</label>
-                <div class=" text-lg ">{{ employee.phone_number|default:"N/A" }}</div>
-            </div>
-            {% if contact %}
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="  text-xs font-semibold  tracking-wider mb-1">Alternative
-                    Phone</label>
-                <div class=" text-lg ">{{ contact.phone_no_alt|default:"N/A" }}</div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="  text-xs font-semibold  tracking-wider mb-1">Roommate
-                    Phone</label>
-                <div class=" text-lg ">{{ contact.roommate_phone|default:"N/A" }}</div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="  text-xs font-semibold  tracking-wider mb-1">Relative Qatar
-                    Phone</label>
-                <div class=" text-lg ">{{ contact.relative_qatar_phone|default:"N/A" }}</div>
-            </div>
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="  text-xs font-semibold  tracking-wider mb-1">Home
-                    Phone</label>
-                <div class=" text-lg ">{{ contact.home_phone|default:"N/A" }}</div>
-            </div>
-            {% endif %}
-        </div>
-
-        {% if employee.remarks %}
-        <div class=" p-4 rounded-lg  mt-4">
-            <label class="  text-xs font-semibold  tracking-wider mb-1">Remarks</label>
-            <div class=" text-lg ">{{ employee.remarks }}</div>
-        </div>
-        {% endif %}
-    </div>
-
-    <!-- Address Information -->
-    {% if address %}
-    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-        <i class="fas fa-map-marker-alt"></i> Address Information
-    </div>
-
-    <div
-        class="  rounded-xl p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {% if address.present_address %}
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block  text-xs font-semibold  tracking-wider mb-1">Present
-                    Address</label>
-                <div class=" text-lg ">{{ address.present_address }}</div>
-            </div>
-            {% endif %}
-            {% if address.permanent_address %}
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block  text-xs font-semibold  tracking-wider mb-1">Permanent
-                    Address</label>
-                <div class=" text-lg ">{{ address.permanent_address }}</div>
-            </div>
-            {% endif %}
-            {% if address.national_address %}
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block  text-xs font-semibold  tracking-wider mb-1">National
-                    Address</label>
-                <div class=" text-lg ">{{ address.national_address }}</div>
-            </div>
-            {% endif %}
-            {% if address.room_address %}
-            <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-indigo-600">
-                <label class="block  text-xs font-semibold  tracking-wider mb-1">Room
-                    Address</label>
-                <div class=" text-lg ">{{ address.room_address }}</div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
 
     <!-- Employment Information -->
     <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-        <i class="fas fa-briefcase"></i> Employment Information
+         Employment Information
     </div>
 
     {% if current_employment %}
@@ -216,101 +119,7 @@
     </div>
     {% endif %}
 
-    <!-- Passport Information -->
-    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-        <i class="fas fa-passport"></i> Passport Information
-    </div>
-
-    {% if passport_history %}
-    <div class="  rounded-xl p-6 mb-6 shadow-none">
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="  border-b-2 ">
-                    <tr>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Passport No</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Expiry Date</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Renewed</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Created At</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y ">
-                    {% for passport in passport_history %}
-                    <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ passport.passport_no }}</td>
-                        <td class="px-4 py-4 ">{{ passport.passport_expiry_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 ">
-                            <span
-                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
-                                {% if passport.passport_renewed %}Yes{% else %}No{% endif %}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 ">
-                            <span
-                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
-                                {% if passport.is_active %}Active{% else %}Inactive{% endif %}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 ">{{ passport.created_at|date:"d M, Y" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% else %}
-    <div class="text-center py-10  italic bg-gray-100 rounded-xl my-5">No passport information available
-    </div>
-    {% endif %}
-
-    <!-- Driving License Information -->
-    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-        <i class="fas fa-id-card"></i> Driving License Information
-    </div>
-
-    {% if driving_license_history %}
-    <div class="  rounded-xl p-6 mb-6 shadow-none">
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="  border-b-2 ">
-                    <tr>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">License No</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Expiry Date</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Renewed</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Renew Status</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
-                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Created At</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y ">
-                    {% for license in driving_license_history %}
-                    <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ license.license_no }}</td>
-                        <td class="px-4 py-4 ">{{ license.license_expiry_date|date:"d M, Y" }}</td>
-                        <td class="px-4 py-4 ">
-                            <span
-                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
-                                {% if license.license_renewed %}Yes{% else %}No{% endif %}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 ">{{ license.get_license_renew_status_display }}</td>
-                        <td class="px-4 py-4 ">
-                            <span
-                                class="inline-block px-3 py-1 rounded-full text-sm    border ">
-                                {% if license.is_active %}Active{% else %}Inactive{% endif %}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 ">{{ license.created_at|date:"d M, Y" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% else %}
-    <div class="text-center py-10  italic bg-gray-100 rounded-xl my-5">No driving license information
-        available</div>
-    {% endif %}
+ 
 
     <!-- Health Insurance -->
     {% if health_insurance %}
@@ -350,7 +159,7 @@
     <!-- UNIFORM SECTION -->
     <!-- ===================================== -->
     <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-        <i class="fas fa-tshirt"></i> Uniform Management
+         Uniform Management
     </div>
 
     <!-- Uniform Statistics Summary -->
@@ -510,7 +319,7 @@
     <!-- VEHICLE SECTION -->
     <!-- ===================================== -->
     <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-        <i class="fas fa-car"></i> Vehicle Management
+         Vehicle Management
     </div>
 
     <!-- Vehicle Statistics Summary -->

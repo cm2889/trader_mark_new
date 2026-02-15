@@ -119,7 +119,10 @@
                             Chessee No
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            Engine No
+                            Status
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Assign Status 
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                             Type
@@ -139,9 +142,14 @@
                     {% for info in vehicle_infos %}
                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ info.plate_no }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                            <a href="{% url 'vehicle_info:detail' info.pk %}">
+                                {{ info.plate_no }}
+                            </a>
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ info.chassee_no }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ info.engine_no }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ info.get_status_display }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ info.current_status }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ info.get_vehicle_type_display }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ info.get_ownership_display }}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ info.istemara_expiry_date|date:"M d, Y" }}</td>

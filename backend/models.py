@@ -600,7 +600,6 @@ class UniformStockTransactionLog(models.Model):
         ordering = ['-created_at']
 
 
-
 class Employment(models.Model):
 
     YES_NO_CHOICES = (
@@ -785,8 +784,14 @@ class Vehicle(models.Model):
         ('COMPANY', 'Company'),
         ('DRIVER', 'Driver'),
     )
-    
+
+    STATUS_CHOICES = (
+        ('ACTIVE', 'Active'),
+        ('INACTIVE', 'Inactive'),
+    )
+
     vehicle_type = models.CharField(max_length=10, choices=VEHICLE_TYPE_CHOICES)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='ACTIVE') 
 
     plate_no = models.CharField(max_length=50, unique=True, null=True, blank=True)
     chassee_no = models.CharField(max_length=100, blank=True, null=True)
@@ -816,6 +821,7 @@ class Vehicle(models.Model):
 # Vehicle Purchase 
 # ============================================================= 
 class VehiclePurchase(models.Model):
+
     PAYMENT_METHOD_CHOICES = (
         ('CASH', 'Cash'),
         ('CARD', 'Card'),
@@ -918,9 +924,14 @@ class VehicleInstallment(models.Model):
 
 
 class VehicleAssign(models.Model):
+    STATUS_CHOICES = (
+        ('ASSIGNED', 'Assigned'),
+        ('RETURNED', 'Returned'),
+    ) 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='vehicle_assignments')
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_assignments') 
 
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ASSIGNED')
     assigned_date = models.DateField()
     remarks = models.TextField(blank=True, null=True) 
 

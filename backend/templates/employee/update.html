@@ -132,9 +132,66 @@
                     </svg>
                 </button>
                 <div id="employment-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
-                    <input type="hidden" name="employment-TOTAL_FORMS" id="employment-total-forms" value="1">
+                    <input type="hidden" name="employment-TOTAL_FORMS" id="employment-total-forms" value="{{ employments.count }}">
+                    <input type="hidden" name="employment-DELETED_IDS" id="employment-deleted-ids" value="">
                     <div id="employment-forms-container" class="pt-4">
-                        <!-- Employment forms will be added here -->
+                        <!-- Employment forms from database -->
+                        {% for employment in employments %}
+                        <div class="employment-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="{{ forloop.counter0 }}" data-db-id="{{ employment.id }}">
+                            <input type="hidden" name="employment-{{ forloop.counter0 }}-id" value="{{ employment.id }}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">Employment #{{ forloop.counter }}</h4>
+                                <button type="button" onclick="removeEmploymentForm(this)" class="text-red-500 hover:text-red-700 remove-employment-btn" {% if employments.count == 1 %}style="display: none;"{% endif %}>
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
+                                    <input type="date" name="employment-{{ forloop.counter0 }}-joining_date" value="{{ employment.joining_at|date:'Y-m-d' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
+                                    <select name="employment-{{ forloop.counter0 }}-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Work Status</option>
+                                        <option value="ACTIVE" {% if employment.work_status == 'ACTIVE' %}selected{% endif %}>Active</option>
+                                        <option value="INACTIVE" {% if employment.work_status == 'INACTIVE' %}selected{% endif %}>Inactive</option>
+                                        <option value="ON_LEAVE" {% if employment.work_status == 'ON_LEAVE' %}selected{% endif %}>On Leave</option>
+                                        <option value="TERMINATED" {% if employment.work_status == 'TERMINATED' %}selected{% endif %}>Terminated</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
+                                    <input type="date" name="employment-{{ forloop.counter0 }}-rp_expiry_date" value="{{ employment.rp_expiry_date|date:'Y-m-d' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
+                                    <input type="text" name="employment-{{ forloop.counter0 }}-work_permit_no" value="{{ employment.work_permit_no }}" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
+                                    <input type="text" name="employment-{{ forloop.counter0 }}-work_id" value="{{ employment.work_id }}" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
+                                    <select name="employment-{{ forloop.counter0 }}-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="NOT_DUE" {% if employment.qid_renew_status == 'NOT_DUE' %}selected{% endif %}>Not Due</option>
+                                        <option value="PENDING" {% if employment.qid_renew_status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                        <option value="RENEWED" {% if employment.qid_renew_status == 'RENEWED' %}selected{% endif %}>Renewed</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
+                                    <select name="employment-{{ forloop.counter0 }}-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="YES" {% if employment.qid_lost_status == 'YES' %}selected{% endif %}>Yes</option>
+                                        <option value="NO" {% if employment.qid_lost_status == 'NO' %}selected{% endif %}>No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
                         <div class="employment-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="0">
                             <div class="flex justify-between items-center mb-4">
                                 <h4 class="text-sm font-semibold text-[var(--text-color)]">Employment #1</h4>
@@ -143,64 +200,16 @@
                                 </button>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                <!-- Employment Joining Date -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label>
-                                    <input type="date" name="employment-0-joining_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Work Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label>
-                                    <select name="employment-0-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                        <option value="">Select Work Status</option>
-                                        <option value="ACTIVE">Active</option>
-                                        <option value="INACTIVE">Inactive</option>
-                                        <option value="ON_LEAVE">On Leave</option>
-                                        <option value="TERMINATED">Terminated</option>
-                                    </select>
-                                </div>
-
-                                <!-- RP Expiry Date -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label>
-                                    <input type="date" name="employment-0-rp_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Work Permit No -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label>
-                                    <input type="text" name="employment-0-work_permit_no" value="" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Work ID -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label>
-                                    <input type="text" name="employment-0-work_id" value="" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- QID Renew Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label>
-                                    <select name="employment-0-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                        <option value="">Select Status</option>
-                                        <option value="NOT_DUE">Not Due</option>
-                                        <option value="PENDING">Pending</option>
-                                        <option value="RENEWED">Renewed</option>
-                                    </select>
-                                </div>
-
-                                <!-- QID Lost Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label>
-                                    <select name="employment-0-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                        <option value="">Select Status</option>
-                                        <option value="YES">Yes</option>
-                                        <option value="NO">No</option>
-                                    </select>
-                                </div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employment Joining Date</label><input type="date" name="employment-0-joining_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Status</label><select name="employment-0-work_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"><option value="">Select Work Status</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option><option value="ON_LEAVE">On Leave</option><option value="TERMINATED">Terminated</option></select></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">RP Expiry Date</label><input type="date" name="employment-0-rp_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work Permit No</label><input type="text" name="employment-0-work_permit_no" value="" placeholder="Enter Work Permit No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">Work ID</label><input type="text" name="employment-0-work_id" value="" placeholder="Enter Work ID" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Renew Status</label><select name="employment-0-qid_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"><option value="">Select Status</option><option value="NOT_DUE">Not Due</option><option value="PENDING">Pending</option><option value="RENEWED">Renewed</option></select></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">QID Lost Status</label><select name="employment-0-qid_lost_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"><option value="">Select Status</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -314,7 +323,35 @@
                 </button>
                 <div id="passport-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
                     <div id="passport-forms-container" class="pt-4">
-                        <!-- Passport forms will be added here -->
+                        <!-- Passport forms from database -->
+                        {% for passport in passports %}
+                        <div class="passport-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="{{ forloop.counter0 }}" data-db-id="{{ passport.id }}">
+                            <input type="hidden" name="passport-{{ forloop.counter0 }}-id" value="{{ passport.id }}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">Passport #{{ forloop.counter }}</h4>
+                                <button type="button" onclick="removePassportForm(this)" class="text-red-500 hover:text-red-700 remove-passport-btn" {% if passports.count == 1 %}style="display: none;"{% endif %}>
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport No</label>
+                                    <input type="text" name="passport-{{ forloop.counter0 }}-passport_no" value="{{ passport.passport_no }}" placeholder="Enter Passport No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label>
+                                    <input type="date" name="passport-{{ forloop.counter0 }}-passport_expiry_date" value="{{ passport.passport_expiry_date|date:'Y-m-d' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Renewed</label>
+                                    <div class="flex items-center h-11">
+                                        <input type="checkbox" name="passport-{{ forloop.counter0 }}-passport_renewed" {% if passport.passport_renewed %}checked{% endif %} class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                                        <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
                         <div class="passport-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="0">
                             <div class="flex justify-between items-center mb-4">
                                 <h4 class="text-sm font-semibold text-[var(--text-color)]">Passport #1</h4>
@@ -323,28 +360,12 @@
                                 </button>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                <!-- Passport No -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport No</label>
-                                    <input type="text" name="passport-0-passport_no" value="" placeholder="Enter Passport No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Passport Expiry Date -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label>
-                                    <input type="date" name="passport-0-passport_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- Passport Renewed -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Renewed</label>
-                                    <div class="flex items-center h-11">
-                                        <input type="checkbox" name="passport-0-passport_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
-                                        <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
-                                    </div>
-                                </div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport No</label><input type="text" name="passport-0-passport_no" value="" placeholder="Enter Passport No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Expiry Date</label><input type="date" name="passport-0-passport_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">Passport Renewed</label><div class="flex items-center h-11"><input type="checkbox" name="passport-0-passport_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]"><span class="ml-2 text-sm text-[var(--text-color)]">Yes</span></div></div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -364,7 +385,43 @@
                 </button>
                 <div id="driving-license-info" class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
                     <div id="license-forms-container" class="pt-4">
-                        <!-- License forms will be added here -->
+                        <!-- License forms from database -->
+                        {% for license in driving_licenses %}
+                        <div class="license-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="{{ forloop.counter0 }}" data-db-id="{{ license.id }}">
+                            <input type="hidden" name="driving_license-{{ forloop.counter0 }}-id" value="{{ license.id }}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">License #{{ forloop.counter }}</h4>
+                                <button type="button" onclick="removeDrivingLicenseForm(this)" class="text-red-500 hover:text-red-700 remove-license-btn" {% if driving_licenses.count == 1 %}style="display: none;"{% endif %}>
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
+                                    <input type="text" name="driving_license-{{ forloop.counter0 }}-license_no" value="{{ license.license_no }}" placeholder="Enter License No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label>
+                                    <input type="date" name="driving_license-{{ forloop.counter0 }}-license_expiry_date" value="{{ license.license_expiry_date|date:'Y-m-d' }}" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renewed</label>
+                                    <div class="flex items-center h-11">
+                                        <input type="checkbox" name="driving_license-{{ forloop.counter0 }}-license_renewed" {% if license.license_renewed %}checked{% endif %} class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
+                                        <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renew Status</label>
+                                    <select name="driving_license-{{ forloop.counter0 }}-license_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                        <option value="">Select Status</option>
+                                        <option value="YES" {% if license.license_renew_status == 'YES' %}selected{% endif %}>Renewed</option>
+                                        <option value="NO" {% if license.license_renew_status == 'NO' %}selected{% endif %}>Not Renewed</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
                         <div class="license-form-item border border-[var(--border-color)] rounded-lg p-4 mb-4" data-index="0">
                             <div class="flex justify-between items-center mb-4">
                                 <h4 class="text-sm font-semibold text-[var(--text-color)]">License #1</h4>
@@ -373,38 +430,13 @@
                                 </button>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                <!-- License No -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
-                                    <input type="text" name="driving_license-0-license_no" value="" placeholder="Enter License No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- License Expiry Date -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label>
-                                    <input type="date" name="driving_license-0-license_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                </div>
-
-                                <!-- License Renewed -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renewed</label>
-                                    <div class="flex items-center h-11">
-                                        <input type="checkbox" name="driving_license-0-license_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]">
-                                        <span class="ml-2 text-sm text-[var(--text-color)]">Yes</span>
-                                    </div>
-                                </div>
-
-                                <!-- License Renew Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renew Status</label>
-                                    <select name="driving_license-0-license_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
-                                        <option value="">Select Status</option>
-                                        <option value="YES">Renewed</option>
-                                        <option value="NO">Not Renewed</option>
-                                    </select>
-                                </div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label><input type="text" name="driving_license-0-license_no" value="" placeholder="Enter License No" class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Expiry Date</label><input type="date" name="driving_license-0-license_expiry_date" value="" class="flatpickr-date w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renewed</label><div class="flex items-center h-11"><input type="checkbox" name="driving_license-0-license_renewed" class="w-5 h-5 text-[var(--primary-color)] border-[var(--border-color)] rounded focus:ring-[var(--primary-color)]"><span class="ml-2 text-sm text-[var(--text-color)]">Yes</span></div></div>
+                                <div><label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Renew Status</label><select name="driving_license-0-license_renew_status" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"><option value="">Select Status</option><option value="YES">Renewed</option><option value="NO">Not Renewed</option></select></div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -500,9 +532,11 @@
 
         // Update remove button visibility
         updateEmploymentRemoveButtons();
+        updatePassportRemoveButtons();
+        updateLicenseRemoveButtons();
     });
 
-    let employmentFormCount = 1;
+    let employmentFormCount = {{ employments.count|default:1 }};
 
     function addEmploymentForm(event) {
         event.stopPropagation();
@@ -598,6 +632,15 @@
 
     function removeEmploymentForm(button) {
         const formItem = button.closest('.employment-form-item');
+        const dbId = formItem.getAttribute('data-db-id');
+        
+        // If this is an existing employment (has db-id), add to deleted IDs
+        if (dbId) {
+            const deletedIdsInput = document.getElementById('employment-deleted-ids');
+            const currentIds = deletedIdsInput.value;
+            deletedIdsInput.value = currentIds ? `${currentIds},${dbId}` : dbId;
+        }
+        
         formItem.remove();
         
         // Update numbering and reindex
@@ -796,7 +839,7 @@
     });
 
     // ===== PASSPORT FORM MANAGEMENT =====
-    let passportFormCount = 1;
+    let passportFormCount = {{ passports.count|default:1 }};
 
     function addPassportForm(event) {
         event.stopPropagation();
@@ -895,7 +938,7 @@
     }
 
     // ===== DRIVING LICENSE FORM MANAGEMENT =====
-    let licenseFormCount = 1;
+    let licenseFormCount = {{ driving_licenses.count|default:1 }};
 
     function addDrivingLicenseForm(event) {
         event.stopPropagation();
