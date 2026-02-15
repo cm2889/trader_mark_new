@@ -170,6 +170,7 @@ uniform_issuance_patterns = ([
     path('create/', views.UniformIssuanceCreateView.as_view(), name='create'),
     path('update/<int:pk>/', views.UniformIssuanceUpdateView.as_view(), name='update'),
     path('detail/<int:pk>/', views.UniformIssuanceDetailView.as_view(), name='detail'),
+    path('return/<int:pk>/', views.uniform_issuance_return, name='return'),
     path('delete/<int:pk>/', views.uniform_issuance_delete, name='delete'),
 ], 'uniform_issuance')
 

@@ -16,7 +16,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Q
-from django.views.decorators.http import require_GET 
+from django.views.decorators.http import require_GET, require_POST 
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -28,6 +28,7 @@ from django.utils.text import slugify
 from django.utils import timezone
 from datetime import datetime 
 from django.db.models import Sum, Count, Q, F
+from django.db import transaction
 from backend.models import UniformStockTransactionLog
 
 from backend.models import (
@@ -2289,6 +2290,72 @@ class UniformIssuanceDetailView(DetailView):
         })
         
         return context 
+
+
+@login_required
+@require_POST
+def uniform_issuance_return(request, pk):
+    if not checkUserPermission(request, "can_update", "/backend/uniform-issuance/"):
+        messages.error(request, "You do not have permission to return uniforms.")
+        return render(request, "403.html", status=403)
+
+    next_url = request.POST.get("next") or reverse("uniform_issuance:detail", args=[pk])
+
+    with transaction.atomic():
+        issuance = (
+            UniformIssuance.objects.select_for_update()
+            .select_related("uniform_stock", "employee")
+            .filter(pk=pk, is_active=True)
+            .first()
+        )
+
+        if not issuance:
+            messages.error(request, "Uniform issuance not found or inactive.")
+            return redirect(next_url)
+
+        if issuance.status != "ISSUED":
+            messages.error(request, "Only issued uniforms can be returned.")
+            return redirect(next_url)
+
+        raw_quantity = request.POST.get("quantity", "").strip()
+        try:
+            quantity = int(raw_quantity) if raw_quantity else issuance.quantity
+        except ValueError:
+            messages.error(request, "Invalid return quantity.")
+            return redirect(next_url)
+
+        if quantity <= 0:
+            messages.error(request, "Return quantity must be greater than zero.")
+            return redirect(next_url)
+
+        if quantity > issuance.quantity:
+            messages.error(request, "Return quantity cannot exceed issued quantity.")
+            return redirect(next_url)
+
+        UniformClearance.objects.create(
+            employee=issuance.employee,
+            uniform_stock=issuance.uniform_stock,
+            quantity=quantity,
+            status="RETURNED",
+            clearance_date=timezone.now().date(),
+            remark=(request.POST.get("remark") or "").strip() or None,
+            created_by=request.user,
+        )
+
+        remaining = issuance.quantity - quantity
+        issuance.updated_by = request.user
+
+        if remaining <= 0:
+            issuance.quantity = 0
+            issuance.status = "RETURNED"
+            issuance.return_date = timezone.now().date()
+        else:
+            issuance.quantity = remaining
+
+        issuance.save(update_fields=["quantity", "status", "return_date", "updated_by", "updated_at"])
+
+    messages.success(request, "Uniform return recorded successfully.")
+    return redirect(next_url)
     
 
 

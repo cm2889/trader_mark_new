@@ -1,0 +1,132 @@
+<div id="returnCardOverlay" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+
+    <div class="bg-white w-full max-w-md rounded-xl shadow-xl border border-gray-200 p-6 relative">
+
+        <!-- Close -->
+        <button onclick="closeReturnCard()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+            &times;
+        </button>
+
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">
+            Return Uniform
+        </h3>
+
+        <form method="post" id="returnForm">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <input type="hidden" name="quantity" id="returnQtyInput">
+
+            <div class="space-y-4">
+                <!-- Info Display -->
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 mb-2">
+                    <p class="text-xs text-blue-600 font-medium">Uniform: <span id="displayUniformName"
+                            class="text-blue-800"></span></p>
+                    <p class="text-xs text-blue-600 font-medium">Issued Quantity: <span id="displayMaxQty"
+                            class="text-blue-800"></span></p>
+                </div>
+
+                <!-- Quantity -->
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Return Quantity</label>
+                    <div class="mt-1 relative">
+                        <input type="number" id="returnQtyField" min="1"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                            placeholder="Enter amount to return">
+                    </div>
+                </div>
+
+                <!-- Return All -->
+                <label
+                    class="inline-flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer hover:text-blue-600 transition-colors">
+                    <input type="checkbox" id="returnAllCheckbox" onchange="toggleReturnAll()"
+                        class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                    Return All
+                </label>
+
+                <!-- Remarks -->
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Remarks
+                        (Optional)</label>
+                    <textarea name="remark" id="returnRemark" rows="3"
+                        class="w-full mt-1 rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+                        placeholder="Condition of returned item, etc."></textarea>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeReturnCard()"
+                        class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg shadow-sm hover:shadow transition-all">
+                        Submit Return
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    <script>
+        let maxReturnQty = 0;
+
+        function openReturnCard(pk, qty, uniformName) {
+            maxReturnQty = parseInt(qty);
+
+            const overlay = document.getElementById('returnCardOverlay');
+            const form = document.getElementById('returnForm');
+            const qtyField = document.getElementById('returnQtyField');
+            const remarkField = document.getElementById('returnRemark');
+
+            // Display info
+            document.getElementById('displayUniformName').textContent = uniformName;
+            document.getElementById('displayMaxQty').textContent = qty;
+
+            form.action = `/backend/uniform-issuance/return/${pk}/`;
+            qtyField.max = qty;
+            qtyField.value = qty; // Default to full return
+            remarkField.value = '';
+
+            document.getElementById('returnAllCheckbox').checked = true;
+            toggleReturnAll(); // Apply readOnly and styling based on initial checked state
+
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        function closeReturnCard() {
+            const overlay = document.getElementById('returnCardOverlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+
+        function toggleReturnAll() {
+            const checkbox = document.getElementById('returnAllCheckbox');
+            const qtyField = document.getElementById('returnQtyField');
+
+            if (checkbox.checked) {
+                qtyField.value = maxReturnQty;
+                qtyField.readOnly = true;
+                qtyField.classList.add('bg-gray-50');
+            } else {
+                qtyField.readOnly = false;
+                qtyField.classList.remove('bg-gray-50');
+            }
+        }
+
+        document.getElementById('returnForm').addEventListener('submit', function (e) {
+            const qtyField = document.getElementById('returnQtyField');
+            const qty = parseInt(qtyField.value);
+
+            if (isNaN(qty) || qty <= 0 || qty > maxReturnQty) {
+                e.preventDefault();
+                alert('Please enter a valid quantity between 1 and ' + maxReturnQty);
+                return;
+            }
+
+            document.getElementById('returnQtyInput').value = qty;
+        });
+    </script>
+
+</div>
