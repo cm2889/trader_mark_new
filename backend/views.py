@@ -3442,29 +3442,68 @@ class TrafficViolationListView(ListView):
         return context
 
 
+# @login_required
+# def traffic_violation_create(request):
+#     if not checkUserPermission(request, "can_add", "/backend/traffic-violation/"):
+#         messages.error(request, "You do not have permission to add traffic violations.")
+#         return render(request, "403.html", status=403)
+
+#     if request.method == 'POST':
+#         form = TrafficViolationForm(request.POST)
+#         if form.is_valid():
+#             violation = form.save(commit=False)
+#             violation.created_by = request.user
+#             violation.save()
+#             messages.success(request, "Traffic violation created successfully.")
+#             return redirect('traffic_violation:list')
+#     else:
+#         form = TrafficViolationForm()
+
+#     context = {
+#         'form': form,
+#         'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
+#         'violation_types': ViolationType.objects.filter(is_active=True),
+#     }
+    
+#     return render(request, 'traffic_violation/create.html', context)
+
 @login_required
 def traffic_violation_create(request):
     if not checkUserPermission(request, "can_add", "/backend/traffic-violation/"):
         messages.error(request, "You do not have permission to add traffic violations.")
         return render(request, "403.html", status=403)
 
+    vehicle_id = request.GET.get('vehicle')
+
     if request.method == 'POST':
         form = TrafficViolationForm(request.POST)
+
         if form.is_valid():
             violation = form.save(commit=False)
+
+            # Force vehicle from URL if exists
+            if vehicle_id:
+                violation.vehicle_id = vehicle_id
+
             violation.created_by = request.user
             violation.save()
+
             messages.success(request, "Traffic violation created successfully.")
             return redirect('traffic_violation:list')
+
     else:
-        form = TrafficViolationForm()
+        # Pre-select vehicle on load
+        initial_data = {}
+        if vehicle_id:
+            initial_data['vehicle'] = vehicle_id
+
+        form = TrafficViolationForm(initial=initial_data)
 
     context = {
         'form': form,
-        'vehicles': Vehicle.objects.filter(is_active=True, deleted=False),
-        'violation_types': ViolationType.objects.filter(is_active=True),
+        'vehicle_id': vehicle_id,
     }
-    
+
     return render(request, 'traffic_violation/create.html', context)
 
 
