@@ -17,14 +17,6 @@
 /*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
--- Current Database: `trader_mark`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `trader_mark` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci */;
-
-USE `trader_mark`;
-
---
 -- Table structure for table `auditlog_logentry`
 --
 
@@ -6807,4 +6799,4 @@ commit;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-02-16  7:19:32
+-- Dump completed on 2026-02-16  7:22:40
