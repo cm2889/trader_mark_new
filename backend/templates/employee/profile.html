@@ -242,6 +242,7 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Work ID</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">RP Expiry</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Created At</th>
+                        <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
@@ -258,6 +259,13 @@
                         <td class="px-4 py-4 ">{{ emp.work_id }}</td>
                         <td class="px-4 py-4 ">{{ emp.rp_expiry_date|date:"d M, Y" }}</td>
                         <td class="px-4 py-4 ">{{ emp.created_at|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4">
+                            {% if emp.is_active %}
+                                <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">Active</span>
+                            {% else %}
+                                <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium">Inactive</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -652,12 +660,13 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Expected Return</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Actual Return</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for issue in uniform_issuances %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ issue.uniform_stock.uniform.name }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'uniform:list' %}" class="text-[var(--primary-color)] hover:underline">{{ issue.uniform_stock.uniform.name }}</a></td>
                         <td class="px-4 py-4 ">{{ issue.uniform_stock.uniform.get_uniform_type_display }}</td>
                         <td class="px-4 py-4 ">{{ issue.uniform_stock.get_size_display }}</td>
                         <td class="px-4 py-4  ">{{ issue.quantity }}</td>
@@ -672,6 +681,21 @@
                         </td>
                         <td class="px-4 py-4 ">{{ issue.return_date|date:"d M, Y"|default:"N/A" }}</td>
                         <td class="px-4 py-4 ">{{ issue.remark|default:"-" }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'uniform_issuance:detail' issue.pk %}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'uniform_issuance:update' issue.pk %}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -835,7 +859,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class=" p-4 rounded-lg ">
                 <label class="block  text-xs  tracking-wider mb-1">Plate Number</label>
-                <div class=" text-lg ">{{ current_vehicle_assign.vehicle.plate_no }}</div>
+                <div class=" text-lg ">
+                    <a href="{% url 'vehicle_info:detail' current_vehicle_assign.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">
+                        {{ current_vehicle_assign.vehicle.plate_no }}
+                    </a>
+                </div>
             </div>
             <div class=" p-4 rounded-lg ">
                 <label class="block  text-xs  tracking-wider mb-1">Vehicle Type</label>
@@ -877,12 +905,13 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Assigned Date</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for assign in vehicle_assignments %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ assign.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' assign.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ assign.vehicle.plate_no }}</a></td>
                         <td class="px-4 py-4 ">{{ assign.vehicle.get_vehicle_type_display }}</td>
                         <td class="px-4 py-4 ">{{ assign.vehicle.get_ownership_display }}</td>
                         <td class="px-4 py-4 ">{{ assign.assigned_date|date:"d M, Y" }}</td>
@@ -893,6 +922,15 @@
                             </span>
                         </td>
                         <td class="px-4 py-4 ">{{ assign.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'vehicle_assign:update' assign.pk %}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -918,15 +956,37 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">To Employee</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Handover Date</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for handover in vehicle_handovers_from %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ handover.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 ">{{ handover.to_employee.full_name|default:"N/A" }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' handover.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ handover.vehicle.plate_no }}</a></td>
+                        <td class="px-4 py-4 ">
+                            {% if handover.to_employee %}
+                                <a href="{% url 'employee:profile' handover.to_employee.pk %}" class="text-[var(--primary-color)] hover:underline">{{ handover.to_employee.full_name }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                         <td class="px-4 py-4 ">{{ handover.handover_date|date:"d M, Y" }}</td>
                         <td class="px-4 py-4 ">{{ handover.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'vehicle_handover:detail' handover.pk %}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'vehicle_handover:update' handover.pk %}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -944,15 +1004,37 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">From Employee</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Handover Date</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for handover in vehicle_handovers_to %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ handover.vehicle.plate_no }}</td>
-                        <td class="px-4 py-4 ">{{ handover.from_employee.full_name|default:"N/A" }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' handover.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ handover.vehicle.plate_no }}</a></td>
+                        <td class="px-4 py-4 ">
+                            {% if handover.from_employee %}
+                                <a href="{% url 'employee:profile' handover.from_employee.pk %}" class="text-[var(--primary-color)] hover:underline">{{ handover.from_employee.full_name }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                         <td class="px-4 py-4 ">{{ handover.handover_date|date:"d M, Y" }}</td>
                         <td class="px-4 py-4 ">{{ handover.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'vehicle_handover:detail' handover.pk %}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'vehicle_handover:update' handover.pk %}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -978,18 +1060,34 @@
                         </th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Method</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Period</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for purchase in vehicle_purchases %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ purchase.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' purchase.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ purchase.vehicle.plate_no }}</a></td>
                         <td class="px-4 py-4 ">{{ purchase.purchase_date|date:"d M, Y" }}</td>
                         <td class="px-4 py-4  ">{{ purchase.total_amount|floatformat:2 }} QR</td>
                         <td class="px-4 py-4 ">{{ purchase.down_payment|floatformat:2 }} QR</td>
                         <td class="px-4 py-4 ">{{ purchase.installment_amount|floatformat:2 }} QR</td>
                         <td class="px-4 py-4 ">{{ purchase.get_payment_method_display }}</td>
                         <td class="px-4 py-4 ">{{ purchase.get_payment_period_display }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'vehicle_purchase:detail' purchase.pk %}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'vehicle_purchase:installments' purchase.pk %}" class="text-purple-600 hover:text-purple-800" title="View Installments">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -1046,12 +1144,13 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Paid Date</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Status</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Payment Method</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for installment in vehicle_installments %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ installment.purchase.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' installment.purchase.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ installment.purchase.vehicle.plate_no }}</a></td>
                         <td class="px-4 py-4 ">{{ installment.installment_no }}</td>
                         <td class="px-4 py-4  ">{{ installment.amount|floatformat:2 }} QR</td>
                         <td class="px-4 py-4 ">{{ installment.due_date|date:"d M, Y" }}</td>
@@ -1063,6 +1162,22 @@
                             </span>
                         </td>
                         <td class="px-4 py-4 ">{{ installment.get_payment_method_display }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                {% if not installment.is_paid %}
+                                <a href="{% url 'vehicle_installment:pay' installment.pk %}" class="text-green-600 hover:text-green-800" title="Pay Installment">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'vehicle_installment:update' installment.pk %}" class="text-blue-600 hover:text-blue-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -1084,16 +1199,32 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Place</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Violation Date</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for violation in traffic_violations %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ violation.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' violation.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ violation.vehicle.plate_no }}</a></td>
                         <td class="px-4 py-4 ">{{ violation.violation_type.name }}</td>
                         <td class="px-4 py-4 ">{{ violation.place|default:"N/A" }}</td>
                         <td class="px-4 py-4 ">{{ violation.violation_date|date:"d M, Y" }}</td>
                         <td class="px-4 py-4 ">{{ violation.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'traffic_violation:detail' violation.pk %}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'traffic_violation:update' violation.pk %}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -1122,12 +1253,13 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Status</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Maintenance Date</th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for maintenance in vehicle_maintenances %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ maintenance.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' maintenance.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ maintenance.vehicle.plate_no }}</a></td>
                         <td class="px-4 py-4 ">{{ maintenance.maintenance_type.name }}</td>
                         <td class="px-4 py-4  ">{{ maintenance.cost|floatformat:2 }} QR</td>
                         <td class="px-4 py-4 ">
@@ -1138,6 +1270,21 @@
                         </td>
                         <td class="px-4 py-4 ">{{ maintenance.maintenance_date|date:"d M, Y" }}</td>
                         <td class="px-4 py-4 ">{{ maintenance.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'vehicle_maintenance:detail' maintenance.pk %}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'vehicle_maintenance:update' maintenance.pk %}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -1167,12 +1314,13 @@
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Insurance Claimed
                         </th>
                         <th class="px-4 py-4 text-left text-xs  tracking-wider">Remarks</th>
+                        <th class="px-4 py-4 text-right text-xs  tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y ">
                     {% for accident in vehicle_accidents %}
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
-                        <td class="px-4 py-4  ">{{ accident.vehicle.plate_no }}</td>
+                        <td class="px-4 py-4  "><a href="{% url 'vehicle_info:detail' accident.vehicle.pk %}" class="text-[var(--primary-color)] hover:underline font-medium">{{ accident.vehicle.plate_no }}</a></td>
                         <td class="px-4 py-4 ">{{ accident.accident_date|date:"d M, Y" }}</td>
                         <td class="px-4 py-4 ">{{ accident.accident_place }}</td>
                         <td class="px-4 py-4  ">{{ accident.damage_cost|floatformat:2 }} QR</td>
@@ -1183,6 +1331,21 @@
                             </span>
                         </td>
                         <td class="px-4 py-4 ">{{ accident.remarks|default:"-" }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-2">
+                                <a href="{% url 'vehicle_accident:detail' accident.pk %}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'vehicle_accident:update' accident.pk %}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

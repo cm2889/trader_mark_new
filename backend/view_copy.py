@@ -85,18 +85,20 @@ def paginate_data(request, page_num, data_list):
 
 
 def import_excel(request):
-     
+    # Get all active companies for the export dropdown
+    companies = Company.objects.filter(is_active=True, deleted=False).order_by('name')
+    
     if request.method == "POST":
         file = request.FILES.get('excel_file')
 
         if not file:
             messages.error(request, "Please upload an Excel file.") 
-            return redirect('backend:import_excel')
+            return redirect('import_export:import_excel')
 
         # Validate file extension
         if not file.name.endswith(('.xlsx', '.xls')):
             messages.error(request, "Please upload a valid Excel file (.xlsx or .xls)")
-            return redirect('backend:import_excel')
+            return redirect('import_export:import_excel')
 
         try:
             # Extract company name from filename (without extension)
@@ -231,7 +233,7 @@ def import_excel(request):
                             )
 
                         # Parse gender
-                        gender_val = safe_str(row.get('Gender', '')).upper()
+                        gender_val = str(row.get('Gender', '')).strip().upper()
                         gender = 'M' if gender_val == 'MALE' else 'F' if gender_val == 'FEMALE' else 'M'
 
                         # Parse dates
@@ -480,9 +482,11 @@ def import_excel(request):
 
         except Exception as e:
             messages.error(request, f"Error processing Excel file: {str(e)}") 
-            return redirect('backend:import_excel')
+            return redirect('import_export:import_excel')
 
-    context = {}
+    context = {
+        'companies': companies
+    }
     return render(request, "export_center/import_excel.html", context)
 
 
@@ -498,14 +502,14 @@ def export_excel(request):
         
         if not company_id:
             messages.error(request, "Please select a company to export.")
-            return redirect('backend:import_excel')
+            return redirect('import_export:import_excel')
         
         # Get the company
         try:
             company = Company.objects.get(id=company_id, is_active=True)
         except Company.DoesNotExist:
             messages.error(request, "Company not found.")
-            return redirect('backend:import_excel')
+            return redirect('import_export:import_excel')
         
         # Create a new workbook
         wb = Workbook()
@@ -572,10 +576,13 @@ def export_excel(request):
             health = getattr(employee, 'health_insurance', None)
             contact = getattr(employee, 'contact', None)
             address = getattr(employee, 'address', None)
-            vehicle = Vehicle.objects.filter(
-                ownership='DRIVER',
+            # Get vehicle assigned to this employee
+            vehicle_assign = VehicleAssign.objects.filter(
+                employee=employee,
+                is_active=True,
                 deleted=False
-            ).first()  # This could be improved with better vehicle-employee relationship
+            ).select_related('vehicle').first()
+            vehicle = vehicle_assign.vehicle if vehicle_assign else None
 
             # Prepare row data
             row_data = [
@@ -645,7 +652,7 @@ def export_excel(request):
 
     except Exception as e:
         messages.error(request, f"Error exporting data: {str(e)}")
-        return redirect('backend:import_excel')
+        return redirect('import_export:import_excel')
 
 
  
