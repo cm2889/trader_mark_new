@@ -1,353 +1,298 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Uniform Issuance Details{% endblock %}
-
 {% block breadcrumb %}
-<a href="{% url 'uniform_issuance:list' %}">Uniform Issuance</a>
-<span class="mx-1">›</span>
-<span>Detail</span>
+    <a href="{% url 'uniform_issuance:list' %}">Uniform Issuance</a>
+    <span class="mx-1">›</span>
+    <span>Detail</span>
 {% endblock %}
-
 {% block content %}
-<div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
-    <div class="">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-semibold text-[var(--text-color)]">Uniform Issuance Details</h1>
-                <p class="text-sm text-[var(--text-light-color)] mt-1">Complete information about this uniform issuance
-                </p>
-            </div>
-            <div class="mt-4 sm:mt-0 flex gap-3">
-                <a href="{% url 'uniform_issuance:list' %}"
-                    class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to List
-                </a>
-            </div>
-        </div>
-
-        <!-- Issues/Alerts Section -->
-        {% if issues %}
-        <div class="mb-6 space-y-3">
-            {% for issue in issues %}
-            <div class="flex items-start p-4 rounded-lg border-l-4 
-                {% if issue.severity == 'critical' %}bg-red-50 border-red-500
-                {% elif issue.severity == 'high' %}bg-orange-50 border-orange-500
-                {% elif issue.severity == 'warning' %}bg-yellow-50 border-yellow-500
-                {% else %}bg-blue-50 border-blue-500{% endif %}">
-                <i class="fas fa-exclamation-triangle text-lg mt-0.5 mr-3
-                    {% if issue.severity == 'critical' %}text-red-600
-                    {% elif issue.severity == 'high' %}text-orange-600
-                    {% elif issue.severity == 'warning' %}text-yellow-600
-                    {% else %}text-blue-600{% endif %}"></i>
+    <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+        <div class="">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                    <p class="font-medium 
-                        {% if issue.severity == 'critical' %}text-red-800
-                        {% elif issue.severity == 'high' %}text-orange-800
-                        {% elif issue.severity == 'warning' %}text-yellow-800
-                        {% else %}text-blue-800{% endif %}">
-                        {{ issue.message }}
-                    </p>
+                    <h1 class="text-2xl font-semibold text-[var(--text-color)]">Uniform Issuance Details</h1>
+                    <p class="text-sm text-[var(--text-light-color)] mt-1">Complete information about this uniform issuance</p>
+                </div>
+                <div class="mt-4 sm:mt-0 flex gap-3">
+                    <a href="{% url 'uniform_issuance:list' %}"
+                       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to List
+                    </a>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Main Details Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
-            <div class="border-b border-[var(--border-color)] px-6 py-4">
-                <h2 class="text-lg font-semibold text-[var(--text-color)]">Issuance Information</h2>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Employee -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Employee</label>
-                        <a href="{% url 'employee:profile' employee.pk %}"
-                            class="text-base font-semibold text-[var(--primary-color)] hover:underline">
-                            {{ employee.full_name }}
-                        </a>
-                        <p class="text-sm text-[var(--text-light-color)]">{{ employee.hr_file_no }}</p>
-                        {% if employee.email %}
-                        <p class="text-sm text-[var(--text-light-color)]">{{ employee.email }}</p>
-                        {% endif %}
-                    </div>
-
-                    <!-- Uniform Details -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Uniform</label>
-                        <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.uniform_stock.uniform.name }}</p>
-                        <p class="text-sm text-[var(--text-light-color)]">Type: {{ uniform_issuance.uniform_stock.uniform.get_uniform_type_display }}</p>
-                    </div>
-
-                    <!-- Size & Quantity -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Size &
-                            Quantity</label>
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                Size: {{ uniform_issuance.uniform_stock.get_size_display }}
-                            </span>
-                            <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                Qty: {{ uniform_issuance.quantity }}
+            <!-- Issues/Alerts Section -->
+            {% if issues %}
+                <div class="mb-6 space-y-3">
+                    {% for issue in issues %}
+                        <div class="flex items-start p-4 rounded-lg border-l-4 {% if issue.severity == 'critical' %}bg-red-50 border-red-500 {% elif issue.severity == 'high' %}bg-orange-50 border-orange-500 {% elif issue.severity == 'warning' %}bg-yellow-50 border-yellow-500 {% else %}bg-blue-50 border-blue-500{% endif %}">
+                            <i class="fas fa-exclamation-triangle text-lg mt-0.5 mr-3 {% if issue.severity == 'critical' %}text-red-600 {% elif issue.severity == 'high' %}text-orange-600 {% elif issue.severity == 'warning' %}text-yellow-600 {% else %}text-blue-600{% endif %}"></i>
+                            <div>
+                                <p class="font-medium {% if issue.severity == 'critical' %}text-red-800 {% elif issue.severity == 'high' %}text-orange-800 {% elif issue.severity == 'warning' %}text-yellow-800 {% else %}text-blue-800{% endif %}">
+                                    {{ issue.message }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- Main Details Card -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
+                <div class="border-b border-[var(--border-color)] px-6 py-4">
+                    <h2 class="text-lg font-semibold text-[var(--text-color)]">Issuance Information</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Employee -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Employee</label>
+                            <a href="{% url 'employee:profile' employee.pk %}"
+                               class="text-base font-semibold text-[var(--primary-color)] hover:underline">
+                                {{ employee.full_name }}
+                            </a>
+                            <p class="text-sm text-[var(--text-light-color)]">{{ employee.hr_file_no }}</p>
+                            {% if employee.email %}<p class="text-sm text-[var(--text-light-color)]">{{ employee.email }}</p>{% endif %}
+                        </div>
+                        <!-- Uniform Details -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Uniform</label>
+                            <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.uniform_stock.uniform.name }}</p>
+                            <p class="text-sm text-[var(--text-light-color)]">
+                                Type: {{ uniform_issuance.uniform_stock.uniform.get_uniform_type_display }}
+                            </p>
+                        </div>
+                        <!-- Size & Quantity -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">
+                                Size &
+                                Quantity
+                            </label>
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    Size: {{ uniform_issuance.uniform_stock.get_size_display }}
+                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    Qty: {{ uniform_issuance.quantity }}
+                                </span>
+                            </div>
+                        </div>
+                        <!-- Status -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Status</label>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {% if uniform_issuance.status == 'ISSUED' %}bg-blue-100 text-blue-800 {% elif uniform_issuance.status == 'RETURNED' %}bg-green-100 text-green-800 {% elif uniform_issuance.status == 'LOST' %}bg-red-100 text-red-800 {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                {{ uniform_issuance.get_status_display }}
                             </span>
                         </div>
-                    </div>
-
-                    <!-- Status -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Status</label>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                            {% if uniform_issuance.status == 'ISSUED' %}bg-blue-100 text-blue-800
-                            {% elif uniform_issuance.status == 'RETURNED' %}bg-green-100 text-green-800
-                            {% elif uniform_issuance.status == 'LOST' %}bg-red-100 text-red-800
-                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                            {{ uniform_issuance.get_status_display }}
-                        </span>
-                    </div>
-
-                    <!-- Issued Date -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Issued Date</label>
-                        <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.issued_date|date:"M d, Y" }}</p>
-                    </div>
-
-                    <!-- Expected Return Date -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Expected Return
-                            Date</label>
-                        <p class="text-base font-semibold text-[var(--text-color)]">
-                            {% if uniform_issuance.expected_return_date %}
-                            {{ uniform_issuance.expected_return_date|date:"M d, Y" }}
-                            {% else %}
-                            <span class="text-[var(--text-light-color)]">Not set</span>
-                            {% endif %}
-                        </p>
-                    </div>
-
-                    <!-- Return Date -->
-                    {% if uniform_issuance.return_date %}
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Actual Return
-                            Date</label>
-                        <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.return_date|date:"M d, Y" }}</p>
-                    </div>
-                    {% endif %}
-
-                    <!-- Stock Code -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Stock Code</label>
-                        <p class="text-base font-mono font-semibold text-[var(--text-color)]">{{ uniform_stock.code }}
-                        </p>
-                    </div>
-
-                    <!-- Current Stock -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Current Stock
-                            Available</label>
-                        <p class="text-base font-semibold 
-                            {% if uniform_stock.quantity < 5 %}text-red-600
-                            {% elif uniform_stock.quantity < 10 %}text-yellow-600
-                            {% else %}text-green-600{% endif %}">
-                            {{ uniform_stock.quantity }} units
-                        </p>
-                    </div>
-
-                    <!-- Created By -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Issued By</label>
-                        <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.created_by.get_full_name|default:uniform_issuance.created_by.username }}
-                        </p>
-                        <p class="text-sm text-[var(--text-light-color)]">{{ uniform_issuance.created_at|date:"M d, Yh:i A" }}</p>
-                    </div>
-
-                    <!-- Updated By -->
-                    {% if uniform_issuance.updated_by %}
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Last Updated
-                            By</label>
-                        <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.updated_by.get_full_name|default:uniform_issuance.updated_by.username }}
-                        </p>
-                        <p class="text-sm text-[var(--text-light-color)]">{{ uniform_issuance.updated_at|date:"M d, Y h:i A" }}</p>
-                    </div>
-                    {% endif %}
-
-                    <!-- Remark -->
-                    {% if uniform_issuance.remark %}
-                    <div class="md:col-span-2 lg:col-span-3">
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Remarks</label>
-                        <p class="text-base text-[var(--text-color)] bg-gray-50 p-3 rounded-lg">{{ uniform_issuance.remark }}</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Employee Uniform Statistics -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
-            <div class="border-b border-[var(--border-color)] px-6 py-4">
-                <h2 class="text-lg font-semibold text-[var(--text-color)]">Employee Uniform Statistics</h2>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
-                        <p class="text-sm text-blue-600 font-medium mb-1">Total Issued</p>
-                        <p class="text-2xl font-bold text-blue-700">{{ employee_uniform_stats.total_issued }}</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
-                        <p class="text-sm text-green-600 font-medium mb-1">Currently Active</p>
-                        <p class="text-2xl font-bold text-green-700">{{ employee_uniform_stats.total_active }}</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
-                        <p class="text-sm text-purple-600 font-medium mb-1">Returned</p>
-                        <p class="text-2xl font-bold text-purple-700">{{ employee_uniform_stats.total_returned }}</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-lg border border-red-200">
-                        <p class="text-sm text-red-600 font-medium mb-1">Lost</p>
-                        <p class="text-2xl font-bold text-red-700">{{ employee_uniform_stats.total_lost }}</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
-                        <p class="text-sm text-yellow-600 font-medium mb-1">Damaged</p>
-                        <p class="text-2xl font-bold text-yellow-700">{{ employee_uniform_stats.total_damaged }}</p>
+                        <!-- Issued Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Issued Date</label>
+                            <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.issued_date|date:"M d, Y" }}</p>
+                        </div>
+                        <!-- Expected Return Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">
+                                Expected Return
+                                Date
+                            </label>
+                            <p class="text-base font-semibold text-[var(--text-color)]">
+                                {% if uniform_issuance.expected_return_date %}
+                                    {{ uniform_issuance.expected_return_date|date:"M d, Y" }}
+                                {% else %}
+                                    <span class="text-[var(--text-light-color)]">Not set</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <!-- Return Date -->
+                        {% if uniform_issuance.return_date %}
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">
+                                    Actual Return
+                                    Date
+                                </label>
+                                <p class="text-base font-semibold text-[var(--text-color)]">{{ uniform_issuance.return_date|date:"M d, Y" }}</p>
+                            </div>
+                        {% endif %}
+                        <!-- Stock Code -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Stock Code</label>
+                            <p class="text-base font-mono font-semibold text-[var(--text-color)]">{{ uniform_stock.code }}</p>
+                        </div>
+                        <!-- Current Stock -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">
+                                Current Stock
+                                Available
+                            </label>
+                            <p class="text-base font-semibold {% if uniform_stock.quantity < 5 %}text-red-600 {% elif uniform_stock.quantity < 10 %}text-yellow-600 {% else %}text-green-600{% endif %}">
+                                {{ uniform_stock.quantity }} units
+                            </p>
+                        </div>
+                        <!-- Created By -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Issued By</label>
+                            <p class="text-base font-semibold text-[var(--text-color)]">
+                                {{ uniform_issuance.created_by.get_full_name|default:uniform_issuance.created_by.username }}
+                            </p>
+                            <p class="text-sm text-[var(--text-light-color)]">{{ uniform_issuance.created_at|date:"M d, Yh:i A" }}</p>
+                        </div>
+                        <!-- Updated By -->
+                        {% if uniform_issuance.updated_by %}
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">
+                                    Last Updated
+                                    By
+                                </label>
+                                <p class="text-base font-semibold text-[var(--text-color)]">
+                                    {{ uniform_issuance.updated_by.get_full_name|default:uniform_issuance.updated_by.username }}
+                                </p>
+                                <p class="text-sm text-[var(--text-light-color)]">{{ uniform_issuance.updated_at|date:"M d, Y h:i A" }}</p>
+                            </div>
+                        {% endif %}
+                        <!-- Remark -->
+                        {% if uniform_issuance.remark %}
+                            <div class="md:col-span-2 lg:col-span-3">
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Remarks</label>
+                                <p class="text-base text-[var(--text-color)] bg-gray-50 p-3 rounded-lg">{{ uniform_issuance.remark }}</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            <!-- Employee Uniform Statistics -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
+                <div class="border-b border-[var(--border-color)] px-6 py-4">
+                    <h2 class="text-lg font-semibold text-[var(--text-color)]">Employee Uniform Statistics</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+                            <p class="text-sm text-blue-600 font-medium mb-1">Total Issued</p>
+                            <p class="text-2xl font-bold text-blue-700">{{ employee_uniform_stats.total_issued }}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                            <p class="text-sm text-green-600 font-medium mb-1">Currently Active</p>
+                            <p class="text-2xl font-bold text-green-700">{{ employee_uniform_stats.total_active }}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+                            <p class="text-sm text-purple-600 font-medium mb-1">Returned</p>
+                            <p class="text-2xl font-bold text-purple-700">{{ employee_uniform_stats.total_returned }}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-lg border border-red-200">
+                            <p class="text-sm text-red-600 font-medium mb-1">Lost</p>
+                            <p class="text-2xl font-bold text-red-700">{{ employee_uniform_stats.total_lost }}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
+                            <p class="text-sm text-yellow-600 font-medium mb-1">Damaged</p>
+                            <p class="text-2xl font-bold text-yellow-700">{{ employee_uniform_stats.total_damaged }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Employee Uniform History -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
+                <div class="border-b border-[var(--border-color)] px-6 py-4">
+                    <h2 class="text-lg font-semibold text-[var(--text-color)]">All Uniform Issuances for {{ employee.full_name }}</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">#</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Uniform</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Size</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Qty</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Issued Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--border-color)]">
+                            {% for issuance in employee_issuances %}
+                                <tr class="hover:bg-gray-50 transition-colors {% if issuance.pk == uniform_issuance.pk %}bg-blue-50{% endif %}">
+                                    <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
+                                    <td class="px-4 py-3 text-sm font-medium text-[var(--text-color)]">{{ issuance.uniform_stock.uniform.name }}</td>
+                                    <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ issuance.uniform_stock.get_size_display }}</td>
+                                    <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ issuance.quantity }}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if issuance.status == 'ISSUED' %}bg-blue-100 text-blue-800 {% elif issuance.status == 'RETURNED' %}bg-green-100 text-green-800 {% elif issuance.status == 'LOST' %}bg-red-100 text-red-800 {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            {{ issuance.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ issuance.issued_date|date:"M d, Y" }}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            {% if issuance.pk == uniform_issuance.pk %}<span class="text-xs font-medium text-blue-600"></span>{% endif %}
+                                            {% if issuance.status == 'ISSUED' %}
+                                                <button onclick="openReturnCard('{{ issuance.pk }}', '{{ issuance.quantity }}', '{{ issuance.uniform_stock.uniform.name }}')"
+                                                        class="inline-flex items-center px-2.5 py-1 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 rounded transition-colors shadow-sm">
+                                                    <i class="fas fa-undo mr-1"></i>Return
+                                                </button>
+                                            {% else %}
+                                                <span class="text-xs font-medium text-[var(--text-light-color)]">No action</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7"
+                                        class="px-4 py-8 text-center text-[var(--text-light-color)]">
+                                        No issuances
+                                        found
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Employee Uniform Clearances -->
+            {% if employee_clearances %}
+                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
+                    <div class="border-b border-[var(--border-color)] px-6 py-4">
+                        <h2 class="text-lg font-semibold text-[var(--text-color)]">Uniform Clearances for {{ employee.full_name }}</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">#</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Uniform</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Size</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Qty</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Clearance Date</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[var(--border-color)]">
+                                {% for clearance in employee_clearances %}
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
+                                        <td class="px-4 py-3 text-sm font-medium text-[var(--text-color)]">{{ clearance.uniform_stock.uniform.name }}</td>
+                                        <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ clearance.uniform_stock.get_size_display }}</td>
+                                        <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ clearance.quantity }}</td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if clearance.status == 'RETURNED' %}bg-green-100 text-green-800 {% elif clearance.status == 'LOST' %}bg-red-100 text-red-800 {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                                {{ clearance.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ clearance.clearance_date|date:"M d, Y" }}</td>
+                                        <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ clearance.remark|default:"-" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-
-        <!-- Employee Uniform History -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
-            <div class="border-b border-[var(--border-color)] px-6 py-4">
-                <h2 class="text-lg font-semibold text-[var(--text-color)]">All Uniform Issuances for {{ employee.full_name }}</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">#
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Uniform</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Size</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Qty
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Issued Date</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--border-color)]">
-                        {% for issuance in employee_issuances %}
-                        <tr
-                            class="hover:bg-gray-50 transition-colors {% if issuance.pk == uniform_issuance.pk %}bg-blue-50{% endif %}">
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
-                            <td class="px-4 py-3 text-sm font-medium text-[var(--text-color)]">{{ issuance.uniform_stock.uniform.name }}</td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ issuance.uniform_stock.get_size_display }}</td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ issuance.quantity }}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {% if issuance.status == 'ISSUED' %}bg-blue-100 text-blue-800
-                                    {% elif issuance.status == 'RETURNED' %}bg-green-100 text-green-800
-                                    {% elif issuance.status == 'LOST' %}bg-red-100 text-red-800
-                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                                    {{ issuance.get_status_display }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ issuance.issued_date|date:"M d, Y" }}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    {% if issuance.pk == uniform_issuance.pk %}
-                                        <span class="text-xs font-medium text-blue-600"></span>
-                                    {% endif %}
-                                    {% if issuance.status == 'ISSUED' %}
-                                    <button
-                                        onclick="openReturnCard('{{ issuance.pk }}', '{{ issuance.quantity }}', '{{ issuance.uniform_stock.uniform.name }}')"
-                                        class="inline-flex items-center px-2.5 py-1 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 rounded transition-colors shadow-sm">
-                                        <i class="fas fa-undo mr-1"></i>Return
-                                    </button>
-                                    {% else %}
-                                    <span class="text-xs font-medium text-[var(--text-light-color)]">No action</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-[var(--text-light-color)]">No issuances
-                                found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Employee Uniform Clearances -->
-        {% if employee_clearances %}
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
-            <div class="border-b border-[var(--border-color)] px-6 py-4">
-                <h2 class="text-lg font-semibold text-[var(--text-color)]">Uniform Clearances for {{ employee.full_name }}</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">#
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Uniform</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Size</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">Qty
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Clearance Date</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase">
-                                Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--border-color)]">
-                        {% for clearance in employee_clearances %}
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
-                            <td class="px-4 py-3 text-sm font-medium text-[var(--text-color)]">{{ clearance.uniform_stock.uniform.name }}</td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ clearance.uniform_stock.get_size_display }}</td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-color)]">{{ clearance.quantity }}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {% if clearance.status == 'RETURNED' %}bg-green-100 text-green-800
-                                    {% elif clearance.status == 'LOST' %}bg-red-100 text-red-800
-                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                                    {{ clearance.get_status_display }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ clearance.clearance_date|date:"M d, Y" }}</td>
-                            <td class="px-4 py-3 text-sm text-[var(--text-light-color)]">{{ clearance.remark|default:"-" }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
     </div>
-</div>
-
-{% include "uniform_issuance/return_card.html" %}
+    {% include "uniform_issuance/return_card.html" %}
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     // Auto-refresh on tab visibility change (optional)
     document.addEventListener('visibilitychange', function () {
         if (!document.hidden) {
@@ -355,5 +300,5 @@
             // location.reload();
         }
     });
-</script>
+    </script>
 {% endblock %}

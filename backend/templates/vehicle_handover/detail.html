@@ -1,66 +1,67 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Handover Detail{% endblock %}
-
 {% block breadcrumb %}
-<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
-<span class="mx-1">›</span>
-<a href="{% url 'vehicle_handover:list' %}">Handover</a>
-<span class="mx-1">›</span>
-<span>Detail</span>
+    <a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+    <span class="mx-1">›</span>
+    <a href="{% url 'vehicle_handover:list' %}">Handover</a>
+    <span class="mx-1">›</span>
+    <span>Detail</span>
 {% endblock %}
-
 {% block header_actions %}
-<a href="{% url 'vehicle_handover:list' %}"
-   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-    Back to List
-</a>
+    <a href="{% url 'vehicle_handover:list' %}"
+       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16"
+             height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to List
+    </a>
 {% endblock %}
-
 {% block content %}
-<div class="container  px-4 py-8 ">
-    <!-- Detail Card -->
-    <div class="bg-white rounded-lg shadow-sm p-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-                <div>
-                    <label class="text-sm font-medium text-gray-500">Vehicle</label>
-                    <p class="text-lg font-semibold text-gray-800">{{ handover.vehicle.plate_no }}</p>
+    <div class="container  px-4 py-8 ">
+        <!-- Detail Card -->
+        <div class="bg-white rounded-lg shadow-sm p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Vehicle</label>
+                        <p class="text-lg font-semibold text-gray-800">{{ handover.vehicle.plate_no }}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">From Employee</label>
+                        <p class="text-lg text-gray-800">{{ handover.from_employee.full_name|default:"-" }}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">To Employee</label>
+                        <p class="text-lg text-gray-800">{{ handover.to_employee.full_name|default:"-" }}</p>
+                    </div>
                 </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-500">From Employee</label>
-                    <p class="text-lg text-gray-800">{{ handover.from_employee.full_name|default:"-" }}</p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Handover Date</label>
+                        <p class="text-lg text-gray-800">{{ handover.handover_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Created By</label>
+                        <p class="text-lg text-gray-800">{{ handover.created_by.get_full_name|default:handover.created_by.username }}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Created At</label>
+                        <p class="text-lg text-gray-800">{{ handover.created_at|date:"F d, Y H:i" }}</p>
+                    </div>
                 </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-500">To Employee</label>
-                    <p class="text-lg text-gray-800">{{ handover.to_employee.full_name|default:"-" }}</p>
-                </div>
+                {% if handover.remarks %}
+                    <div class="md:col-span-2">
+                        <label class="text-sm font-medium text-gray-500">Remarks</label>
+                        <p class="text-gray-800 mt-1">{{ handover.remarks }}</p>
+                    </div>
+                {% endif %}
             </div>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-sm font-medium text-gray-500">Handover Date</label>
-                    <p class="text-lg text-gray-800">{{ handover.handover_date|date:"F d, Y" }}</p>
-                </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-500">Created By</label>
-                    <p class="text-lg text-gray-800">{{ handover.created_by.get_full_name|default:handover.created_by.username }}</p>
-                </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-500">Created At</label>
-                    <p class="text-lg text-gray-800">{{ handover.created_at|date:"F d, Y H:i" }}</p>
-                </div>
-            </div>
-            {% if handover.remarks %}
-            <div class="md:col-span-2">
-                <label class="text-sm font-medium text-gray-500">Remarks</label>
-                <p class="text-gray-800 mt-1">{{ handover.remarks }}</p>
-            </div>
-            {% endif %}
         </div>
     </div>
-</div>
 {% endblock %}

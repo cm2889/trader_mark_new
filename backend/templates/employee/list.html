@@ -1,163 +1,197 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block page_title %}Employees - {{ site_setting.site_title|default:'' }}{% endblock %}
-{% block meta_description %}Manage employee records, view employee details, and track workforce information{% endblock %}
-
+{% block meta_description %}
+    Manage employee records, view employee details, and track workforce information
+{% endblock %}
 {% block title %}Employees{% endblock %}
-
 {% block subtitle %}
-<p class="text-sm text-[var(--text-light-color)] mt-1">Manage all employee records and information</p>
+    <p class="text-sm text-[var(--text-light-color)] mt-1">Manage all employee records and information</p>
 {% endblock %}
-
 {% block breadcrumb %}
-<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-</svg>
-<span class="font-medium text-[var(--primary-color)]">Employees</span>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="font-medium text-[var(--primary-color)]">Employees</span>
 {% endblock %}
-
 {% block header_actions %}
-<button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm" aria-label="Filter employees">
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-    </svg>
-    <span>Filter</span>
-</button>
-<button class="ml-2">
-    <!-- Export Section -->
-    <a href="{% url 'import_export:export_excel' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+    <button onclick="openFilterModal()"
+            class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            aria-label="Filter employees">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+            </path>
         </svg>
-        Download Excel  
+        <span>Filter</span>
+    </button>
+    <button class="ml-2">
+        <!-- Export Section -->
+        <a href="{% url 'import_export:export_excel' %}"
+           class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+            <svg class="w-4 h-4 mr-2"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4">
+                </path>
+            </svg>
+            Download Excel
+        </a>
+    </button>
+    <a href="{% url 'import_export:import_excel' %}"
+       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+            </path>
+        </svg>
+        Import Excel
     </a>
-</button>
-<a href="{% url 'import_export:import_excel' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-    </svg>
-    Import Excel
-</a>
-<a href="{% url 'employee:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-    </svg>
-    <span>Add Employee</span>
-</a>
+    <a href="{% url 'employee:create' %}"
+       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Add Employee</span>
+    </a>
 {% endblock %}
-
 {% block content %}
-
-        <!-- Filter Modal -->
-        <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
-            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
-                <!-- Modal Header -->
-                <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
-                    <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Employees</h3>
-                    <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Modal Body -->
-                <form method="get" id="filterForm">
-                    <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Name Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Name</label>
-                                <select name="name" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                    <option value="">All Employees</option>
-                                    {% for emp in all_employees %}
-                                    <option value="{{ emp.id }}" {% if request.GET.name == emp.id|stringformat:"s" %}selected{% endif %}>{{ emp.full_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- QID No Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">QID No</label>
-                                <select name="qid_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                    <option value="">All QID</option>
-                                    {% for emp in all_employees %}
-                                    <option value="{{ emp.qid_no }}" {% if request.GET.qid_no == emp.qid_no %}selected{% endif %}>{{ emp.qid_no }} - {{ emp.full_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- HR File No Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">HR File No</label>
-                                <select name="hr_file_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                    <option value="">All HR Files</option>
-                                    {% for emp in all_employees %}
-                                    <option value="{{ emp.hr_file_no }}" {% if request.GET.hr_file_no == emp.hr_file_no %}selected{% endif %}>{{ emp.hr_file_no }} - {{ emp.full_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- Nationality Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Nationality</label>
-                                <select name="nationality" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                    <option value="">All Nationalities</option>
-                                    {% for nat in nationalities %}
-                                    <option value="{{ nat.id }}" {% if request.GET.nationality == nat.id|stringformat:"s" %}selected{% endif %}>{{ nat.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- Gender Filter -->
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Gender</label>
-                                <select name="gender" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                    <option value="">All Genders</option>
-                                    <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Male</option>
-                                    <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Female</option>
-                                </select>
-                            </div>
+    <!-- Filter Modal -->
+    <div id="filterModal"
+         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+         onclick="closeFilterModal(event)">
+        <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
+             onclick="event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
+                <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Employees</h3>
+                <button onclick="closeFilterModal()"
+                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <form method="get" id="filterForm">
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Name Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Name</label>
+                            <select name="name"
+                                    class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All Employees</option>
+                                {% for emp in all_employees %}
+                                    <option value="{{ emp.id }}"
+                                            {% if request.GET.name == emp.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ emp.full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- QID No Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">QID No</label>
+                            <select name="qid_no"
+                                    class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All QID</option>
+                                {% for emp in all_employees %}
+                                    <option value="{{ emp.qid_no }}"
+                                            {% if request.GET.qid_no == emp.qid_no %}selected{% endif %}>
+                                        {{ emp.qid_no }} - {{ emp.full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- HR File No Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">HR File No</label>
+                            <select name="hr_file_no"
+                                    class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All HR Files</option>
+                                {% for emp in all_employees %}
+                                    <option value="{{ emp.hr_file_no }}"
+                                            {% if request.GET.hr_file_no == emp.hr_file_no %}selected{% endif %}>
+                                        {{ emp.hr_file_no }} - {{ emp.full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Nationality Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Nationality</label>
+                            <select name="nationality"
+                                    class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All Nationalities</option>
+                                {% for nat in nationalities %}
+                                    <option value="{{ nat.id }}"
+                                            {% if request.GET.nationality == nat.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ nat.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Gender Filter -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Gender</label>
+                            <select name="gender"
+                                    class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All Genders</option>
+                                <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Male</option>
+                                <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Female</option>
+                            </select>
                         </div>
                     </div>
-
-                    <!-- Modal Footer -->
-                    <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
-                        <a href="{% url 'employee:list' %}" class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
-                            Reset
-                        </a>
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                            Filter
-                        </button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <!-- Modal Footer -->
+                <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
+                    <a href="{% url 'employee:list' %}"
+                       class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                        Reset
+                    </a>
+                    <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                        Filter
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <!-- Table Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] ">
-            <div class="">
-                <table class="w-full">
-                    <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">HR File No</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">QID No</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Gender</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Nationality</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Joining Date</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--border-color)]">
-                        {% for employee in employees %}
+    </div>
+    <!-- Table Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] ">
+        <div class="">
+            <table class="w-full">
+                <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">HR File No</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">QID No</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Gender</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                            Nationality
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                            Joining Date
+                        </th>
+                        <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border-color)]">
+                    {% for employee in employees %}
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
-                                {{ employee.hr_file_no }}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">{{ employee.hr_file_no }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{% url 'employee:detail' employee.pk %}" class="flex items-center gap-3 text-sm text-[var(--text-color)] hover:underline">
+                                <a href="{% url 'employee:detail' employee.pk %}"
+                                   class="flex items-center gap-3 text-sm text-[var(--text-color)] hover:underline">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10 bg-[var(--primary-color)] rounded-full flex items-center justify-center text-white font-medium">
                                             {{ employee.first_name|slice:":1"|upper }}
@@ -175,116 +209,119 @@
                                     </div>
                                 </a>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
-                                {{ employee.qid_no }}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">{{ employee.qid_no }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 {% if employee.gender == 'M' %}
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    <i class="fas fa-mars mr-1"></i>Male
-                                </span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-mars mr-1"></i>Male
+                                    </span>
                                 {% else %}
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
-                                    <i class="fas fa-venus mr-1"></i>Female
-                                </span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                        <i class="fas fa-venus mr-1"></i>Female
+                                    </span>
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
                                 {{ employee.nationality.name|default:'-' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
-                                {{ employee.joining_at|date:"M d, Y" }}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">{{ employee.joining_at|date:"M d, Y" }}</td>
                             <td class="px-6 py-4 text-sm text-center">
                                 <div class="relative inline-block" data-menu-wrap>
                                     <button type="button"
                                             class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)] transition-colors"
-                                            data-menu-btn aria-haspopup="true" aria-expanded="false" aria-label="Employee actions"
+                                            data-menu-btn
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                            aria-label="Employee actions"
                                             onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                                    ⋯
+                                        ⋯
                                     </button>
-
-                                    <div class="hidden absolute right-0 mt-1 w-[180px] z-50 rounded-lg bg-white
-                                                ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
-
-                                    <a href="{% url 'employee:detail' employee.pk %}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50 first:rounded-t-lg"
-                                        role="menuitem"
-                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 2.66C4.66 2.66 2.66 4.66 2.66 8C2.66 11.34 4.66 13.34 8 13.34C11.34 13.34 13.34 11.34 13.34 8C13.34 4.66 11.34 2.66 8 2.66Z" stroke="#4A5565" stroke-width="1.2"/>
-                                        <path d="M8 5.33C6.9 5.33 6 6.23 6 7.33C6 8.43 6.9 9.33 8 9.33C9.1 9.33 10 8.43 10 7.33C10 6.23 9.1 5.33 8 5.33Z" stroke="#4A5565" stroke-width="1.2"/>
-                                        </svg>
-                                        View Profile
-                                        
-                                    </a>
-
-                                    <a href="{% url 'employee:profile' employee.pk %}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
-                                        role="menuitem"
-                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z" stroke="#4A5565" stroke-width="1.2"/>
-                                        </svg>
-                                        View Details
-                                    </a>
-
-                                    <div class="border-t border-[var(--border-color)] my-1"></div>
-
-                                    <a href="{% url 'employee:update' employee.pk %}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
-                                        role="menuitem"
-                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
-                                                stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round"/>
-                                        <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33"
-                                                stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        Edit Employee
-                                    </a>
-
-                                    <div class="border-t border-[var(--border-color)] my-1"></div>
-
-                                    <a href="{% url 'uniform_issuance:create' %}?employee={{ employee.pk }}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
-                                        role="menuitem"
-                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M5.5 2.66h5c1.05 0 1.9.85 1.9 1.9v6.88c0 1.05-.85 1.9-1.9 1.9h-5c-1.05 0-1.9-.85-1.9-1.9V4.56c0-1.05.85-1.9 1.9-1.9Z" stroke="#4A5565" stroke-width="1.2"/>
-                                        </svg>
-                                        Issue Uniform
-                                    </a>
-
-                                    <a href="{% url 'vehicle_assign:create' %}?employee={{ employee.pk }}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
-                                        role="menuitem"
-                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3.66 9.66h8.68c.38 0 .7-.27.77-.64l.43-2.2" stroke="#4A5565" stroke-width="1.2"/>
-                                        </svg>
-                                        Assign Vehicle
-                                    </a>
-
-                                    <div class="border-t border-[var(--border-color)] my-1"></div>
-
-                                    <button type="button"
-                                        onclick="confirmDelete({{ employee.pk }}, '{{ employee.full_name|escapejs }}')"
-                                        class="w-full block px-3 py-2 text-sm text-left flex items-center gap-2 text-red-600 hover:bg-red-50 last:rounded-b-lg"
-                                        role="menuitem">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
-                                                stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                                        </svg>
-                                        Delete
-                                    </button>
-
+                                    <div class="hidden absolute right-0 mt-1 w-[180px] z-50 rounded-lg bg-white ring-1 ring-[var(--border-color)] shadow-lg"
+                                         data-menu
+                                         role="menu">
+                                        <a href="{% url 'employee:detail' employee.pk %}"
+                                           class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50 first:rounded-t-lg"
+                                           role="menuitem"
+                                           onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 class="w-4 h-4"
+                                                 viewBox="0 0 16 16"
+                                                 fill="none">
+                                                <path d="M8 2.66C4.66 2.66 2.66 4.66 2.66 8C2.66 11.34 4.66 13.34 8 13.34C11.34 13.34 13.34 11.34 13.34 8C13.34 4.66 11.34 2.66 8 2.66Z" stroke="#4A5565" stroke-width="1.2" />
+                                                <path d="M8 5.33C6.9 5.33 6 6.23 6 7.33C6 8.43 6.9 9.33 8 9.33C9.1 9.33 10 8.43 10 7.33C10 6.23 9.1 5.33 8 5.33Z" stroke="#4A5565" stroke-width="1.2" />
+                                            </svg>
+                                            View Profile
+                                        </a>
+                                        <a href="{% url 'employee:profile' employee.pk %}"
+                                           class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
+                                           role="menuitem"
+                                           onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 class="w-4 h-4"
+                                                 viewBox="0 0 16 16"
+                                                 fill="none">
+                                                <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z" stroke="#4A5565" stroke-width="1.2" />
+                                            </svg>
+                                            View Details
+                                        </a>
+                                        <div class="border-t border-[var(--border-color)] my-1"></div>
+                                        <a href="{% url 'employee:update' employee.pk %}"
+                                           class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
+                                           role="menuitem"
+                                           onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 class="w-4 h-4"
+                                                 viewBox="0 0 16 16"
+                                                 fill="none">
+                                                <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05" stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round" />
+                                                <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            Edit Employee
+                                        </a>
+                                        <div class="border-t border-[var(--border-color)] my-1"></div>
+                                        <a href="{% url 'uniform_issuance:create' %}?employee={{ employee.pk }}"
+                                           class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
+                                           role="menuitem"
+                                           onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 class="w-4 h-4"
+                                                 viewBox="0 0 16 16"
+                                                 fill="none">
+                                                <path d="M5.5 2.66h5c1.05 0 1.9.85 1.9 1.9v6.88c0 1.05-.85 1.9-1.9 1.9h-5c-1.05 0-1.9-.85-1.9-1.9V4.56c0-1.05.85-1.9 1.9-1.9Z" stroke="#4A5565" stroke-width="1.2" />
+                                            </svg>
+                                            Issue Uniform
+                                        </a>
+                                        <a href="{% url 'vehicle_assign:create' %}?employee={{ employee.pk }}"
+                                           class="block px-3 py-2 text-sm text-left flex items-center gap-2 hover:bg-gray-50"
+                                           role="menuitem"
+                                           onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 class="w-4 h-4"
+                                                 viewBox="0 0 16 16"
+                                                 fill="none">
+                                                <path d="M3.66 9.66h8.68c.38 0 .7-.27.77-.64l.43-2.2" stroke="#4A5565" stroke-width="1.2" />
+                                            </svg>
+                                            Assign Vehicle
+                                        </a>
+                                        <div class="border-t border-[var(--border-color)] my-1"></div>
+                                        <button type="button"
+                                                onclick="confirmDelete({{ employee.pk }}, '{{ employee.full_name|escapejs }}')"
+                                                class="w-full block px-3 py-2 text-sm text-left flex items-center gap-2 text-red-600 hover:bg-red-50 last:rounded-b-lg"
+                                                role="menuitem">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 class="w-4 h-4"
+                                                 viewBox="0 0 16 16"
+                                                 fill="none">
+                                                <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                                            </svg>
+                                            Delete
+                                        </button>
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        {% empty %}
+                    {% empty %}
                         <tr>
                             <td colspan="7" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center">
@@ -293,58 +330,60 @@
                                     </div>
                                     <p class="text-[var(--text-color)] font-medium">No employees found</p>
                                     <p class="text-sm text-[var(--text-light-color)] mt-1">Get started by adding a new employee</p>
-                                    <a href="{% url 'employee:create' %}" class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                                    <a href="{% url 'employee:create' %}"
+                                       class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
                                         <i class="fas fa-plus mr-2"></i>Add Employee
                                     </a>
                                 </div>
                             </td>
                         </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            {% if employees %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        {% if employees %}
             <div class="px-6 py-4 border-t border-[var(--border-color)] bg-[var(--table-header)]">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <p class="text-sm text-[var(--text-light-color)]">
                         Showing <span class="font-medium text-[var(--text-color)]">{{ employees|length }}</span> results
                     </p>
                     {% if paginator_list %}
-                    <nav class="flex items-center gap-1">
-                        {% if paginator.has_previous %}
-                        <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
-                            <i class="fas fa-angle-double-left"></i>
-                        </a>
-                        <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
-                            <i class="fas fa-angle-left"></i>
-                        </a>
-                        {% endif %}
-
-                        {% for page in paginator_list %}
-                        <a href="?page={{ page }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-3 py-1.5 text-sm rounded-lg transition-colors {% if page == paginator.number %}bg-[var(--primary-color)] text-white{% else %}text-[var(--text-color)] hover:bg-gray-100{% endif %}">
-                            {{ page }}
-                        </a>
-                        {% endfor %}
-
-                        {% if paginator.has_next %}
-                        <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
-                            <i class="fas fa-angle-right"></i>
-                        </a>
-                        <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
-                            <i class="fas fa-angle-double-right"></i>
-                        </a>
-                        {% endif %}
-                    </nav>
+                        <nav class="flex items-center gap-1">
+                            {% if paginator.has_previous %}
+                                <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}"
+                                   class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                                <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                                   class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            {% endif %}
+                            {% for page in paginator_list %}
+                                <a href="?page={{ page }}{% if get_param %}&{{ get_param }}{% endif %}"
+                                   class="px-3 py-1.5 text-sm rounded-lg transition-colors {% if page == paginator.number %}bg-[var(--primary-color)] text-white{% else %}text-[var(--text-color)] hover:bg-gray-100{% endif %}">
+                                    {{ page }}
+                                </a>
+                            {% endfor %}
+                            {% if paginator.has_next %}
+                                <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                                   class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                                <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                                   class="p-2 text-sm text-[var(--text-color)] hover:bg-gray-100 rounded-lg transition-colors">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            {% endif %}
+                        </nav>
                     {% endif %}
                 </div>
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
     </div>
 </div>
-
+</div>
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 z-50 hidden">
     <div class="fixed inset-0 bg-black/50" onclick="closeDeleteModal()"></div>
@@ -359,10 +398,14 @@
                     Are you sure you want to delete <span id="employeeName" class="font-medium text-[var(--text-color)]"></span>? This action cannot be undone.
                 </p>
                 <div class="flex items-center justify-center gap-3">
-                    <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    <button type="button"
+                            onclick="closeDeleteModal()"
+                            class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                         Cancel
                     </button>
-                    <a id="deleteLink" href="#" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                    <a id="deleteLink"
+                       href="#"
+                       class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
                         Delete
                     </a>
                 </div>
@@ -371,9 +414,8 @@
     </div>
 </div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     // Initialize Select2 for all filter dropdowns
     $(document).ready(function() {
         $('.select2-filter').select2({
@@ -416,5 +458,5 @@
             document.body.style.overflow = 'auto';
         }
     }
-</script>
+    </script>
 {% endblock %}

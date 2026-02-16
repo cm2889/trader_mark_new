@@ -1,119 +1,106 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Assign Vehicle{% endblock %}
-
 {% block breadcrumb %}
-<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
-<span class="mx-1">›</span>
-<a href="{% url 'vehicle_assign:list' %}">Vehicle Assignments</a>
-<span class="mx-1">›</span>
-<span>Create Assignment</span>
+    <a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+    <span class="mx-1">›</span>
+    <a href="{% url 'vehicle_assign:list' %}">Vehicle Assignments</a>
+    <span class="mx-1">›</span>
+    <span>Create Assignment</span>
 {% endblock %}
-
-
 {% block header_actions %}
-<a href="{% url 'vehicle_assign:list' %}" class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-    <span>Back to List</span>
-</a>
+    <a href="{% url 'vehicle_assign:list' %}"
+       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16"
+             height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        <span>Back to List</span>
+    </a>
 {% endblock %}
-
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-
-    <!-- Form Section -->
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <form method="post" class="space-y-6">
-            {% csrf_token %}
-            
-            <!-- Error Messages -->
-            {% if form.non_field_errors %}
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                <div class="flex">
-                    <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Form Section -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <!-- Error Messages -->
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                        <div class="flex">
+                            <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-red-800">Please correct the following errors:</p>
+                                <ul class="list-disc list-inside text-sm text-red-700 mt-2">
+                                    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Vehicle Selection -->
                     <div>
-                        <p class="font-medium text-red-800">Please correct the following errors:</p>
-                        <ul class="list-disc list-inside text-sm text-red-700 mt-2">
-                            {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
+                        <label for="{{ form.vehicle.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            Vehicle <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.vehicle }}
+                        {% if form.vehicle.errors %}<p class="mt-1 text-sm text-red-600">{{ form.vehicle.errors.0 }}</p>{% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Select the vehicle to assign</p>
+                    </div>
+                    <!-- Employee Selection -->
+                    <div>
+                        <label for="{{ form.employee.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            Employee <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.employee }}
+                        {% if form.employee.errors %}<p class="mt-1 text-sm text-red-600">{{ form.employee.errors.0 }}</p>{% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Select the employee to assign to</p>
+                    </div>
+                    <!-- Assigned Date -->
+                    <div>
+                        <label for="id_assigned_date"
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            Assigned Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date"
+                               name="assigned_date"
+                               id="id_assigned_date"
+                               value="{{ form.assigned_date.value|default:'' }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               required>
+                        {% if form.assigned_date.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.assigned_date.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Date when the vehicle was assigned</p>
                     </div>
                 </div>
-            </div>
-            {% endif %}
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Vehicle Selection -->
+                <!-- Remarks -->
                 <div>
-                    <label for="{{ form.vehicle.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        Vehicle <span class="text-red-500">*</span>
-                    </label>
-                    {{ form.vehicle }}
-                    {% if form.vehicle.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.vehicle.errors.0 }}</p>
-                    {% endif %}
-                    <p class="mt-1 text-xs text-gray-500">Select the vehicle to assign</p>
+                    <label for="{{ form.remarks.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                    {{ form.remarks }}
+                    {% if form.remarks.errors %}<p class="mt-1 text-sm text-red-600">{{ form.remarks.errors.0 }}</p>{% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Any additional notes about this assignment</p>
                 </div>
-
-                <!-- Employee Selection -->
-                <div>
-                    <label for="{{ form.employee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        Employee <span class="text-red-500">*</span>
-                    </label>
-                    {{ form.employee }}
-                    {% if form.employee.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.employee.errors.0 }}</p>
-                    {% endif %}
-                    <p class="mt-1 text-xs text-gray-500">Select the employee to assign to</p>
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
+                    <button type="submit"
+                            class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                        Update Assignment
+                    </button>
+                    <a href="{% url 'vehicle_assign:list' %}"
+                       class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
+                        Cancel
+                    </a>
                 </div>
-
-                <!-- Assigned Date -->
-                <div>
-                    <label for="id_assigned_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        Assigned Date <span class="text-red-500">*</span>
-                    </label>
-                    <input type="date" 
-                           name="assigned_date" 
-                           id="id_assigned_date"
-                           value="{{ form.assigned_date.value|default:'' }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           required>
-                    {% if form.assigned_date.errors %}
-                        <p class="mt-1 text-sm text-red-600">{{ form.assigned_date.errors.0 }}</p>
-                    {% endif %}
-                    <p class="mt-1 text-xs text-gray-500">Date when the vehicle was assigned</p>
-                </div>
-            </div>
-
-            <!-- Remarks -->
-            <div>
-                <label for="{{ form.remarks.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                    Remarks
-                </label>
-                {{ form.remarks }}
-                {% if form.remarks.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ form.remarks.errors.0 }}</p>
-                {% endif %}
-                <p class="mt-1 text-xs text-gray-500">Any additional notes about this assignment</p>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
-                <button type="submit"
-                    class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                    Update Assignment
-                </button>
-
-                <a href="{% url 'vehicle_assign:list' %}"
-                    class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
-                    Cancel
-                </a>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}

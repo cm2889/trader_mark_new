@@ -1,138 +1,131 @@
 {% extends 'base.html' %}
-{% block title %}Create Visitor{% endblock title %}
-
+{% block title %}
+    Create Visitor
+{% endblock title %}
 {% block breadcrumb %}
-<span class="mx-1">›</span>
-<a href="{% url 'visitor:list' %}" class="text-gray-600 hover:text-indigo-600 font-medium">
-    Visitor
-</a>
-<span class="mx-1 text-gray-400">›</span>
-<span class="text-gray-500">Create</span>
+    <span class="mx-1">›</span>
+    <a href="{% url 'visitor:list' %}"
+       class="text-gray-600 hover:text-indigo-600 font-medium">Visitor</a>
+    <span class="mx-1 text-gray-400">›</span>
+    <span class="text-gray-500">Create</span>
 {% endblock breadcrumb %}
-
 {% block header_actions %}
-<a href="{% url 'visitor:list' %}"
-   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-    <span>Back to List</span>
-</a>
+    <a href="{% url 'visitor:list' %}"
+       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16"
+             height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        <span>Back to List</span>
+    </a>
 {% endblock %}
-
 {% block content %}
-<div class="px-4 py-8">
-
-    <!-- Form Card -->
-    <div class="bg-white rounded-xl shadow border border-gray-200 p-8">
-        <form method="post" class="space-y-8">
-            {% csrf_token %}
-
-            <!-- GRID: TWO FIELDS PER ROW -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- First Name -->
-                <div>
-                    <label for="{{ form.first_name.id_for_label }}"
-                           class="block text-sm font-medium text-gray-700 mb-2">
-                        First Name <span class="text-red-500">*</span>
-                    </label>
-                    {{ form.first_name }}
-                    {% if form.first_name.errors %}
-                    <div class="mt-2 text-sm text-red-600 space-y-1">
-                        {% for error in form.first_name.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    <p class="mt-1 text-sm text-gray-500">Enter the visitor's first name</p>
-                </div>
-
-                <!-- Last Name -->
-                <div>
-                    <label for="{{ form.last_name.id_for_label }}"
-                           class="block text-sm font-medium text-gray-700 mb-2">
-                        Last Name <span class="text-red-500">*</span>
-                    </label>
-                    {{ form.last_name }}
-                    {% if form.last_name.errors %}
-                    <div class="mt-2 text-sm text-red-600 space-y-1">
-                        {% for error in form.last_name.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    <p class="mt-1 text-sm text-gray-500">Enter the visitor's last name</p>
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <label for="{{ form.email.id_for_label }}"
-                           class="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                    </label>
-                    {{ form.email }}
-                    {% if form.email.errors %}
-                    <div class="mt-2 text-sm text-red-600 space-y-1">
-                        {% for error in form.email.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    <p class="mt-1 text-sm text-gray-500">Enter the visitor's email (optional)</p>
-                </div>
-
-                <!-- Phone Number -->
-                <div>
-                    <label for="{{ form.phone_number.id_for_label }}"
-                           class="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number
-                    </label>
-                    {{ form.phone_number }}
-                    {% if form.phone_number.errors %}
-                    <div class="mt-2 text-sm text-red-600 space-y-1">
-                        {% for error in form.phone_number.errors %}
-                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    <p class="mt-1 text-sm text-gray-500">Enter the phone number (optional)</p>
-                </div>
-
-            </div>
-
-            <!-- Non-field Errors -->
-            {% if form.non_field_errors %}
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-                <div class="flex gap-3">
-                    <i class="fas fa-exclamation-circle text-red-400 mt-0.5"></i>
+    <div class="px-4 py-8">
+        <!-- Form Card -->
+        <div class="bg-white rounded-xl shadow border border-gray-200 p-8">
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                <!-- GRID: TWO FIELDS PER ROW -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- First Name -->
                     <div>
-                        <h3 class="text-sm font-medium text-red-800">Form Errors</h3>
-                        <ul class="mt-2 text-sm text-red-700 list-disc list-inside space-y-1">
-                            {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
+                        <label for="{{ form.first_name.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            First Name <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="mt-2 text-sm text-red-600 space-y-1">
+                                {% for error in form.first_name.errors %}
+                                    <p>
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">Enter the visitor's first name</p>
+                    </div>
+                    <!-- Last Name -->
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            Last Name <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="mt-2 text-sm text-red-600 space-y-1">
+                                {% for error in form.last_name.errors %}
+                                    <p>
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">Enter the visitor's last name</p>
+                    </div>
+                    <!-- Email -->
+                    <div>
+                        <label for="{{ form.email.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="mt-2 text-sm text-red-600 space-y-1">
+                                {% for error in form.email.errors %}
+                                    <p>
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">Enter the visitor's email (optional)</p>
+                    </div>
+                    <!-- Phone Number -->
+                    <div>
+                        <label for="{{ form.phone_number.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <div class="mt-2 text-sm text-red-600 space-y-1">
+                                {% for error in form.phone_number.errors %}
+                                    <p>
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">Enter the phone number (optional)</p>
                     </div>
                 </div>
-            </div>
-            {% endif %}
-
-            <!-- Actions -->
-            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
-                <button type="submit"
-                    class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                    Create Visitor
-                </button>
-
-                <a href="{% url 'visitor:list' %}"
-                    class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
-                    Cancel
-                </a>
-            </div>
-
-        </form>
+                <!-- Non-field Errors -->
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                        <div class="flex gap-3">
+                            <i class="fas fa-exclamation-circle text-red-400 mt-0.5"></i>
+                            <div>
+                                <h3 class="text-sm font-medium text-red-800">Form Errors</h3>
+                                <ul class="mt-2 text-sm text-red-700 list-disc list-inside space-y-1">
+                                    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
+                    <button type="submit"
+                            class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                        Create Visitor
+                    </button>
+                    <a href="{% url 'visitor:list' %}"
+                       class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-
-</div>
 {% endblock %}

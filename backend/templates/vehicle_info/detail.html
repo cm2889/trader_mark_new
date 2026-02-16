@@ -1,342 +1,324 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}{{ vehicle.plate_no }} - Vehicle Details{% endblock %}
-
 {% block breadcrumb %}
-    <a href="{% url "vehicle_info:list" %}">
-        Vehicles 
-    </a>
+    <a href="{% url "vehicle_info:list" %}">Vehicles</a>
     <span class="mx-1">›</span>
     <span>{{ vehicle.plate_no }}</span>
 {% endblock %}
-
 {% block content %}
-<div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
-    <div class="">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-semibold text-[var(--text-color)]">Vehicle Details: {{ vehicle.plate_no }}</h1>
-                <p class="text-sm text-[var(--text-light-color)] mt-1">Complete information and history for this vehicle</p>
-            </div>
-            <div class="mt-4 sm:mt-0 flex gap-3">
-                <a href="{% url 'vehicle_info:update' vehicle.pk %}" 
-                   class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
-                    <i class="fas fa-edit mr-2"></i>Edit Vehicle
-                </a>
-                <a href="{% url 'vehicle_info:list' %}" 
-                   class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to List
-                </a>
-            </div>
-        </div>
-
-        <!-- Main Vehicle Information Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
-            <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-[var(--text-color)]">Vehicle Information</h2>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-                        {% if vehicle.vehicle_type == 'CAR' %}bg-blue-100 text-blue-800
-                        {% else %}bg-green-100 text-green-800{% endif %}">
-                        <i class="fas {% if vehicle.vehicle_type == 'CAR' %}fa-car{% else %}fa-motorcycle{% endif %} mr-1.5"></i>
-                        {{ vehicle.get_vehicle_type_display }}
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-                        {% if vehicle.ownership == 'COMPANY' %}bg-purple-100 text-purple-800
-                        {% else %}bg-orange-100 text-orange-800{% endif %}">
-                        <i class="fas fa-building mr-1.5"></i>
-                        {{ vehicle.get_ownership_display }} Owned
-                    </span>
+    <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+        <div class="">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-[var(--text-color)]">Vehicle Details: {{ vehicle.plate_no }}</h1>
+                    <p class="text-sm text-[var(--text-light-color)] mt-1">Complete information and history for this vehicle</p>
+                </div>
+                <div class="mt-4 sm:mt-0 flex gap-3">
+                    <a href="{% url 'vehicle_info:update' vehicle.pk %}"
+                       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
+                        <i class="fas fa-edit mr-2"></i>Edit Vehicle
+                    </a>
+                    <a href="{% url 'vehicle_info:list' %}"
+                       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to List
+                    </a>
                 </div>
             </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Plate Number -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Plate Number</label>
-                        <p class="text-base font-semibold text-[var(--text-color)]">{{ vehicle.plate_no }}</p>
-                    </div>
-
-                    <!-- Chassis Number -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Chassis Number</label>
-                        <p class="text-base text-[var(--text-color)]">{{ vehicle.chassee_no|default:"-" }}</p>
-                    </div>
-
-                    <!-- Engine Number -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Engine Number</label>
-                        <p class="text-base text-[var(--text-color)]">{{ vehicle.engine_no|default:"-" }}</p>
-                    </div>
-
-                    <!-- Insurance Name -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Insurance Provider</label>
-                        <p class="text-base text-[var(--text-color)]">{{ vehicle.insurance_name }}</p>
-                    </div>
-
-                    <!-- Insurance Expiry Date -->
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Insurance Expiry</label>
-                        <p class="text-base text-[var(--text-color)]">{{ vehicle.insurance_expiry_date|date:"d M, Y" }}</p>
-                        {% if vehicle.insurance_expiry_date %}
-                        {% now "Y-m-d" as today %}
-                        {% if vehicle.insurance_expiry_date|date:"Y-m-d" < today %}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mt-1">
-                            </i>Expired
+            <!-- Main Vehicle Information Card -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
+                <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-[var(--text-color)]">Vehicle Information</h2>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {% if vehicle.vehicle_type == 'CAR' %}bg-blue-100 text-blue-800 {% else %}bg-green-100 text-green-800{% endif %}">
+                            <i class="fas {% if vehicle.vehicle_type == 'CAR' %}fa-car{% else %}fa-motorcycle{% endif %} mr-1.5"></i>
+                            {{ vehicle.get_vehicle_type_display }}
                         </span>
-                        {% endif %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {% if vehicle.ownership == 'COMPANY' %}bg-purple-100 text-purple-800 {% else %}bg-orange-100 text-orange-800{% endif %}">
+                            <i class="fas fa-building mr-1.5"></i>
+                            {{ vehicle.get_ownership_display }} Owned
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Plate Number -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Plate Number</label>
+                            <p class="text-base font-semibold text-[var(--text-color)]">{{ vehicle.plate_no }}</p>
+                        </div>
+                        <!-- Chassis Number -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Chassis Number</label>
+                            <p class="text-base text-[var(--text-color)]">{{ vehicle.chassee_no|default:"-" }}</p>
+                        </div>
+                        <!-- Engine Number -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Engine Number</label>
+                            <p class="text-base text-[var(--text-color)]">{{ vehicle.engine_no|default:"-" }}</p>
+                        </div>
+                        <!-- Insurance Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Insurance Provider</label>
+                            <p class="text-base text-[var(--text-color)]">{{ vehicle.insurance_name }}</p>
+                        </div>
+                        <!-- Insurance Expiry Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Insurance Expiry</label>
+                            <p class="text-base text-[var(--text-color)]">{{ vehicle.insurance_expiry_date|date:"d M, Y" }}</p>
+                            {% if vehicle.insurance_expiry_date %}
+                                {% now "Y-m-d" as today %}
+                                {% if vehicle.insurance_expiry_date|date:"Y-m-d" < today %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mt-1">
+                                    </i>Expired
+                                </span>
+                            {% endif %}
                         {% endif %}
                     </div>
-
                     <!-- Istemara Expiry Date -->
                     <div>
                         <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Istemara Expiry</label>
                         <p class="text-base text-[var(--text-color)]">{{ vehicle.istemara_expiry_date|date:"d M, Y" }}</p>
                         {% if vehicle.istemara_expiry_date %}
-                        {% now "Y-m-d" as today %}
-                        {% if vehicle.istemara_expiry_date|date:"Y-m-d" < today %}
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mt-1">
-                            </i>Expired
-                        </span>
+                            {% now "Y-m-d" as today %}
+                            {% if vehicle.istemara_expiry_date|date:"Y-m-d" < today %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mt-1">
+                                </i>Expired
+                            </span>
                         {% endif %}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-      
-
-        <!-- Summary Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <!-- Violations Summary -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-[var(--text-light-color)]">Traffic Violations</h3>
-                    
-                </div>
-                <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ penalties_summary.total }}</p>
-                <div class="space-y-1 text-xs">
-                    <p class="text-green-600">Paid: {{ penalties_summary.paid }}</p>
-                    <p class="text-yellow-600">Pending: {{ penalties_summary.pending }}</p>
-                    <p class="text-red-600">Overdue: {{ penalties_summary.overdue }}</p>
-                    <p class="text-[var(--text-color)] font-semibold mt-2">Total: {{ penalties_summary.total_amount }} </p>
-                </div>
-            </div>
-
-            <!-- Accidents Summary -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-[var(--text-light-color)]">Accidents</h3>
-                </div>
-                <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ accidents_summary.total }}</p>
-                <div class="space-y-1 text-xs">
-                    <p class="text-blue-600">With Insurance: {{ accidents_summary.with_insurance }}</p>
-                    <p class="text-[var(--text-color)] font-semibold mt-2">Damage Cost: {{ accidents_summary.total_damage }} </p>
-                </div>
-            </div>
-
-            <!-- Maintenance Summary -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-[var(--text-light-color)]">Maintenance</h3>
-                </div>
-                <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ maintenance_summary.total }}</p>
-                <div class="space-y-1 text-xs">
-                    <p class="text-green-600">Completed: {{ maintenance_summary.completed }}</p>
-                    <p class="text-blue-600">In Progress: {{ maintenance_summary.in_progress }}</p>
-                    <p class="text-yellow-600">Pending: {{ maintenance_summary.pending }}</p>
-                    <p class="text-[var(--text-color)] font-semibold mt-2">Total Cost: {{ maintenance_summary.total_cost }} </p>
-                </div>
-            </div>
-
-            <!-- Installments Summary -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-medium text-[var(--text-light-color)]">Installments</h3>
-                </div>
-                <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ installments_summary.total }}</p>
-                <div class="space-y-1 text-xs">
-                    <p class="text-green-600">Paid: {{ installments_summary.paid }}</p>
-                    <p class="text-yellow-600">Pending: {{ installments_summary.pending }}</p>
-                    <p class="text-red-600">Overdue: {{ installments_summary.overdue }}</p>
-                    <p class="text-[var(--text-color)] font-semibold mt-2">Pending: {{ installments_summary.pending_amount }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabs Navigation -->
-        <div class="mb-6">
-            <div class="border-b border-[var(--border-color)]">
-                <nav class="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
-                    <button onclick="showTab('assignments')" id="tab-assignments"
-                            class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-[var(--primary-color)] text-[var(--primary-color)]">
-                        Assignment History
-                    </button>
-                    <button onclick="showTab('violations')" id="tab-violations"
-                            class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
-                            Violations ({{ violations.count }})
-                    </button>
-                    <button onclick="showTab('accidents')" id="tab-accidents"
-                            class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
-                        </i>Accidents ({{ accidents.count }})
-                    </button>
-                    <button onclick="showTab('maintenance')" id="tab-maintenance"
-                            class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
-                        </i>Maintenance ({{ maintenances.count }})
-                    </button>
-                    <button onclick="showTab('handovers')" id="tab-handovers"
-                            class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
-                        <i class="fas fa-exchange-alt mr-2"></i>Handovers ({{ handovers.count }})
-                    </button>
-                    {% if vehicle_purchase %}
-                    <button onclick="showTab('purchase')" id="tab-purchase"
-                            class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
-                        <i class="fas fa-shopping-cart mr-2"></i>Purchase & Installments
-                    </button>
                     {% endif %}
-                </nav>
+                </div>
             </div>
         </div>
-
-        <!-- Tab Content -->
-        <div class="space-y-6">
-            <!-- Assignment History Tab -->
-            <div id="content-assignments" class="tab-content">
-                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                    <div class="border-b border-[var(--border-color)] px-6 py-4">
-                        <h3 class="text-lg font-semibold text-[var(--text-color)]">Assignment History</h3>
-                    </div>
-                    <div class="p-6">
-                        {% if all_assignments %}
-                        <div class="space-y-4">
-                            {% for assignment in all_assignments %}
+    </div>
+    <!-- Summary Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- Violations Summary -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-[var(--text-light-color)]">Traffic Violations</h3>
+            </div>
+            <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ penalties_summary.total }}</p>
+            <div class="space-y-1 text-xs">
+                <p class="text-green-600">Paid: {{ penalties_summary.paid }}</p>
+                <p class="text-yellow-600">Pending: {{ penalties_summary.pending }}</p>
+                <p class="text-red-600">Overdue: {{ penalties_summary.overdue }}</p>
+                <p class="text-[var(--text-color)] font-semibold mt-2">Total: {{ penalties_summary.total_amount }}</p>
+            </div>
+        </div>
+        <!-- Accidents Summary -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-[var(--text-light-color)]">Accidents</h3>
+            </div>
+            <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ accidents_summary.total }}</p>
+            <div class="space-y-1 text-xs">
+                <p class="text-blue-600">With Insurance: {{ accidents_summary.with_insurance }}</p>
+                <p class="text-[var(--text-color)] font-semibold mt-2">Damage Cost: {{ accidents_summary.total_damage }}</p>
+            </div>
+        </div>
+        <!-- Maintenance Summary -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-[var(--text-light-color)]">Maintenance</h3>
+            </div>
+            <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ maintenance_summary.total }}</p>
+            <div class="space-y-1 text-xs">
+                <p class="text-green-600">Completed: {{ maintenance_summary.completed }}</p>
+                <p class="text-blue-600">In Progress: {{ maintenance_summary.in_progress }}</p>
+                <p class="text-yellow-600">Pending: {{ maintenance_summary.pending }}</p>
+                <p class="text-[var(--text-color)] font-semibold mt-2">Total Cost: {{ maintenance_summary.total_cost }}</p>
+            </div>
+        </div>
+        <!-- Installments Summary -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-[var(--text-light-color)]">Installments</h3>
+            </div>
+            <p class="text-2xl font-bold text-[var(--text-color)] mb-2">{{ installments_summary.total }}</p>
+            <div class="space-y-1 text-xs">
+                <p class="text-green-600">Paid: {{ installments_summary.paid }}</p>
+                <p class="text-yellow-600">Pending: {{ installments_summary.pending }}</p>
+                <p class="text-red-600">Overdue: {{ installments_summary.overdue }}</p>
+                <p class="text-[var(--text-color)] font-semibold mt-2">Pending: {{ installments_summary.pending_amount }}</p>
+            </div>
+        </div>
+    </div>
+    <!-- Tabs Navigation -->
+    <div class="mb-6">
+        <div class="border-b border-[var(--border-color)]">
+            <nav class="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+                <button onclick="showTab('assignments')"
+                        id="tab-assignments"
+                        class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-[var(--primary-color)] text-[var(--primary-color)]">
+                    Assignment History
+                </button>
+                <button onclick="showTab('violations')"
+                        id="tab-violations"
+                        class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
+                    Violations ({{ violations.count }})
+                </button>
+                <button onclick="showTab('accidents')"
+                        id="tab-accidents"
+                        class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
+                </i>Accidents ({{ accidents.count }})
+            </button>
+            <button onclick="showTab('maintenance')"
+                    id="tab-maintenance"
+                    class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
+            </i>Maintenance ({{ maintenances.count }})
+        </button>
+        <button onclick="showTab('handovers')"
+                id="tab-handovers"
+                class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
+            <i class="fas fa-exchange-alt mr-2"></i>Handovers ({{ handovers.count }})
+        </button>
+        {% if vehicle_purchase %}
+            <button onclick="showTab('purchase')"
+                    id="tab-purchase"
+                    class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-[var(--text-light-color)] hover:text-[var(--text-color)] hover:border-gray-300">
+                <i class="fas fa-shopping-cart mr-2"></i>Purchase & Installments
+            </button>
+        {% endif %}
+    </nav>
+</div>
+</div>
+<!-- Tab Content -->
+<div class="space-y-6">
+    <!-- Assignment History Tab -->
+    <div id="content-assignments" class="tab-content">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+            <div class="border-b border-[var(--border-color)] px-6 py-4">
+                <h3 class="text-lg font-semibold text-[var(--text-color)]">Assignment History</h3>
+            </div>
+            <div class="p-6">
+                {% if all_assignments %}
+                    <div class="space-y-4">
+                        {% for assignment in all_assignments %}
                             <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-200 {% if assignment.is_active and not assignment.deleted %}ring-2 ring-green-500{% endif %}">
                                 <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                                     {{ assignment.employee.first_name|slice:":1"|upper }}
                                 </div>
                                 <div class="ml-4 flex-1">
                                     <div class="flex items-center justify-between">
-                                        <a href="{% url 'employee:profile' assignment.employee.pk %}" 
+                                        <a href="{% url 'employee:profile' assignment.employee.pk %}"
                                            class="text-base font-semibold text-[var(--primary-color)] hover:underline">
                                             {{ assignment.employee.full_name }}
                                         </a>
                                         {% if assignment.is_active and not assignment.deleted %}
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-circle mr-1 text-xs"></i>Active
-                                        </span>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <i class="fas fa-circle mr-1 text-xs"></i>Active
+                                            </span>
                                         {% else %}
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            Inactive
-                                        </span>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                Inactive
+                                            </span>
                                         {% endif %}
                                     </div>
                                     <p class="text-sm text-[var(--text-light-color)] mt-1">
                                         {{ assignment.employee.hr_file_no }} | {{ assignment.employee.email|default:"-" }}
                                     </p>
                                     <div class="mt-2 text-xs text-[var(--text-light-color)]">
-                                        <p><i class="fas fa-calendar mr-1"></i>Assigned: {{ assignment.assigned_date|date:"d M, Y" }}</p>
-                                        <p class="mt-1"><i class="fas fa-user mr-1"></i>Created by: {{ assignment.created_by.username }}</p>
+                                        <p>
+                                            <i class="fas fa-calendar mr-1"></i>Assigned: {{ assignment.assigned_date|date:"d M, Y" }}
+                                        </p>
+                                        <p class="mt-1">
+                                            <i class="fas fa-user mr-1"></i>Created by: {{ assignment.created_by.username }}
+                                        </p>
                                         {% if assignment.remarks %}
-                                        <p class="mt-2 text-[var(--text-color)]"><i class="fas fa-comment mr-1"></i>{{ assignment.remarks }}</p>
+                                            <p class="mt-2 text-[var(--text-color)]">
+                                                <i class="fas fa-comment mr-1"></i>{{ assignment.remarks }}
+                                            </p>
                                         {% endif %}
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <div class="text-center py-12">
-                            <i class="fas fa-history text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-[var(--text-light-color)]">No assignment history found</p>
-                        </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
-                </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-history text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-[var(--text-light-color)]">No assignment history found</p>
+                    </div>
+                {% endif %}
             </div>
-
-            <!-- Violations Tab -->
-            <div id="content-violations" class="tab-content hidden">
-                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                    <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-[var(--text-color)]">Traffic Violations</h3>
-                        <a href="{% url 'traffic_violation:create' %}?vehicle={{ vehicle.pk }}" 
-                           class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Violation
-                        </a>
-                    </div>
-                    <div class="p-6">
-                        {% if violations %}
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Violation Type</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Place</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penalties</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    {% for violation in violations %}
+        </div>
+    </div>
+    <!-- Violations Tab -->
+    <div id="content-violations" class="tab-content hidden">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+            <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-[var(--text-color)]">Traffic Violations</h3>
+                <a href="{% url 'traffic_violation:create' %}?vehicle={{ vehicle.pk }}"
+                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Violation
+                </a>
+            </div>
+            <div class="p-6">
+                {% if violations %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Violation Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Place</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penalties</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for violation in violations %}
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
                                             {{ violation.violation_date|date:"d M, Y" }}
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-[var(--text-color)]">
-                                            {{ violation.violation_type.name }}
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-[var(--text-color)]">
-                                            {{ violation.place|default:"-" }}
-                                        </td>
+                                        <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ violation.violation_type.name }}</td>
+                                        <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ violation.place|default:"-" }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             {% with penalties=violation.penalties.all %}
-                                            {% if penalties %}
-                                            <span class="text-[var(--text-color)]">{{ penalties.count }} penalty(ies)</span>
-                                            {% else %}
-                                            <span class="text-gray-400">No penalties</span>
-                                            {% endif %}
+                                                {% if penalties %}
+                                                    <span class="text-[var(--text-color)]">{{ penalties.count }} penalty(ies)</span>
+                                                {% else %}
+                                                    <span class="text-gray-400">No penalties</span>
+                                                {% endif %}
                                             {% endwith %}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <a href="{% url 'traffic_violation:detail' violation.pk %}" 
+                                            <a href="{% url 'traffic_violation:detail' violation.pk %}"
                                                class="text-[var(--primary-color)] hover:underline">
                                                 <i class="fas fa-eye mr-1"></i>View
                                             </a>
                                         </td>
                                     </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% else %}
-                        <div class="text-center py-12">
-                            <i class="fas fa-shield-alt text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-[var(--text-light-color)]">No traffic violations recorded</p>
-                        </div>
-                        {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-shield-alt text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-[var(--text-light-color)]">No traffic violations recorded</p>
+                    </div>
+                {% endif %}
             </div>
-
-            <!-- Accidents Tab -->
-            <div id="content-accidents" class="tab-content hidden">
-                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                    <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-[var(--text-color)]">Accident History</h3>
-                        <a href="{% url 'vehicle_accident:create' %}?vehicle={{ vehicle.pk }}" 
-                           class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Accident
-                        </a>
-                    </div>
-                    <div class="p-6">
-                        {% if accidents %}
-                        <div class="space-y-4">
-                            {% for accident in accidents %}
+        </div>
+    </div>
+    <!-- Accidents Tab -->
+    <div id="content-accidents" class="tab-content hidden">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+            <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-[var(--text-color)]">Accident History</h3>
+                <a href="{% url 'vehicle_accident:create' %}?vehicle={{ vehicle.pk }}"
+                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Accident
+                </a>
+            </div>
+            <div class="p-6">
+                {% if accidents %}
+                    <div class="space-y-4">
+                        {% for accident in accidents %}
                             <div class="p-4 bg-orange-50 rounded-lg border border-orange-200">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
@@ -344,127 +326,114 @@
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                                 <i class="fas fa-car-crash mr-1"></i>Accident
                                             </span>
-                                            <span class="text-sm text-[var(--text-light-color)]">
-                                                {{ accident.accident_date|date:"d M, Y" }}
-                                            </span>
+                                            <span class="text-sm text-[var(--text-light-color)]">{{ accident.accident_date|date:"d M, Y" }}</span>
                                         </div>
                                         <p class="text-sm font-medium text-[var(--text-color)] mb-1">
                                             <i class="fas fa-map-marker-alt mr-1"></i>{{ accident.accident_place }}
                                         </p>
                                         <p class="text-sm text-[var(--text-color)]">
-                                            <i class="fas fa-dollar-sign mr-1"></i>Damage Cost: <span class="font-semibold">{{ accident.damage_cost }} </span>
+                                            <i class="fas fa-dollar-sign mr-1"></i>Damage Cost: <span class="font-semibold">{{ accident.damage_cost }}</span>
                                         </p>
                                         {% if accident.insurance_claimed %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mt-2">
-                                            <i class="fas fa-shield-alt mr-1"></i>Insurance Claimed
-                                        </span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mt-2">
+                                                <i class="fas fa-shield-alt mr-1"></i>Insurance Claimed
+                                            </span>
                                         {% endif %}
-                                        {% if accident.remarks %}
-                                        <p class="text-sm text-[var(--text-light-color)] mt-2">{{ accident.remarks }}</p>
-                                        {% endif %}
+                                        {% if accident.remarks %}<p class="text-sm text-[var(--text-light-color)] mt-2">{{ accident.remarks }}</p>{% endif %}
                                     </div>
-                                    <a href="{% url 'vehicle_accident:detail' accident.pk %}" 
+                                    <a href="{% url 'vehicle_accident:detail' accident.pk %}"
                                        class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-[var(--primary-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
                                         <i class="fas fa-eye mr-2"></i>View Details
                                     </a>
                                 </div>
                             </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <div class="text-center py-12">
-                            <i class="fas fa-car text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-[var(--text-light-color)]">No accidents recorded</p>
-                        </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
-                </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-car text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-[var(--text-light-color)]">No accidents recorded</p>
+                    </div>
+                {% endif %}
             </div>
-
-            <!-- Maintenance Tab -->
-            <div id="content-maintenance" class="tab-content hidden">
-                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                    <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-[var(--text-color)]">Maintenance Records</h3>
-                        <a href="{% url 'vehicle_maintenance:create' %}?vehicle={{ vehicle.pk }}" 
-                           class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Maintenance
-                        </a>
-                    </div>
-                    <div class="p-6">
-                        {% if maintenances %}
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    {% for maintenance in maintenances %}
+        </div>
+    </div>
+    <!-- Maintenance Tab -->
+    <div id="content-maintenance" class="tab-content hidden">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+            <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-[var(--text-color)]">Maintenance Records</h3>
+                <a href="{% url 'vehicle_maintenance:create' %}?vehicle={{ vehicle.pk }}"
+                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Maintenance
+                </a>
+            </div>
+            <div class="p-6">
+                {% if maintenances %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for maintenance in maintenances %}
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
                                             {{ maintenance.maintenance_date|date:"d M, Y" }}
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-[var(--text-color)]">
-                                            {{ maintenance.maintenance_type.name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-color)]">
-                                            {{ maintenance.cost }} 
-                                        </td>
+                                        <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ maintenance.maintenance_type.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-color)]">{{ maintenance.cost }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                {% if maintenance.status == 'COMPLETED' %}bg-green-100 text-green-800
-                                                {% elif maintenance.status == 'IN_PROGRESS' %}bg-blue-100 text-blue-800
-                                                {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if maintenance.status == 'COMPLETED' %}bg-green-100 text-green-800 {% elif maintenance.status == 'IN_PROGRESS' %}bg-blue-100 text-blue-800 {% else %}bg-yellow-100 text-yellow-800{% endif %}">
                                                 {{ maintenance.get_status_display }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <a href="{% url 'vehicle_maintenance:detail' maintenance.pk %}" 
+                                            <a href="{% url 'vehicle_maintenance:detail' maintenance.pk %}"
                                                class="text-[var(--primary-color)] hover:underline">
                                                 <i class="fas fa-eye mr-1"></i>View
                                             </a>
                                         </td>
                                     </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% else %}
-                        <div class="text-center py-12">
-                            <i class="fas fa-tools text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-[var(--text-light-color)]">No maintenance records found</p>
-                        </div>
-                        {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-tools text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-[var(--text-light-color)]">No maintenance records found</p>
+                    </div>
+                {% endif %}
             </div>
-
-            <!-- Handovers Tab -->
-            <div id="content-handovers" class="tab-content hidden">
-                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                    <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-[var(--text-color)]">Handover History</h3>
-                        <a href="{% url 'vehicle_handover:create' %}?vehicle={{ vehicle.pk }}" 
-                           class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Handover
-                        </a>
-                    </div>
-                    <div class="p-6">
-                        {% if handovers %}
-                        <div class="space-y-4">
-                            {% for handover in handovers %}
+        </div>
+    </div>
+    <!-- Handovers Tab -->
+    <div id="content-handovers" class="tab-content hidden">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+            <div class="border-b border-[var(--border-color)] px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-[var(--text-color)]">Handover History</h3>
+                <a href="{% url 'vehicle_handover:create' %}?vehicle={{ vehicle.pk }}"
+                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Handover
+                </a>
+            </div>
+            <div class="p-6">
+                {% if handovers %}
+                    <div class="space-y-4">
+                        {% for handover in handovers %}
                             <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
                                 <div class="flex items-center justify-between mb-3">
                                     <span class="text-sm text-[var(--text-light-color)]">
                                         <i class="fas fa-calendar mr-1"></i>{{ handover.handover_date|date:"d M, Y" }}
                                     </span>
-                                    <a href="{% url 'vehicle_handover:detail' handover.pk %}" 
+                                    <a href="{% url 'vehicle_handover:detail' handover.pk %}"
                                        class="text-[var(--primary-color)] text-sm hover:underline">
                                         <i class="fas fa-eye mr-1"></i>View Details
                                     </a>
@@ -473,12 +442,12 @@
                                     <div class="flex-1 text-center">
                                         <p class="text-xs text-[var(--text-light-color)] mb-1">From</p>
                                         {% if handover.from_employee %}
-                                        <a href="{% url 'employee:profile' handover.from_employee.pk %}" 
-                                           class="text-sm font-semibold text-[var(--primary-color)] hover:underline">
-                                            {{ handover.from_employee.full_name }}
-                                        </a>
+                                            <a href="{% url 'employee:profile' handover.from_employee.pk %}"
+                                               class="text-sm font-semibold text-[var(--primary-color)] hover:underline">
+                                                {{ handover.from_employee.full_name }}
+                                            </a>
                                         {% else %}
-                                        <p class="text-sm text-gray-400">-</p>
+                                            <p class="text-sm text-gray-400">-</p>
                                         {% endif %}
                                     </div>
                                     <div class="flex-shrink-0">
@@ -487,92 +456,90 @@
                                     <div class="flex-1 text-center">
                                         <p class="text-xs text-[var(--text-light-color)] mb-1">To</p>
                                         {% if handover.to_employee %}
-                                        <a href="{% url 'employee:profile' handover.to_employee.pk %}" 
-                                           class="text-sm font-semibold text-[var(--primary-color)] hover:underline">
-                                            {{ handover.to_employee.full_name }}
-                                        </a>
+                                            <a href="{% url 'employee:profile' handover.to_employee.pk %}"
+                                               class="text-sm font-semibold text-[var(--primary-color)] hover:underline">
+                                                {{ handover.to_employee.full_name }}
+                                            </a>
                                         {% else %}
-                                        <p class="text-sm text-gray-400">-</p>
+                                            <p class="text-sm text-gray-400">-</p>
                                         {% endif %}
                                     </div>
                                 </div>
                                 {% if handover.remarks %}
-                                <p class="text-sm text-[var(--text-light-color)] mt-3 pt-3 border-t border-blue-200">
-                                    <i class="fas fa-comment mr-1"></i>{{ handover.remarks }}
-                                </p>
+                                    <p class="text-sm text-[var(--text-light-color)] mt-3 pt-3 border-t border-blue-200">
+                                        <i class="fas fa-comment mr-1"></i>{{ handover.remarks }}
+                                    </p>
                                 {% endif %}
                             </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <div class="text-center py-12">
-                            <i class="fas fa-exchange-alt text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-[var(--text-light-color)]">No handover records found</p>
-                        </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
-                </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-exchange-alt text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-[var(--text-light-color)]">No handover records found</p>
+                    </div>
+                {% endif %}
             </div>
-
-            <!-- Purchase & Installments Tab -->
-            {% if vehicle_purchase %}
-            <div id="content-purchase" class="tab-content hidden">
-                <div class="space-y-6">
-                    <!-- Purchase Information -->
-                    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                        <div class="border-b border-[var(--border-color)] px-6 py-4">
-                            <h3 class="text-lg font-semibold text-[var(--text-color)]">Purchase Information</h3>
-                        </div>
-                        <div class="p-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Purchase Date</label>
-                                    <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.purchase_date|date:"d M, Y" }}</p>
-                                </div>
-                                {% if vehicle_purchase.employee %}
+        </div>
+    </div>
+    <!-- Purchase & Installments Tab -->
+    {% if vehicle_purchase %}
+        <div id="content-purchase" class="tab-content hidden">
+            <div class="space-y-6">
+                <!-- Purchase Information -->
+                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                    <div class="border-b border-[var(--border-color)] px-6 py-4">
+                        <h3 class="text-lg font-semibold text-[var(--text-color)]">Purchase Information</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Purchase Date</label>
+                                <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.purchase_date|date:"d M, Y" }}</p>
+                            </div>
+                            {% if vehicle_purchase.employee %}
                                 <div>
                                     <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Purchased By</label>
-                                    <a href="{% url 'employee:profile' vehicle_purchase.employee.pk %}" 
+                                    <a href="{% url 'employee:profile' vehicle_purchase.employee.pk %}"
                                        class="text-base font-semibold text-[var(--primary-color)] hover:underline">
                                         {{ vehicle_purchase.employee.full_name }}
                                     </a>
                                 </div>
-                                {% endif %}
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Total Amount</label>
-                                    <p class="text-base font-semibold text-[var(--text-color)]">{{ vehicle_purchase.total_amount }} </p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Down Payment</label>
-                                    <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.down_payment }} </p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Installment Amount</label>
-                                    <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.installment_amount }} </p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Payment Period</label>
-                                    <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.get_payment_period_display }}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Payment Method</label>
-                                    <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.get_payment_method_display }}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Start Date</label>
-                                    <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.start_date|date:"d M, Y" }}</p>
-                                </div>
+                            {% endif %}
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Total Amount</label>
+                                <p class="text-base font-semibold text-[var(--text-color)]">{{ vehicle_purchase.total_amount }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Down Payment</label>
+                                <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.down_payment }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Installment Amount</label>
+                                <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.installment_amount }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Payment Period</label>
+                                <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.get_payment_period_display }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Payment Method</label>
+                                <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.get_payment_method_display }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-light-color)] mb-1">Start Date</label>
+                                <p class="text-base text-[var(--text-color)]">{{ vehicle_purchase.start_date|date:"d M, Y" }}</p>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Installments List -->
-                    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                        <div class="border-b border-[var(--border-color)] px-6 py-4">
-                            <h3 class="text-lg font-semibold text-[var(--text-color)]">Installments Schedule</h3>
-                        </div>
-                        <div class="p-6">
-                            {% if installments %}
+                </div>
+                <!-- Installments List -->
+                <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                    <div class="border-b border-[var(--border-color)] px-6 py-4">
+                        <h3 class="text-lg font-semibold text-[var(--text-color)]">Installments Schedule</h3>
+                    </div>
+                    <div class="p-6">
+                        {% if installments %}
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
@@ -587,67 +554,62 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         {% for installment in installments %}
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-color)]">
-                                                {{ installment.installment_no }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
-                                                {{ installment.due_date|date:"d M, Y" }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-color)]">
-                                                {{ installment.amount }} 
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                    {% if installment.is_paid %}bg-green-100 text-green-800
-                                                    {% elif installment.payment_status == 'OVERDUE' %}bg-red-100 text-red-800
-                                                    {% elif installment.payment_status == 'PENDING' %}bg-yellow-100 text-yellow-800
-                                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
-                                                    {% if installment.is_paid %}Paid
-                                                    {% else %}{{ installment.get_payment_status_display }}{% endif %}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
-                                                {{ installment.paid_date|date:"d M, Y"|default:"-" }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                {% if not installment.is_paid %}
-                                                <a href="{% url 'vehicle_installment:pay' installment.pk %}" 
-                                                   class="text-green-600 hover:underline mr-3">
-                                                    <i class="fas fa-money-bill mr-1"></i>Pay
-                                                </a>
-                                                {% endif %}
-                                                <a href="{% url 'vehicle_installment:update' installment.pk %}" 
-                                                   class="text-[var(--primary-color)] hover:underline">
-                                                    <i class="fas fa-edit mr-1"></i>Edit
-                                                </a>
-                                            </td>
-                                        </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-color)]">
+                                                    {{ installment.installment_no }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">{{ installment.due_date|date:"d M, Y" }}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-color)]">{{ installment.amount }}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if installment.is_paid %}bg-green-100 text-green-800 {% elif installment.payment_status == 'OVERDUE' %}bg-red-100 text-red-800 {% elif installment.payment_status == 'PENDING' %}bg-yellow-100 text-yellow-800 {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                        {% if installment.is_paid %}
+                                                            Paid
+                                                        {% else %}
+                                                            {{ installment.get_payment_status_display }}
+                                                        {% endif %}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                                    {{ installment.paid_date|date:"d M, Y"|default:"-" }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                    {% if not installment.is_paid %}
+                                                        <a href="{% url 'vehicle_installment:pay' installment.pk %}"
+                                                           class="text-green-600 hover:underline mr-3">
+                                                            <i class="fas fa-money-bill mr-1"></i>Pay
+                                                        </a>
+                                                    {% endif %}
+                                                    <a href="{% url 'vehicle_installment:update' installment.pk %}"
+                                                       class="text-[var(--primary-color)] hover:underline">
+                                                        <i class="fas fa-edit mr-1"></i>Edit
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
-                            {% else %}
+                        {% else %}
                             <div class="text-center py-12">
                                 <i class="fas fa-calendar-times text-4xl text-gray-300 mb-3"></i>
                                 <p class="text-[var(--text-light-color)]">No installments found</p>
                             </div>
-                            {% endif %}
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            {% endif %}
         </div>
-    </div>
+    {% endif %}
 </div>
-
+</div>
+</div>
 <!-- Assign Vehicle Modal -->
-<div id="assignModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+<div id="assignModal"
+     class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5  w-full max-w-md shadow-lg rounded-lg bg-white">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-[var(--text-color)]">Assign Vehicle to Employee</h3>
-            <button type="button" 
+            <button type="button"
                     onclick="document.getElementById('assignModal').classList.add('hidden')"
                     class="text-gray-400 hover:text-gray-600">
                 <i class="fas fa-times text-xl"></i>
@@ -658,23 +620,27 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Employee</label>
-                    <select name="employee_id" required
+                    <select name="employee_id"
+                            required
                             class=" select2-items w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]">
                         <option value="">Select Employee</option>
                         {% for employee in available_employees %}
-                        <option value="{{ employee.pk }}">{{ employee.full_name }} ({{ employee.hr_file_no }})</option>
+                            <option value="{{ employee.pk }}">{{ employee.full_name }} ({{ employee.hr_file_no }})</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Assignment Date</label>
-                    <input type="date" name="assigned_date" required
+                    <input type="date"
+                           name="assigned_date"
+                           required
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
                            value="{% now 'Y-m-d' %}">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Remarks (Optional)</label>
-                    <textarea name="remarks" rows="3"
+                    <textarea name="remarks"
+                              rows="3"
                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"></textarea>
                 </div>
             </div>
@@ -692,61 +658,59 @@
         </form>
     </div>
 </div>
-
-  <!-- Current Assignment Section -->
-        <div class="bg-white rounded-lg border-[var(--border-color)] mb-6">
-            <div class="border-b border-[var(--border-color)] px-6 py-4">
-                <h2 class="text-lg font-semibold text-[var(--text-color)]">Current Assignment</h2>
-            </div>
-            <div class="p-6">
-                {% if current_assignment %}
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
-                            {{ current_assignment.employee.first_name|slice:":1"|upper }}
-                        </div>
-                        <div>
-                            <a href="{% url 'employee:profile' current_assignment.employee.pk %}" 
-                               class="text-base font-semibold text-[var(--primary-color)] hover:underline">
-                                {{ current_assignment.employee.full_name }}
-                            </a>
-                            <p class="text-sm text-[var(--text-light-color)]">{{ current_assignment.employee.hr_file_no }}</p>
-                            <p class="text-xs text-[var(--text-light-color)] mt-1">
-                                <i class="fas fa-calendar mr-1"></i>Assigned: {{ current_assignment.assigned_date|date:"d M, Y" }}
-                            </p>
-                        </div>
+<!-- Current Assignment Section -->
+<div class="bg-white rounded-lg border-[var(--border-color)] mb-6">
+    <div class="border-b border-[var(--border-color)] px-6 py-4">
+        <h2 class="text-lg font-semibold text-[var(--text-color)]">Current Assignment</h2>
+    </div>
+    <div class="p-6">
+        {% if current_assignment %}
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
+                        {{ current_assignment.employee.first_name|slice:":1"|upper }}
                     </div>
-                    <div class="mt-4 md:mt-0">
-                        <form method="POST" action="{% url 'vehicle_info:unassign' vehicle.pk %}" onsubmit="return confirm('Are you sure you want to unassign this vehicle?');" class="inline">
-                            {% csrf_token %}
-                            <button type="submit" 
-                                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
-                                <i class="fas fa-times-circle mr-2"></i>Unassign Vehicle
-                            </button>
-                        </form>
+                    <div>
+                        <a href="{% url 'employee:profile' current_assignment.employee.pk %}"
+                           class="text-base font-semibold text-[var(--primary-color)] hover:underline">
+                            {{ current_assignment.employee.full_name }}
+                        </a>
+                        <p class="text-sm text-[var(--text-light-color)]">{{ current_assignment.employee.hr_file_no }}</p>
+                        <p class="text-xs text-[var(--text-light-color)] mt-1">
+                            <i class="fas fa-calendar mr-1"></i>Assigned: {{ current_assignment.assigned_date|date:"d M, Y" }}
+                        </p>
                     </div>
                 </div>
-                {% else %}
-                <div class="text-center py-8">
-                    <i class="fas fa-user-slash text-4xl text-gray-300 mb-3"></i>
-                    <p class="text-[var(--text-light-color)] mb-4">This vehicle is not currently assigned to any employee</p>
-                    
-                    {% if available_employees %}
-                    <button type="button" 
+                <div class="mt-4 md:mt-0">
+                    <form method="POST"
+                          action="{% url 'vehicle_info:unassign' vehicle.pk %}"
+                          onsubmit="return confirm('Are you sure you want to unassign this vehicle?');"
+                          class="inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                            <i class="fas fa-times-circle mr-2"></i>Unassign Vehicle
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-user-slash text-4xl text-gray-300 mb-3"></i>
+                <p class="text-[var(--text-light-color)] mb-4">This vehicle is not currently assigned to any employee</p>
+                {% if available_employees %}
+                    <button type="button"
                             onclick="document.getElementById('assignModal').classList.remove('hidden')"
                             class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:bg-opacity-90 transition-colors">
                         <i class="fas fa-user-plus mr-2"></i>Assign to Employee
                     </button>
-                    {% else %}
+                {% else %}
                     <p class="text-sm text-red-600">No available employees for assignment</p>
-                    {% endif %}
-                </div>
                 {% endif %}
             </div>
-        </div>
-
-
-
+        {% endif %}
+    </div>
+</div>
 <script>
     $(document).ready(function () {
     $('.select2-items').select2({

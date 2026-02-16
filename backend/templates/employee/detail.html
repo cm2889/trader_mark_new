@@ -1,131 +1,137 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block page_title %}{{ employee.full_name }} - Employee Details - {{ site_setting.site_title|default:'' }}{% endblock %}
+{% block page_title %}
+    {{ employee.full_name }} - Employee Details - {{ site_setting.site_title|default:'' }}
+{% endblock %}
 {% block meta_description %}View detailed information for employee {{ employee.full_name }}{% endblock %}
-
 {% block title %}{{ employee.full_name }}{% endblock %}
-
 {% block subtitle %}
-<p class="text-sm text-[var(--text-light-color)] mt-1">Employee ID: {{ employee.hr_file_no }}</p>
+    <p class="text-sm text-[var(--text-light-color)] mt-1">Employee ID: {{ employee.hr_file_no }}</p>
 {% endblock %}
-
 {% block breadcrumb %}
-<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-</svg>
-<a href="{% url 'employee:list' %}" class="hover:text-[var(--primary-color)] transition-colors">Employees</a>
-<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-</svg>
-<span class="font-medium text-[var(--primary-color)]">{{ employee.full_name }}</span>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <a href="{% url 'employee:list' %}"
+       class="hover:text-[var(--primary-color)] transition-colors">Employees</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="font-medium text-[var(--primary-color)]">{{ employee.full_name }}</span>
 {% endblock %}
-
-
-
 {% block header_actions %}
-<a href="{% url 'employee:update' employee.pk %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-    </svg>
-    <span>Edit Employee</span>
-</a>
-
-<a href="{% url 'employee:list' %}"
-   class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-    Back to List
-</a>
-
+    <a href="{% url 'employee:update' employee.pk %}"
+       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+            </path>
+        </svg>
+        <span>Edit Employee</span>
+    </a>
+    <a href="{% url 'employee:list' %}"
+       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16"
+             height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to List
+    </a>
 {% endblock %}
-
 {% block content %}
-
-        <!-- Employee Profile Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
-            <div class="flex flex-col md:flex-row md:items-start gap-6">
-                <div class="flex-shrink-0">
-                    <div class="w-24 h-24 bg-[var(--primary-color)] rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                        {{ employee.first_name|slice:":1"|upper }}
-                    </div>
+    <!-- Employee Profile Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-start gap-6">
+            <div class="flex-shrink-0">
+                <div class="w-24 h-24 bg-[var(--primary-color)] rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                    {{ employee.first_name|slice:":1"|upper }}
                 </div>
-                <div class="flex-1">
-                    <h2 class="text-xl font-semibold text-[var(--text-color)]">{{ employee.full_name }}</h2>
-                    <p class="text-[var(--text-light-color)] mt-1">
-                        {% if employee.user %}
-                            {{ employee.user.email|default:employee.user.username }}
-                        {% else %}
-                            {{ employee.email|default:employee.qid_no }}
-                        {% endif %}
-                    </p>
-                    <div class="flex flex-wrap items-center gap-3 mt-3">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            <i class="fas fa-id-card mr-1"></i>{{ employee.hr_file_no }}
-                        </span>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <i class="fas fa-fingerprint mr-1"></i>{{ employee.qid_no }}
-                        </span>
-                        {% if employee.gender == 'M' %}
+            </div>
+            <div class="flex-1">
+                <h2 class="text-xl font-semibold text-[var(--text-color)]">{{ employee.full_name }}</h2>
+                <p class="text-[var(--text-light-color)] mt-1">
+                    {% if employee.user %}
+                        {{ employee.user.email|default:employee.user.username }}
+                    {% else %}
+                        {{ employee.email|default:employee.qid_no }}
+                    {% endif %}
+                </p>
+                <div class="flex flex-wrap items-center gap-3 mt-3">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <i class="fas fa-id-card mr-1"></i>{{ employee.hr_file_no }}
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <i class="fas fa-fingerprint mr-1"></i>{{ employee.qid_no }}
+                    </span>
+                    {% if employee.gender == 'M' %}
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                             <i class="fas fa-mars mr-1"></i>Male
                         </span>
-                        {% else %}
+                    {% else %}
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
                             <i class="fas fa-venus mr-1"></i>Female
                         </span>
-                        {% endif %}
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
-
-        <!-- Information Sections -->
-        <div class="space-y-4">
-            <!-- Basic Information -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="px-6 py-4 border-b border-[var(--border-color)]">
-                    <h3 class="text-base font-medium text-[var(--text-color)]">Basic Information</h3>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">HR File No</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.hr_file_no }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID No</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.qid_no }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Full Name</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.full_name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Nationality</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.nationality.name|default:'-' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Gender</p>
-                            <p class="text-sm text-[var(--text-color)]">{% if employee.gender == 'M' %}Male{% else %}Female{% endif %}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Joining Date</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.joining_date|date:"F d, Y" }}</p>
-                        </div>
-                        {% if employee.remarks %}
+    </div>
+    <!-- Information Sections -->
+    <div class="space-y-4">
+        <!-- Basic Information -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+            <div class="px-6 py-4 border-b border-[var(--border-color)]">
+                <h3 class="text-base font-medium text-[var(--text-color)]">Basic Information</h3>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">HR File No</p>
+                        <p class="text-sm text-[var(--text-color)]">{{ employee.hr_file_no }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID No</p>
+                        <p class="text-sm text-[var(--text-color)]">{{ employee.qid_no }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Full Name</p>
+                        <p class="text-sm text-[var(--text-color)]">{{ employee.full_name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Nationality</p>
+                        <p class="text-sm text-[var(--text-color)]">{{ employee.nationality.name|default:'-' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Gender</p>
+                        <p class="text-sm text-[var(--text-color)]">
+                            {% if employee.gender == 'M' %}
+                                Male
+                            {% else %}
+                                Female
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Joining Date</p>
+                        <p class="text-sm text-[var(--text-color)]">{{ employee.joining_date|date:"F d, Y" }}</p>
+                    </div>
+                    {% if employee.remarks %}
                         <div class="md:col-span-2 lg:col-span-3">
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Remarks</p>
                             <p class="text-sm text-[var(--text-color)]">{{ employee.remarks }}</p>
                         </div>
-                        {% endif %}
-                    </div>
+                    {% endif %}
                 </div>
             </div>
-
-            <!-- Employment Details - All Records -->
-            {% if employments %}
+        </div>
+        <!-- Employment Details - All Records -->
+        {% if employments %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <div class="px-6 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Employment Details</h3>
@@ -133,56 +139,59 @@
                 </div>
                 <div class="p-6 space-y-6">
                     {% for employment in employments %}
-                    <div class="{% if not forloop.last %}border-b border-[var(--border-color)] pb-6{% endif %}">
-                        <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-sm font-semibold text-[var(--text-color)]">
-                                Employment #{{ forloop.counter }}
-                                {% if employment.is_active %}
-                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Active</span>
-                                {% endif %}
-                            </h4>
-                            <span class="text-xs text-[var(--text-light-color)]">Created: {{ employment.created_at|date:"M d, Y" }}</span>
+                        <div class="{% if not forloop.last %}border-b border-[var(--border-color)] pb-6{% endif %}">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-sm font-semibold text-[var(--text-color)]">
+                                    Employment #{{ forloop.counter }}
+                                    {% if employment.is_active %}
+                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Active</span>
+                                    {% endif %}
+                                </h4>
+                                <span class="text-xs text-[var(--text-light-color)]">Created: {{ employment.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div>
+                                    <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Joining Date</p>
+                                    <p class="text-sm text-[var(--text-color)]">{{ employment.joining_at|date:"F d, Y"|default:"-" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Status</p>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if employment.work_status == 'ACTIVE' %}bg-green-100 text-green-800{% elif employment.work_status == 'INACTIVE' %}bg-red-100 text-red-800{% elif employment.work_status == 'ON_LEAVE' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ employment.get_work_status_display|default:employment.work_status }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">RP Expiry Date</p>
+                                    <p class="text-sm text-[var(--text-color)]">{{ employment.rp_expiry_date|date:"F d, Y"|default:"-" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Permit No</p>
+                                    <p class="text-sm text-[var(--text-color)]">{{ employment.work_permit_no|default:"-" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work ID</p>
+                                    <p class="text-sm text-[var(--text-color)]">{{ employment.work_id|default:"-" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID Renew Status</p>
+                                    <p class="text-sm text-[var(--text-color)]">
+                                        {{ employment.get_qid_renew_status_display|default:employment.qid_renew_status|default:"-" }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID Lost Status</p>
+                                    <p class="text-sm text-[var(--text-color)]">
+                                        {{ employment.get_qid_lost_status_display|default:employment.qid_lost_status|default:"-" }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div>
-                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Joining Date</p>
-                                <p class="text-sm text-[var(--text-color)]">{{ employment.joining_at|date:"F d, Y"|default:"-" }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Status</p>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if employment.work_status == 'ACTIVE' %}bg-green-100 text-green-800{% elif employment.work_status == 'INACTIVE' %}bg-red-100 text-red-800{% elif employment.work_status == 'ON_LEAVE' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
-                                    {{ employment.get_work_status_display|default:employment.work_status }}
-                                </span>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">RP Expiry Date</p>
-                                <p class="text-sm text-[var(--text-color)]">{{ employment.rp_expiry_date|date:"F d, Y"|default:"-" }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work Permit No</p>
-                                <p class="text-sm text-[var(--text-color)]">{{ employment.work_permit_no|default:"-" }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Work ID</p>
-                                <p class="text-sm text-[var(--text-color)]">{{ employment.work_id|default:"-" }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID Renew Status</p>
-                                <p class="text-sm text-[var(--text-color)]">{{ employment.get_qid_renew_status_display|default:employment.qid_renew_status|default:"-" }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">QID Lost Status</p>
-                                <p class="text-sm text-[var(--text-color)]">{{ employment.get_qid_lost_status_display|default:employment.qid_lost_status|default:"-" }}</p>
-                            </div>
-                        </div>
-                    </div>
                     {% endfor %}
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Contact Information -->
-            {% if employee.contact %}
+        {% endif %}
+        <!-- Contact Information -->
+        {% if employee.contact %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <div class="px-6 py-4 border-b border-[var(--border-color)]">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Contact Information</h3>
@@ -194,42 +203,41 @@
                             <p class="text-sm text-[var(--text-color)]">{{ employee.contact.phone_no|default:"Not Available" }}</p>
                         </div>
                         {% if employee.contact.phone_no_alt %}
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Phone No (Alt)</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.phone_no_alt|default:"Not Available" }}</p>
-                        </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Phone No (Alt)</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employee.contact.phone_no_alt|default:"Not Available" }}</p>
+                            </div>
                         {% endif %}
                         {% if employee.contact.home_email %}
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Home Email</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_email|default:"Not Available" }}</p>
-                        </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Home Email</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_email|default:"Not Available" }}</p>
+                            </div>
                         {% endif %}
                         {% if employee.contact.home_phone %}
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Home Phone</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_phone|default:"Not Available" }}</p>
-                        </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Home Phone</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_phone|default:"Not Available" }}</p>
+                            </div>
                         {% endif %}
                         {% if employee.contact.roommate_phone %}
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Roommate Phone</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.roommate_phone|default:"Not Available" }}</p>
-                        </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Roommate Phone</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employee.contact.roommate_phone|default:"Not Available" }}</p>
+                            </div>
                         {% endif %}
                         {% if employee.contact.relative_qatar_phone %}
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Relative Qatar Phone</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.relative_qatar_phone|default:"Not Available" }}</p>
-                        </div>
+                            <div>
+                                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Relative Qatar Phone</p>
+                                <p class="text-sm text-[var(--text-color)]">{{ employee.contact.relative_qatar_phone|default:"Not Available" }}</p>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Address -->
-            {% if employee.address %}
+        {% endif %}
+        <!-- Address -->
+        {% if employee.address %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <div class="px-6 py-4 border-b border-[var(--border-color)]">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Address</h3>
@@ -255,10 +263,9 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Passport Information (active + history) -->
-            {% if passport %}
+        {% endif %}
+        <!-- Passport Information (active + history) -->
+        {% if passport %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <div class="px-6 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Passport Information</h3>
@@ -277,48 +284,58 @@
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Renewed</p>
                             {% if passport.passport_renewed %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Yes</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Yes</span>
                             {% else %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">No</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">No</span>
                             {% endif %}
                         </div>
                     </div>
-
                     {% if passport_history|length > 1 %}
-                    <div class="border-t border-[var(--border-color)] pt-4">
-                        <p class="text-sm font-medium text-[var(--text-color)] mb-3">Previous Passports</p>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-[var(--border-color)] text-sm">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Passport No</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Expiry Date</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Renewed</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Active</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Created</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-[var(--border-color)]">
-                                    {% for item in passport_history %}
-                                    <tr class="{% if item.id == passport.id %}bg-green-50{% endif %}">
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.passport_no }}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.passport_expiry_date|date:"F d, Y" }}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{% if item.passport_renewed %}Yes{% else %}No{% endif %}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{% if item.is_active %}Active{% else %}Inactive{% endif %}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.created_at|date:"M d, Y" }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="border-t border-[var(--border-color)] pt-4">
+                            <p class="text-sm font-medium text-[var(--text-color)] mb-3">Previous Passports</p>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-[var(--border-color)] text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Passport No</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Expiry Date</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Renewed</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Active</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-[var(--border-color)]">
+                                        {% for item in passport_history %}
+                                            <tr class="{% if item.id == passport.id %}bg-green-50{% endif %}">
+                                                <td class="px-4 py-2 text-[var(--text-color)]">{{ item.passport_no }}</td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">{{ item.passport_expiry_date|date:"F d, Y" }}</td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">
+                                                    {% if item.passport_renewed %}
+                                                        Yes
+                                                    {% else %}
+                                                        No
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">
+                                                    {% if item.is_active %}
+                                                        Active
+                                                    {% else %}
+                                                        Inactive
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">{{ item.created_at|date:"M d, Y" }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
                     {% endif %}
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Driving License (active + history) -->
-            {% if driving_license %}
+        {% endif %}
+        <!-- Driving License (active + history) -->
+        {% if driving_license %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <div class="px-6 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Driving License</h3>
@@ -339,42 +356,46 @@
                             <p class="text-sm text-[var(--text-color)]">{{ driving_license.license_renew_status }}</p>
                         </div>
                     </div>
-
                     {% if driving_license_history|length > 1 %}
-                    <div class="border-t border-[var(--border-color)] pt-4">
-                        <p class="text-sm font-medium text-[var(--text-color)] mb-3">Previous Licenses</p>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-[var(--border-color)] text-sm">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">License No</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Expiry Date</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Renew Status</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Active</th>
-                                        <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Created</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-[var(--border-color)]">
-                                    {% for item in driving_license_history %}
-                                    <tr class="{% if item.id == driving_license.id %}bg-green-50{% endif %}">
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_no }}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_expiry_date|date:"F d, Y" }}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_renew_status }}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{% if item.is_active %}Active{% else %}Inactive{% endif %}</td>
-                                        <td class="px-4 py-2 text-[var(--text-color)]">{{ item.created_at|date:"M d, Y" }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="border-t border-[var(--border-color)] pt-4">
+                            <p class="text-sm font-medium text-[var(--text-color)] mb-3">Previous Licenses</p>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-[var(--border-color)] text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">License No</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Expiry Date</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Renew Status</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Active</th>
+                                            <th class="px-4 py-2 text-left text-xs font-semibold text-[var(--text-light-color)]">Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-[var(--border-color)]">
+                                        {% for item in driving_license_history %}
+                                            <tr class="{% if item.id == driving_license.id %}bg-green-50{% endif %}">
+                                                <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_no }}</td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_expiry_date|date:"F d, Y" }}</td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">{{ item.license_renew_status }}</td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">
+                                                    {% if item.is_active %}
+                                                        Active
+                                                    {% else %}
+                                                        Inactive
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-4 py-2 text-[var(--text-color)]">{{ item.created_at|date:"M d, Y" }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
                     {% endif %}
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Health Insurance -->
-            {% if employee.healthinsurance %}
+        {% endif %}
+        <!-- Health Insurance -->
+        {% if employee.healthinsurance %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <div class="px-6 py-4 border-b border-[var(--border-color)]">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Health & Insurance</h3>
@@ -384,9 +405,9 @@
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Hamad Health Card</p>
                             {% if employee.healthinsurance.hamad_health_card %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Yes</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Yes</span>
                             {% else %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">No</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">No</span>
                             {% endif %}
                         </div>
                         <div>
@@ -400,10 +421,9 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Vehicle -->
-            {% if employee.vehicle %}
+        {% endif %}
+        <!-- Vehicle -->
+        {% if employee.vehicle %}
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                 <div class="px-6 py-4 border-b border-[var(--border-color)]">
                     <h3 class="text-base font-medium text-[var(--text-color)]">Vehicle</h3>
@@ -421,9 +441,8 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
-
-        </div>
+        {% endif %}
     </div>
+</div>
 </div>
 {% endblock %}

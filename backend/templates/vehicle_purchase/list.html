@@ -1,50 +1,58 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block page_title %}Vehicle Purchases - {{ site_setting.site_title|default:'' }}{% endblock %}
 {% block meta_description %}Manage vehicle purchase records and installment payments{% endblock %}
-
 {% block title %}Vehicle Purchases{% endblock %}
-
 {% block subtitle %}
-<p class="text-sm text-[var(--text-light-color)] mt-1">Manage vehicle purchase records and installments</p>
+    <p class="text-sm text-[var(--text-light-color)] mt-1">Manage vehicle purchase records and installments</p>
 {% endblock %}
-
 {% block breadcrumb %}
-<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-</svg>
-<a href="{% url 'backend:vehicle_management' %}" class="hover:text-[var(--primary-color)] transition-colors">Vehicle Management</a>
-<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-</svg>
-<span class="font-medium text-[var(--primary-color)]">Purchases</span>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <a href="{% url 'backend:vehicle_management' %}"
+       class="hover:text-[var(--primary-color)] transition-colors">Vehicle Management</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="font-medium text-[var(--primary-color)]">Purchases</span>
 {% endblock %}
-
 {% block header_actions %}
-<button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm" aria-label="Filter purchases">
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-    </svg>
-    <span>Filter</span>
-</button>
-<a href="{% url 'vehicle_purchase:create' %}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-    </svg>
-    <span>Add Purchase</span>
-</a>
+    <button onclick="openFilterModal()"
+            class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            aria-label="Filter purchases">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+            </path>
+        </svg>
+        <span>Filter</span>
+    </button>
+    <a href="{% url 'vehicle_purchase:create' %}"
+       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Add Purchase</span>
+    </a>
 {% endblock %}
-
 {% block content %}
-
     <!-- Filter Modal -->
-    <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
-        <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
+    <div id="filterModal"
+         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+         onclick="closeFilterModal(event)">
+        <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
+             onclick="event.stopPropagation()">
             <!-- Header -->
             <div class="flex items-center justify-between p-4 border-b">
                 <h3 class="text-lg font-semibold">Filter Vehicle Purchases</h3>
-                <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600">
+                <button onclick="closeFilterModal()"
+                        class="text-gray-400 hover:text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -56,23 +64,37 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="plate_no" class="block text-sm font-medium text-gray-700 mb-2">Plate No</label>
-                            <input type="text" name="plate_no" id="plate_no" value="{{ request.GET.plate_no }}" placeholder="Search by plate no" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text"
+                                   name="plate_no"
+                                   id="plate_no"
+                                   value="{{ request.GET.plate_no }}"
+                                   placeholder="Search by plate no"
+                                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label for="employee_name" class="block text-sm font-medium text-gray-700 mb-2">Employee Name</label>
-                            <input type="text" name="employee_name" id="employee_name" value="{{ request.GET.employee_name }}" placeholder="Search by employee name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <label for="employee_name"
+                                   class="block text-sm font-medium text-gray-700 mb-2">Employee Name</label>
+                            <input type="text"
+                                   name="employee_name"
+                                   id="employee_name"
+                                   value="{{ request.GET.employee_name }}"
+                                   placeholder="Search by employee name"
+                                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
                 </div>
                 <!-- Footer -->
                 <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
-                    <a href="{% url 'vehicle_purchase:list' %}" class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">Filter</button>
+                    <a href="{% url 'vehicle_purchase:list' %}"
+                       class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
+                    <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">
+                        Filter
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -91,128 +113,140 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for purchase in purchases %}
-                    <tr class="hover:bg-gray-50 transition-colors duration-150">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ purchase.pk|default:"N/A" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ purchase.vehicle.plate_no|default:"-" }}</div>
-                            <div class="text-sm text-gray-500">{{ purchase.vehicle.make|default:"" }} {{ purchase.vehicle.model|default:"" }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ purchase.employee.full_name|default:"-" }}</div>
-                            <div class="text-sm text-gray-500">{{ purchase.employee.employee_id|default:"" }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.purchase_date|date:"d M, Y"|default:"-" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ purchase.total_amount|default:"0.00" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.down_payment|default:"0.00" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.installment_amount|default:"0.00" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                {{ purchase.get_payment_period_display }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-
-                            {% if purchase.pk %}
-                             <div class="inline-block" data-menu-wrap>
-                                <button type="button"
-                                        class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                        data-menu-btn aria-haspopup="true" aria-expanded="false"
-                                        onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                                ⋯
-                                </button>
-
-                                <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
-                                            ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
-
-                                <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
-                                    class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                    role="menuitem"
-                                    onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                    <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
-                                            stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round"/>
-                                    <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33"
-                                            stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    Edit
-                                </a>
-
-                                <div class="border-t border-[var(--border-color)]"></div>
-                                <a href="{% url 'vehicle_purchase:detail' purchase.pk %}" class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                    role="menuitem"
-                                    onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                    <path d="M8 3.33C4.66 3.33 2.66 5.66 2.66 8C2.66 10.34 4.66 12.66 8 12.66C11.34 12.66 13.34 10.34 13.34 8C13.34 5.66 11.34 3.33 8 3.33ZM8 11C5.79 11 4 9.21 4 7C4 4.79 5.79 3 8 3C10.21 3 12 4.79 12 7C12 9.21 10.21 11 8 11Z"
-                                            stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M8 6V8M6.66 6L8.66 8M6.66 8L8.66 6" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    View
-                                </a>
-
-                                <a href="{% url 'vehicle_purchase:delete' purchase.pk %}"
-                                    class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
-                                    role="menuitem"
-                                    onclick="if(!confirm('Are you sure you want to delete this shift?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                    <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
-                                            stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                                    </svg>
-                                    Delete
-                                </a>
-
-                                </div>
-                            </div>
-                            {% else %}
-                            <span class="text-gray-400">-</span>
-                            {% endif %}
-                        </td>
-                    </tr>
+                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ purchase.pk|default:"N/A" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ purchase.vehicle.plate_no|default:"-" }}</div>
+                                <div class="text-sm text-gray-500">{{ purchase.vehicle.make|default:"" }} {{ purchase.vehicle.model|default:"" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ purchase.employee.full_name|default:"-" }}</div>
+                                <div class="text-sm text-gray-500">{{ purchase.employee.employee_id|default:"" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ purchase.purchase_date|date:"d M, Y"|default:"-" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                {{ purchase.total_amount|default:"0.00" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.down_payment|default:"0.00" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ purchase.installment_amount|default:"0.00" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ purchase.get_payment_period_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                {% if purchase.pk %}
+                                    <div class="inline-block" data-menu-wrap>
+                                        <button type="button"
+                                                class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
+                                                data-menu-btn
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                                onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                                            ⋯
+                                        </button>
+                                        <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                             data-menu
+                                             role="menu">
+                                            <a href="{% url 'vehicle_purchase:installments' purchase.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                               role="menuitem"
+                                               onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     class="w-4 h-4"
+                                                     viewBox="0 0 16 16"
+                                                     fill="none">
+                                                    <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05" stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round" />
+                                                    <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+                                                Edit
+                                            </a>
+                                            <div class="border-t border-[var(--border-color)]"></div>
+                                            <a href="{% url 'vehicle_purchase:detail' purchase.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                               role="menuitem"
+                                               onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     class="w-4 h-4"
+                                                     viewBox="0 0 16 16"
+                                                     fill="none">
+                                                    <path d="M8 3.33C4.66 3.33 2.66 5.66 2.66 8C2.66 10.34 4.66 12.66 8 12.66C11.34 12.66 13.34 10.34 13.34 8C13.34 5.66 11.34 3.33 8 3.33ZM8 11C5.79 11 4 9.21 4 7C4 4.79 5.79 3 8 3C10.21 3 12 4.79 12 7C12 9.21 10.21 11 8 11Z" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M8 6V8M6.66 6L8.66 8M6.66 8L8.66 6" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+                                                View
+                                            </a>
+                                            <a href="{% url 'vehicle_purchase:delete' purchase.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
+                                               role="menuitem"
+                                               onclick="if(!confirm('Are you sure you want to delete this shift?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     class="w-4 h-4"
+                                                     viewBox="0 0 16 16"
+                                                     fill="none">
+                                                    <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                                                </svg>
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% empty %}
-                    <tr>
-                        <td colspan="9" class="px-6 py-8 text-center text-gray-500">
-                            <i class="fas fa-inbox text-4xl mb-2"></i>
-                            <p>No vehicle purchases found</p>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                                <i class="fas fa-inbox text-4xl mb-2"></i>
+                                <p>No vehicle purchases found</p>
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
         {% if paginator.num_pages > 1 %}
-        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-            <div class="flex-1 flex justify-between sm:hidden">
-                {% if page_num > 1 %}
-                <a href="?page={{ page_num|add:'-1' }}&{{ get_param }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
-                {% endif %}
-                {% if page_num < last_page_number %}
-                <a href="?page={{ page_num|add:'1' }}&{{ get_param }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
-                {% endif %}
-            </div>
-            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-sm text-gray-700">Page <span class="font-medium">{{ page_num }}</span> of <span class="font-medium">{{ last_page_number }}</span></p>
+            <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    {% if page_num > 1 %}
+                        <a href="?page={{ page_num|add:'-1' }}&{{ get_param }}"
+                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                    {% endif %}
+                    {% if page_num < last_page_number %}
+                        <a href="?page={{ page_num|add:'1' }}&{{ get_param }}"
+                           class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                    {% endif %}
                 </div>
-                <div>
-                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        {% if page_num > 1 %}
-                        <a href="?page={{ page_num|add:'-1' }}&{{ get_param }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-left"></i></a>
-                        {% endif %}
-                        {% if page_num < last_page_number %}
-                        <a href="?page={{ page_num|add:'1' }}&{{ get_param }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-right"></i></a>
-                        {% endif %}
-                    </nav>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Page <span class="font-medium">{{ page_num }}</span> of <span class="font-medium">{{ last_page_number }}</span>
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                             aria-label="Pagination">
+                            {% if page_num > 1 %}
+                                <a href="?page={{ page_num|add:'-1' }}&{{ get_param }}"
+                                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-left"></i></a>
+                            {% endif %}
+                            {% if page_num < last_page_number %}
+                                <a href="?page={{ page_num|add:'1' }}&{{ get_param }}"
+                                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"><i class="fas fa-chevron-right"></i></a>
+                            {% endif %}
+                        </nav>
+                    </div>
                 </div>
             </div>
-        </div>
         {% endif %}
     </div>
 </div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
 function openFilterModal() {
     document.getElementById('filterModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -230,5 +264,5 @@ document.addEventListener('keydown', function(e) {
         closeFilterModal();
     }
 });
-</script>
+    </script>
 {% endblock %}

@@ -1,154 +1,146 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Insurance Claim Details{% endblock %}
-
 {% block breadcrumb %}
-<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
-<span class="mx-1">›</span>
-<a href="{% url 'insurance_claim:list' %}">Insurance Claims</a>
-<span class="mx-1">›</span>
-<span>Details</span>
+    <a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+    <span class="mx-1">›</span>
+    <a href="{% url 'insurance_claim:list' %}">Insurance Claims</a>
+    <span class="mx-1">›</span>
+    <span>Details</span>
 {% endblock %}
-
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-5xl">
-    <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-[var(--text-color)]">Insurance Claim Details</h1>
-            <p class="text-[var(--text-light-color)] mt-1">Complete information about the insurance claim</p>
-        </div>
-        <div class="flex gap-2">
-            <a href="{% url 'insurance_claim:list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-all duration-200">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <!-- Accident Information Section -->
-        <div class="p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Accident Information</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Vehicle Plate No</p>
-                    <p class="text-base text-gray-900 font-semibold">{{ claim.accident.vehicle.plate_no }}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Vehicle Type</p>
-                    <p class="text-base text-gray-900">{{ claim.accident.vehicle.vehicle_type|default:"-" }}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Accident Date</p>
-                    <p class="text-base text-gray-900">{{ claim.accident.accident_date|date:"F d, Y" }}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Accident Place</p>
-                    <p class="text-base text-gray-900">{{ claim.accident.accident_place }}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Damage Cost</p>
-                    <p class="text-lg text-gray-900 font-bold">${{ claim.accident.damage_cost }}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Insurance Claimed</p>
-                    <p class="text-base text-gray-900">
-                        {% if claim.accident.insurance_claimed %}
-                        <span class="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
-                            <i class="fas fa-check-circle"></i> Yes
-                        </span>
-                        {% else %}
-                        <span class="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-800">
-                            <i class="fas fa-times-circle"></i> No
-                        </span>
-                        {% endif %}
-                    </p>
-                </div>
-                
-                {% if claim.accident.remarks %}
-                <div class="md:col-span-2">
-                    <p class="text-sm font-medium text-gray-500 mb-1">Accident Remarks</p>
-                    <p class="text-base text-gray-900">{{ claim.accident.remarks }}</p>
-                </div>
-                {% endif %}
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header Section -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-[var(--text-color)]">Insurance Claim Details</h1>
+                <p class="text-[var(--text-light-color)] mt-1">Complete information about the insurance claim</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'insurance_claim:list' %}"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-all duration-200">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
             </div>
         </div>
-
-        <!-- Claim Information Section -->
-        <div class="p-6 border-b border-gray-200 bg-blue-50">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Claim Information</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Claim Amount</p>
-                    <p class="text-3xl text-gray-900 font-bold">${{ claim.claim_amount }}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Claim Date</p>
-                    <p class="text-base text-gray-900">{{ claim.claim_date|date:"F d, Y" }}</p>
-                </div>
-                <div class="md:col-span-2">
-                    <p class="text-sm font-medium text-gray-500 mb-1">Claim Status</p>
-                    <div class="mt-1">
-                        {% if claim.claim_status == 'APPROVED' %}
-                        <span class="px-4 py-2 text-base font-medium rounded-full bg-green-100 text-green-800">
-                            <i class="fas fa-check-circle"></i> Approved
-                        </span>
-                        {% elif claim.claim_status == 'PENDING' %}
-                        <span class="px-4 py-2 text-base font-medium rounded-full bg-yellow-100 text-yellow-800">
-                            <i class="fas fa-clock"></i> Pending
-                        </span>
-                        {% elif claim.claim_status == 'REJECTED' %}
-                        <span class="px-4 py-2 text-base font-medium rounded-full bg-red-100 text-red-800">
-                            <i class="fas fa-times-circle"></i> Rejected
-                        </span>
-                        {% elif claim.claim_status == 'SETTLED' %}
-                        <span class="px-4 py-2 text-base font-medium rounded-full bg-blue-100 text-blue-800">
-                            <i class="fas fa-check-double"></i> Settled
-                        </span>
-                        {% else %}
-                        <span class="px-4 py-2 text-base font-medium rounded-full bg-gray-100 text-gray-800">
-                            {{ claim.get_claim_status_display }}
-                        </span>
-                        {% endif %}
+        <!-- Main Content -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <!-- Accident Information Section -->
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Accident Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Vehicle Plate No</p>
+                        <p class="text-base text-gray-900 font-semibold">{{ claim.accident.vehicle.plate_no }}</p>
                     </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Vehicle Type</p>
+                        <p class="text-base text-gray-900">{{ claim.accident.vehicle.vehicle_type|default:"-" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Accident Date</p>
+                        <p class="text-base text-gray-900">{{ claim.accident.accident_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Accident Place</p>
+                        <p class="text-base text-gray-900">{{ claim.accident.accident_place }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Damage Cost</p>
+                        <p class="text-lg text-gray-900 font-bold">${{ claim.accident.damage_cost }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Insurance Claimed</p>
+                        <p class="text-base text-gray-900">
+                            {% if claim.accident.insurance_claimed %}
+                                <span class="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle"></i> Yes
+                                </span>
+                            {% else %}
+                                <span class="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-800">
+                                    <i class="fas fa-times-circle"></i> No
+                                </span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if claim.accident.remarks %}
+                        <div class="md:col-span-2">
+                            <p class="text-sm font-medium text-gray-500 mb-1">Accident Remarks</p>
+                            <p class="text-base text-gray-900">{{ claim.accident.remarks }}</p>
+                        </div>
+                    {% endif %}
                 </div>
-                
-                {% if claim.remarks %}
-                <div class="md:col-span-2">
-                    <p class="text-sm font-medium text-gray-500 mb-1">Claim Remarks</p>
-                    <p class="text-base text-gray-900">{{ claim.remarks }}</p>
-                </div>
-                {% endif %}
             </div>
-        </div>
-
-        <!-- Metadata Section -->
-        <div class="p-6 bg-gray-50">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Record Information</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Created By</p>
-                    <p class="text-base text-gray-900">{{ claim.created_by.get_full_name|default:claim.created_by.username }}</p>
+            <!-- Claim Information Section -->
+            <div class="p-6 border-b border-gray-200 bg-blue-50">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Claim Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Claim Amount</p>
+                        <p class="text-3xl text-gray-900 font-bold">${{ claim.claim_amount }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Claim Date</p>
+                        <p class="text-base text-gray-900">{{ claim.claim_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <p class="text-sm font-medium text-gray-500 mb-1">Claim Status</p>
+                        <div class="mt-1">
+                            {% if claim.claim_status == 'APPROVED' %}
+                                <span class="px-4 py-2 text-base font-medium rounded-full bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle"></i> Approved
+                                </span>
+                            {% elif claim.claim_status == 'PENDING' %}
+                                <span class="px-4 py-2 text-base font-medium rounded-full bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-clock"></i> Pending
+                                </span>
+                            {% elif claim.claim_status == 'REJECTED' %}
+                                <span class="px-4 py-2 text-base font-medium rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-times-circle"></i> Rejected
+                                </span>
+                            {% elif claim.claim_status == 'SETTLED' %}
+                                <span class="px-4 py-2 text-base font-medium rounded-full bg-blue-100 text-blue-800">
+                                    <i class="fas fa-check-double"></i> Settled
+                                </span>
+                            {% else %}
+                                <span class="px-4 py-2 text-base font-medium rounded-full bg-gray-100 text-gray-800">
+                                    {{ claim.get_claim_status_display }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if claim.remarks %}
+                        <div class="md:col-span-2">
+                            <p class="text-sm font-medium text-gray-500 mb-1">Claim Remarks</p>
+                            <p class="text-base text-gray-900">{{ claim.remarks }}</p>
+                        </div>
+                    {% endif %}
                 </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Created At</p>
-                    <p class="text-base text-gray-900">{{ claim.created_at|date:"F d, Y H:i" }}</p>
+            </div>
+            <!-- Metadata Section -->
+            <div class="p-6 bg-gray-50">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Record Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Created By</p>
+                        <p class="text-base text-gray-900">{{ claim.created_by.get_full_name|default:claim.created_by.username }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Created At</p>
+                        <p class="text-base text-gray-900">{{ claim.created_at|date:"F d, Y H:i" }}</p>
+                    </div>
+                    {% if claim.updated_by %}
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Updated By</p>
+                            <p class="text-base text-gray-900">{{ claim.updated_by.get_full_name|default:claim.updated_by.username }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Updated At</p>
+                            <p class="text-base text-gray-900">{{ claim.updated_at|date:"F d, Y H:i" }}</p>
+                        </div>
+                    {% endif %}
                 </div>
-                {% if claim.updated_by %}
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Updated By</p>
-                    <p class="text-base text-gray-900">{{ claim.updated_by.get_full_name|default:claim.updated_by.username }}</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Updated At</p>
-                    <p class="text-base text-gray-900">{{ claim.updated_at|date:"F d, Y H:i" }}</p>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
-
-</div>
 {% endblock %}

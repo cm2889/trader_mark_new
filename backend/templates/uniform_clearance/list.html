@@ -1,218 +1,218 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Uniform Clearance List{% endblock %}
-
 {% block breadcrumb %}
-    <a href="{% url "uniform_clearance:list" %}">
-        Uniform Clearance 
-    </a>
+    <a href="{% url "uniform_clearance:list" %}">Uniform Clearance</a>
     <span class="mx-1">›</span>
     <span>List</span>
 {% endblock %}
-
 {% block content %}
-<div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
-    <div class="">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-semibold text-[var(--text-color)]">Uniform Clearances</h1>
-                <p class="text-sm text-[var(--text-light-color)] mt-1">Manage uniform clearance records</p>
-            </div>
-            <div class="mt-4 sm:mt-0 flex items-center gap-3">
-                <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-filter mr-2"></i>Filter
-                </button>
-               
-            </div>
-        </div>
-
-        <!-- Filter Modal -->
-        <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
-            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
-                <!-- Header -->
-                <div class="flex items-center justify-between p-4 border-b">
-                    <h3 class="text-lg font-semibold">Filter Uniform Clearances</h3>
-                    <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+    <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+        <div class="">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-[var(--text-color)]">Uniform Clearances</h1>
+                    <p class="text-sm text-[var(--text-light-color)] mt-1">Manage uniform clearance records</p>
+                </div>
+                <div class="mt-4 sm:mt-0 flex items-center gap-3">
+                    <button onclick="openFilterModal()"
+                            class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-filter mr-2"></i>Filter
                     </button>
                 </div>
-                <!-- Body with form -->
-                <form method="get">
-                    <div class="p-6">
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employee</label>
-                            <select name="employee" class="select2-items h-11 w-full appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm ring-1 ring-[var(--border-color)] outline-none focus:ring-[var(--primary-color)]/40">
-                                <option value="">All Employees</option>
-                                {% for emp in all_employees %}
-                                <option value="{{ emp.id }}" {% if request.GET.employee == emp.id|stringformat:"s" %}selected{% endif %}>
-                                    {{ emp.full_name }}
-                                </option>
-                                {% endfor %}
-                            </select>
+            </div>
+            <!-- Filter Modal -->
+            <div id="filterModal"
+                 class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+                 onclick="closeFilterModal(event)">
+                <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
+                     onclick="event.stopPropagation()">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between p-4 border-b">
+                        <h3 class="text-lg font-semibold">Filter Uniform Clearances</h3>
+                        <button onclick="closeFilterModal()"
+                                class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Body with form -->
+                    <form method="get">
+                        <div class="p-6">
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Employee</label>
+                                <select name="employee"
+                                        class="select2-items h-11 w-full appearance-none rounded-lg bg-[var(--bg-color)] px-3 pr-10 text-sm ring-1 ring-[var(--border-color)] outline-none focus:ring-[var(--primary-color)]/40">
+                                    <option value="">All Employees</option>
+                                    {% for emp in all_employees %}
+                                        <option value="{{ emp.id }}"
+                                                {% if request.GET.employee == emp.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ emp.full_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Footer -->
-                    <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
-                        <a href="{% url 'uniform_clearance:list' %}" class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">Filter</button>
-                    </div>
-                </form>
+                        <!-- Footer -->
+                        <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
+                            <a href="{% url 'uniform_clearance:list' %}"
+                               class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
+                            <button type="submit"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">
+                                Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-
-        <!-- Table Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-            <div class="">
-                <table class="w-full">
-                    <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Employee</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Uniform</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Size</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Quantity</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Clearance Date</th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--border-color)]">
-                        {% for clearance in uniform_clearances %}
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
-                            <td class="px-6 py-4 text-sm font-medium text-[var(--text-color)]">{{ clearance.employee.full_name }}</td>
-                            <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ clearance.uniform_stock.uniform.name }}</td>
-                            <td class="px-6 py-4 text-sm text-[var(--text-color)]">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    {{ clearance.uniform_stock.get_size_display }}
+            <!-- Table Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <div class="">
+                    <table class="w-full">
+                        <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Employee</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Uniform</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Size</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Quantity</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                                    Clearance Date
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--border-color)]">
+                            {% for clearance in uniform_clearances %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
+                                    <td class="px-6 py-4 text-sm font-medium text-[var(--text-color)]">{{ clearance.employee.full_name }}</td>
+                                    <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ clearance.uniform_stock.uniform.name }}</td>
+                                    <td class="px-6 py-4 text-sm text-[var(--text-color)]">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ clearance.uniform_stock.get_size_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ clearance.quantity }}</td>
+                                    <td class="px-6 py-4 text-sm">
+                                        {% if clearance.status == "RETURNED" %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">{{ clearance.get_status_display }}</span>
+                                        {% elif clearance.status == "LOST" %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">{{ clearance.get_status_display }}</span>
+                                        {% elif clearance.status == "DAMAGED" %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">{{ clearance.get_status_display }}</span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ clearance.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ clearance.clearance_date|date:"M d, Y" }}</td>
+                                    <td class="px-6 py-4 text-sm text-center relative">
+                                        <div class="inline-block" data-menu-wrap>
+                                            <button type="button"
+                                                    class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
+                                                    data-menu-btn
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false"
+                                                    onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                                                ⋯
+                                            </button>
+                                            <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                                 data-menu
+                                                 role="menu">
+                                                <div class="border-t border-[var(--border-color)]"></div>
+                                                <a href="{% url 'uniform_clearance:delete' clearance.pk %}"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
+                                                   role="menuitem"
+                                                   onclick="if(!confirm('Are you sure you want to delete this clearance?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         class="w-4 h-4"
+                                                         viewBox="0 0 16 16"
+                                                         fill="none">
+                                                        <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                        <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                                                    </svg>
+                                                    Delete
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="8" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center justify-center text-gray-500">
+                                            <i class="fas fa-clipboard-check text-5xl mb-4 text-gray-400"></i>
+                                            <p class="text-lg font-medium text-[var(--text-color)]">No clearances found</p>
+                                            <p class="text-sm mt-1 text-[var(--text-light-color)]">Try adjusting your search or create a new clearance</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Pagination Section -->
+            {% if paginator.has_other_pages %}
+                <div class="mt-6 flex justify-center">
+                    <nav class="flex items-center gap-2">
+                        {% if paginator.has_previous %}
+                            <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                            <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        {% else %}
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
+                                <i class="fas fa-angle-double-left"></i>
+                            </span>
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
+                                <i class="fas fa-angle-left"></i>
+                            </span>
+                        {% endif %}
+                        {% for page_num in paginator_list %}
+                            {% if page_num == paginator.number %}
+                                <span class="px-4 py-2 bg-[var(--primary-color)] text-white border border-[var(--primary-color)] rounded-lg font-medium">
+                                    {{ page_num }}
                                 </span>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ clearance.quantity }}</td>
-                            <td class="px-6 py-4 text-sm">
-                                {% if clearance.status == "RETURNED" %}
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">{{ clearance.get_status_display }}</span>
-                                {% elif clearance.status == "LOST" %}
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">{{ clearance.get_status_display }}</span>
-                                {% elif clearance.status == "DAMAGED" %}
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">{{ clearance.get_status_display }}</span>
-                                {% else %}
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ clearance.get_status_display }}</span>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ clearance.clearance_date|date:"M d, Y" }}</td>
-                            <td class="px-6 py-4 text-sm text-center relative">
-                                <div class="inline-block" data-menu-wrap>
-                                    <button type="button"
-                                            class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                            data-menu-btn aria-haspopup="true" aria-expanded="false"
-                                            onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                                        ⋯
-                                    </button>
-
-                                    <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
-                                                ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
-
-                                       
-
-                                        <div class="border-t border-[var(--border-color)]"></div>
-
-                                        <a href="{% url 'uniform_clearance:delete' clearance.pk %}"
-                                           class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
-                                           role="menuitem"
-                                           onclick="if(!confirm('Are you sure you want to delete this clearance?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                                <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
-                                                      stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                                            </svg>
-                                            Delete
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="px-6 py-12 text-center">
-                                <div class="flex flex-col items-center justify-center text-gray-500">
-                                    <i class="fas fa-clipboard-check text-5xl mb-4 text-gray-400"></i>
-                                    <p class="text-lg font-medium text-[var(--text-color)]">No clearances found</p>
-                                    <p class="text-sm mt-1 text-[var(--text-light-color)]">Try adjusting your search or create a new clearance</p>
-                                </div>
-                            </td>
-                        </tr>
+                            {% else %}
+                                <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}"
+                                   class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                    {{ page_num }}
+                                </a>
+                            {% endif %}
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                        {% if paginator.has_next %}
+                            <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                            <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        {% else %}
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
+                                <i class="fas fa-angle-right"></i>
+                            </span>
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
+                                <i class="fas fa-angle-double-right"></i>
+                            </span>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
         </div>
-
-        <!-- Pagination Section -->
-        {% if paginator.has_other_pages %}
-        <div class="mt-6 flex justify-center">
-            <nav class="flex items-center gap-2">
-                {% if paginator.has_previous %}
-                <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}" 
-                   class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-angle-double-left"></i>
-                </a>
-                <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" 
-                   class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-angle-left"></i>
-                </a>
-                {% else %}
-                <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
-                    <i class="fas fa-angle-double-left"></i>
-                </span>
-                <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
-                    <i class="fas fa-angle-left"></i>
-                </span>
-                {% endif %}
-
-                {% for page_num in paginator_list %}
-                {% if page_num == paginator.number %}
-                <span class="px-4 py-2 bg-[var(--primary-color)] text-white border border-[var(--primary-color)] rounded-lg font-medium">
-                    {{ page_num }}
-                </span>
-                {% else %}
-                <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}" 
-                   class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
-                    {{ page_num }}
-                </a>
-                {% endif %}
-                {% endfor %}
-
-                {% if paginator.has_next %}
-                <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" 
-                   class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-angle-right"></i>
-                </a>
-                <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" 
-                   class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-angle-double-right"></i>
-                </a>
-                {% else %}
-                <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
-                    <i class="fas fa-angle-right"></i>
-                </span>
-                <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed">
-                    <i class="fas fa-angle-double-right"></i>
-                </span>
-                {% endif %}
-            </nav>
-        </div>
-        {% endif %}
     </div>
-</div>
 {% endblock %}
-
-
 {% block extra_js %}
- <script>
+    <script>
   $(document).ready(function () {
     $('.select2-items').select2({
         dropdownParent: $('#filterModal')
@@ -236,5 +236,5 @@
           closeFilterModal();
       }
   });
-</script>
+    </script>
 {% endblock %}

@@ -1,210 +1,228 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Traffic Violation Penalties{% endblock %}
-
 {% block breadcrumb %}
-<a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
-<span class="mx-1">›</span>
-<a href="{% url 'traffic_violation_penalty:list' %}">Traffic Violation Penalties</a>
-<span class="mx-1">›</span>
-<span>List</span>
+    <a href="{% url 'backend:vehicle_management' %}">Vehicle Management</a>
+    <span class="mx-1">›</span>
+    <a href="{% url 'traffic_violation_penalty:list' %}">Traffic Violation Penalties</a>
+    <span class="mx-1">›</span>
+    <span>List</span>
 {% endblock %}
-
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-[var(--text-color)]">Traffic Violation Penalties</h1>
-            <p class="text-[var(--text-light-color)] mt-1">Manage penalty records for traffic violations</p>
-        </div>
-        <div class="flex gap-3">
-            <button onclick="openFilterModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
-                <i class="fas fa-filter mr-2"></i>Filter
-            </button>
-            <a href="{% url 'traffic_violation_penalty:create' %}" class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
-                <i class="fas fa-plus"></i>
-                <span>Add Penalty</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Filter Modal -->
-    <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onclick="closeFilterModal(event)">
-        <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
-                <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Traffic Violation Penalties</h3>
-                <button onclick="closeFilterModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-[var(--text-color)]">Traffic Violation Penalties</h1>
+                <p class="text-[var(--text-light-color)] mt-1">Manage penalty records for traffic violations</p>
             </div>
-            <form method="get" id="filterForm">
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Vehicle Plate No</label>
-                            <select name="plate_no" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                <option value="">All Vehicles</option>
-                                {% for vehicle in all_vehicles %}
-                                <option value="{{ vehicle.plate_no }}" {% if request.GET.plate_no == vehicle.plate_no %}selected{% endif %}>{{ vehicle.plate_no }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Violation Type</label>
-                            <select name="violation_type" class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
-                                <option value="">All Types</option>
-                                {% for vtype in all_violation_types %}
-                                <option value="{{ vtype.id }}" {% if request.GET.violation_type == vtype.id|stringformat:"s" %}selected{% endif %}>{{ vtype.name }}</option>
-                                {% endfor %}
-                            </select>
+            <div class="flex gap-3">
+                <button onclick="openFilterModal()"
+                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+                <a href="{% url 'traffic_violation_penalty:create' %}"
+                   class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Penalty</span>
+                </a>
+            </div>
+        </div>
+        <!-- Filter Modal -->
+        <div id="filterModal"
+             class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+             onclick="closeFilterModal(event)">
+            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
+                 onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
+                    <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Traffic Violation Penalties</h3>
+                    <button onclick="closeFilterModal()"
+                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form method="get" id="filterForm">
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Vehicle Plate No</label>
+                                <select name="plate_no"
+                                        class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Vehicles</option>
+                                    {% for vehicle in all_vehicles %}
+                                        <option value="{{ vehicle.plate_no }}"
+                                                {% if request.GET.plate_no == vehicle.plate_no %}selected{% endif %}>
+                                            {{ vehicle.plate_no }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Violation Type</label>
+                                <select name="violation_type"
+                                        class="select2-filter w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Types</option>
+                                    {% for vtype in all_violation_types %}
+                                        <option value="{{ vtype.id }}"
+                                                {% if request.GET.violation_type == vtype.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ vtype.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
-                    <a href="{% url 'traffic_violation_penalty:list' %}" class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">Reset</a>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">Filter</button>
-                </div>
-            </form>
+                    <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
+                        <a href="{% url 'traffic_violation_penalty:list' %}"
+                           class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">Reset</a>
+                        <button type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                            Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <!-- Results Count -->
-    <div class="mb-4">
-        <p class="text-gray-600">Found <span class="font-semibold text-gray-800">{{ paginator.paginator.count }}</span> penalt{{ paginator.paginator.count|pluralize:"y,ies" }}</p>
-    </div>
-
-    <!-- Table Section -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vehicle</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Violation Type</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fine Amount</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Payment Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Paid Date</th>
-                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    {% for penalty in penalties %}
-                    <tr class="hover:bg-gray-50 transition-colors duration-150">
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ penalty.violation.vehicle.plate_no }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ penalty.violation.violation_type }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">${{ penalty.fine_amount }}</td>
-                        <td class="px-6 py-4 text-sm">
-                            {% if penalty.payment_status == 'PAID' %}
-                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Paid</span>
-                            {% elif penalty.payment_status == 'PENDING' %}
-                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Pending</span>
-                            {% elif penalty.payment_status == 'OVERDUE' %}
-                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Overdue</span>
-                            {% else %}
-                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">{{ penalty.get_payment_status_display }}</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ penalty.paid_date|date:"M d, Y"|default:"-" }}</td>
-                        
-                        <td class="px-6 py-4 text-center">
-                            <div class="flex justify-center gap-2">
-                                <div class="inline-block" data-menu-wrap>
-                                    <button type="button"
-                                            class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                            data-menu-btn aria-haspopup="true" aria-expanded="false"
-                                            onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                                    ⋯
-                                    </button>
-
-                                    <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)]
-                                                ring-1 ring-[var(--border-color)] shadow-lg" data-menu role="menu">
-
-                                    <a href="{% url 'traffic_violation_penalty:update' penalty.pk %}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                        role="menuitem"
-                                        onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05"
-                                                stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round"/>
-                                        <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33"
-                                                stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        Edit
-                                    </a>
-
-                                    <a href="{% url 'traffic_violation_penalty:detail' penalty.pk %}" class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start" title="View">
-                                        <i class="fas fa-eye"></i>
-                                        View
-                                    </a>
-
-                                    <div class="border-t border-[var(--border-color)]"></div>
-
-                                    <a href="{% url 'traffic_violation_penalty:delete' penalty.pk %}"
-                                        class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
-                                        role="menuitem"
-                                        onclick="if(!confirm('Are you sure you want to delete this penalty?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                                        <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4"
-                                                stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                                        </svg>
-                                        Delete
-                                    </a>
-
+        <!-- Results Count -->
+        <div class="mb-4">
+            <p class="text-gray-600">
+                Found <span class="font-semibold text-gray-800">{{ paginator.paginator.count }}</span> penalt{{ paginator.paginator.count|pluralize:"y,ies" }}
+            </p>
+        </div>
+        <!-- Table Section -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vehicle</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Violation Type</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fine Amount</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Payment Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Paid Date</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for penalty in penalties %}
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm text-gray-900">{{ forloop.counter }}</td>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ penalty.violation.vehicle.plate_no }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-900">{{ penalty.violation.violation_type }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-900">${{ penalty.fine_amount }}</td>
+                                <td class="px-6 py-4 text-sm">
+                                    {% if penalty.payment_status == 'PAID' %}
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Paid</span>
+                                    {% elif penalty.payment_status == 'PENDING' %}
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                    {% elif penalty.payment_status == 'OVERDUE' %}
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Overdue</span>
+                                    {% else %}
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">{{ penalty.get_payment_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">{{ penalty.paid_date|date:"M d, Y"|default:"-" }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center gap-2">
+                                        <div class="inline-block" data-menu-wrap>
+                                            <button type="button"
+                                                    class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
+                                                    data-menu-btn
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false"
+                                                    onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                                                ⋯
+                                            </button>
+                                            <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                                 data-menu
+                                                 role="menu">
+                                                <a href="{% url 'traffic_violation_penalty:update' penalty.pk %}"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                                   role="menuitem"
+                                                   onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         class="w-4 h-4"
+                                                         viewBox="0 0 16 16"
+                                                         fill="none">
+                                                        <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05" stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round" />
+                                                        <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                    Edit
+                                                </a>
+                                                <a href="{% url 'traffic_violation_penalty:detail' penalty.pk %}"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                                   title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                    View
+                                                </a>
+                                                <div class="border-t border-[var(--border-color)]"></div>
+                                                <a href="{% url 'traffic_violation_penalty:delete' penalty.pk %}"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
+                                                   role="menuitem"
+                                                   onclick="if(!confirm('Are you sure you want to delete this penalty?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         class="w-4 h-4"
+                                                         viewBox="0 0 16 16"
+                                                         fill="none">
+                                                        <path d="M6 2.66h4M2.66 4h10.68M6 4V3.33c0-.74.6-1.33 1.33-1.33h1.34C9.4 2 10 2.59 10 3.33V4M4.66 4l.47 9.06c.05.76.68 1.34 1.44 1.34h2.86c.76 0 1.39-.58 1.44-1.34L11.33 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                                        <path d="M6.66 7v5.33M9.33 7v5.33" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                                                    </svg>
+                                                    Delete
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center justify-center text-gray-500">
-                                <i class="fas fa-money-bill-wave text-5xl mb-4"></i>
-                                <p class="text-lg font-medium">No penalties found</p>
-                                <p class="text-sm mt-1">Try adjusting your search criteria or add a new penalty</p>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center text-gray-500">
+                                        <i class="fas fa-money-bill-wave text-5xl mb-4"></i>
+                                        <p class="text-lg font-medium">No penalties found</p>
+                                        <p class="text-sm mt-1">Try adjusting your search criteria or add a new penalty</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        <!-- Pagination -->
+        {% if paginator.has_other_pages %}
+            <div class="mt-6 flex justify-center">
+                <nav class="flex items-center gap-2">
+                    {% if paginator.has_previous %}
+                        <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}"
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-double-left"></i></a>
+                        <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-left"></i></a>
+                    {% endif %}
+                    {% for page_num in paginator_list %}
+                        {% if page_num == paginator.number %}
+                            <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ page_num }}</span>
+                        {% else %}
+                            <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{{ page_num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if paginator.has_next %}
+                        <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-right"></i></a>
+                        <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-double-right"></i></a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
     </div>
-
-    <!-- Pagination -->
-    {% if paginator.has_other_pages %}
-    <div class="mt-6 flex justify-center">
-        <nav class="flex items-center gap-2">
-            {% if paginator.has_previous %}
-            <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-double-left"></i></a>
-            <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-left"></i></a>
-            {% endif %}
-            {% for page_num in paginator_list %}
-            {% if page_num == paginator.number %}
-            <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ page_num }}</span>
-            {% else %}
-            <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{{ page_num }}</a>
-            {% endif %}
-            {% endfor %}
-            {% if paginator.has_next %}
-            <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-right"></i></a>
-            <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"><i class="fas fa-angle-double-right"></i></a>
-            {% endif %}
-        </nav>
-    </div>
-    {% endif %}
-</div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     $(document).ready(function() {
         $('.select2-filter').select2({
             theme: 'default',
@@ -225,5 +243,5 @@
             document.getElementById('filterModal').classList.add('hidden');
         }
     }
-</script>
+    </script>
 {% endblock %}

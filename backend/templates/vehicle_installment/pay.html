@@ -1,156 +1,108 @@
-
-
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Pay Installment{% endblock %}
-
 {% block breadcrumb %}
-<a href="{% url 'backend:vehicle_management' %}" class="text-gray-900">Vehicle Management</a>
-<span class="mx-1 text-gray-900">›</span>
-<a href="{% url 'vehicle_purchase:list' %}" class="text-gray-900">Purchases</a>
-<span class="mx-1 text-gray-900">›</span>
-<a href="{% url 'vehicle_purchase:installments' installment.purchase.pk %}" class="text-gray-900">Installments</a>
-<span class="mx-1 text-gray-900">›</span>
-<span class="text-gray-900">Pay</span>
+    <a href="{% url 'backend:vehicle_management' %}" class="text-gray-900">Vehicle Management</a>
+    <span class="mx-1 text-gray-900">›</span>
+    <a href="{% url 'vehicle_purchase:list' %}" class="text-gray-900">Purchases</a>
+    <span class="mx-1 text-gray-900">›</span>
+    <a href="{% url 'vehicle_purchase:installments' installment.purchase.pk %}"
+       class="text-gray-900">Installments</a>
+    <span class="mx-1 text-gray-900">›</span>
+    <span class="text-gray-900">Pay</span>
 {% endblock %}
-
 {% block content %}
-<div class="container px-4 py-8 bg-white text-gray-900">
-
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Pay Installment</h1>
-        <p class="text-gray-700 mt-1">
-            Process payment for installment #{{ installment.installment_no }}
-        </p>
-    </div>
-
-    <!-- Installment Details Card -->
-    <div class="bg-white border border-gray-300 rounded-lg p-6 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            <div>
-                <p class="text-sm text-gray-700">Vehicle</p>
-                <p class="text-lg font-semibold text-gray-900">
-                    {{ installment.purchase.vehicle.plate_no }}
-                </p>
+    <div class="container px-4 py-8 bg-white text-gray-900">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Pay Installment</h1>
+            <p class="text-gray-700 mt-1">Process payment for installment #{{ installment.installment_no }}</p>
+        </div>
+        <!-- Installment Details Card -->
+        <div class="bg-white border border-gray-300 rounded-lg p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-700">Vehicle</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ installment.purchase.vehicle.plate_no }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-700">Employee</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ installment.purchase.employee.full_name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-700">Installment Number</p>
+                    <p class="text-lg font-semibold text-gray-900">#{{ installment.installment_no }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-700">Amount</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ installment.amount }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-700">Due Date</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ installment.due_date|date:"d M, Y" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-700">Payment Period</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ installment.purchase.get_payment_period_display }}</p>
+                </div>
             </div>
-
-            <div>
-                <p class="text-sm text-gray-700">Employee</p>
-                <p class="text-lg font-semibold text-gray-900">
-                    {{ installment.purchase.employee.full_name }}
-                </p>
-            </div>
-
-            <div>
-                <p class="text-sm text-gray-700">Installment Number</p>
-                <p class="text-lg font-semibold text-gray-900">
-                    #{{ installment.installment_no }}
-                </p>
-            </div>
-
-            <div>
-                <p class="text-sm text-gray-700">Amount</p>
-                <p class="text-2xl font-bold text-gray-900">
-                    {{ installment.amount }}
-                </p>
-            </div>
-
-            <div>
-                <p class="text-sm text-gray-700">Due Date</p>
-                <p class="text-lg font-semibold text-gray-900">
-                    {{ installment.due_date|date:"d M, Y" }}
-                </p>
-            </div>
-
-            <div>
-                <p class="text-sm text-gray-700">Payment Period</p>
-                <p class="text-lg font-semibold text-gray-900">
-                    {{ installment.purchase.get_payment_period_display }}
-                </p>
-            </div>
-
+        </div>
+        <div class="bg-white border border-gray-300 rounded-lg shadow-sm p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="bg-white border border-gray-400 text-gray-900 px-4 py-3 rounded">
+                        <strong class="font-bold">Please correct the following errors:</strong>
+                        <ul class="mt-2 list-disc list-inside">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}<li>{{ field }}: {{ error }}</li>{% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <div>
+                    <label for="{{ form.payment_method.id_for_label }}"
+                           class="block text-sm font-medium text-gray-900 mb-2">Payment Method *</label>
+                    {{ form.payment_method }}
+                    <p class="mt-1 text-sm text-gray-600">Select how this installment was paid</p>
+                </div>
+                <div>
+                    <label for="{{ form.remarks.id_for_label }}"
+                           class="block text-sm font-medium text-gray-900 mb-2">Remarks (Optional)</label>
+                    {{ form.remarks }}
+                    <p class="mt-1 text-sm text-gray-600">Add any additional notes about this payment</p>
+                </div>
+                <div class="bg-white border border-gray-300 text-gray-900 px-4 py-3 rounded">
+                    <p class="text-sm flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <span>
+                            Amount <strong>{{ installment.amount }}</strong>
+                            will be marked as paid and payment date will be set to today.
+                        </span>
+                    </p>
+                </div>
+                <div class="flex justify-end gap-4 pt-4">
+                    <a href="{% url 'vehicle_purchase:installments' installment.purchase.pk %}"
+                       class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="bg-gray-900 hover:bg-black text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirm Payment</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <div class="bg-white border border-gray-300 rounded-lg shadow-sm p-6">
-        <form method="post" class="space-y-6">
-            {% csrf_token %}
-
-            {% if form.errors %}
-            <div class="bg-white border border-gray-400 text-gray-900 px-4 py-3 rounded">
-                <strong class="font-bold">Please correct the following errors:</strong>
-                <ul class="mt-2 list-disc list-inside">
-                    {% for field, errors in form.errors.items %}
-                        {% for error in errors %}
-                        <li>{{ field }}: {{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-
-            <div>
-                <label for="{{ form.payment_method.id_for_label }}"
-                       class="block text-sm font-medium text-gray-900 mb-2">
-                    Payment Method *
-                </label>
-                {{ form.payment_method }}
-                <p class="mt-1 text-sm text-gray-600">
-                    Select how this installment was paid
-                </p>
-            </div>
-
-            <div>
-                <label for="{{ form.remarks.id_for_label }}"
-                       class="block text-sm font-medium text-gray-900 mb-2">
-                    Remarks (Optional)
-                </label>
-                {{ form.remarks }}
-                <p class="mt-1 text-sm text-gray-600">
-                    Add any additional notes about this payment
-                </p>
-            </div>
-
-            <div class="bg-white border border-gray-300 text-gray-900 px-4 py-3 rounded">
-                <p class="text-sm flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    <span>
-                        Amount <strong>{{ installment.amount }}</strong>
-                        will be marked as paid and payment date will be set to today.
-                    </span>
-                </p>
-            </div>
-
-            <div class="flex justify-end gap-4 pt-4">
-                <a href="{% url 'vehicle_purchase:installments' installment.purchase.pk %}"
-                   class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200">
-                    Cancel
-                </a>
-
-                <button type="submit"
-                        class="bg-gray-900 hover:bg-black text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Confirm Payment</span>
-                </button>
-            </div>
-        </form>
-    </div>
-
-</div>
-
-<script>
+    <script>
     $(document).ready(function() {
         $('.select2-items').select2({
             placeholder: "Select payment method",
             allowClear: false
         });
     });
-</script>
+    </script>
 {% endblock %}
-
-
 {% comment %} {% extends 'base.html' %}
 {% load static %}
 

@@ -1,128 +1,113 @@
 {% extends 'base.html' %}
-{% block title %}Driving License Details{% endblock title %}
-
+{% block title %}
+    Driving License Details
+{% endblock title %}
 {% block breadcrumb %}
     <span class="mx-1">›</span>
     <a href="{% url 'driving_license:list' %}" class="hover:underline">Driving License</a>
     <span class="mx-1">›</span>
     <span>Details</span>
 {% endblock breadcrumb %}
-
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-    <!-- Header Section -->
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-2">
-            <a href="{% url 'driving_license:list' %}" 
-               class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-gray-800">Driving License Details</h1>
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex items-center gap-4 mb-2">
+                <a href="{% url 'driving_license:list' %}"
+                   class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-3xl font-bold text-gray-800">Driving License Details</h1>
+            </div>
+            <p class="text-gray-600 ml-12">View driving license information for {{ drivinglicense.employee.full_name }}</p>
         </div>
-        <p class="text-gray-600 ml-12">View driving license information for {{ drivinglicense.employee.full_name }}</p>
-    </div>
-
-    <!-- Details Section -->
-    <div class="bg-white rounded-lg shadow-sm p-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Employee -->
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Employee</label>
-                <p class="text-base text-gray-900">{{ drivinglicense.employee.full_name }}</p>
+        <!-- Details Section -->
+        <div class="bg-white rounded-lg shadow-sm p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Employee -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Employee</label>
+                    <p class="text-base text-gray-900">{{ drivinglicense.employee.full_name }}</p>
+                </div>
+                <!-- License No -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">License No</label>
+                    <p class="text-base text-gray-900">{{ drivinglicense.license_no }}</p>
+                </div>
+                <!-- License Expiry Date -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">License Expiry Date</label>
+                    <p class="text-base text-gray-900">{{ drivinglicense.license_expiry_date|date:"M d, Y" }}</p>
+                </div>
+                <!-- License Renewed -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">License Renewed</label>
+                    <p class="text-base">
+                        {% if drivinglicense.license_renewed %}
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                <i class="fas fa-check-circle"></i> Yes
+                            </span>
+                        {% else %}
+                            <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                                <i class="fas fa-times-circle"></i> No
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+                <!-- License Renew Status -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">License Renew Status</label>
+                    <p class="text-base">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium {% if drivinglicense.license_renew_status == 'RENEWED' %}bg-green-100 text-green-800 {% elif drivinglicense.license_renew_status == 'PENDING' %}bg-yellow-100 text-yellow-800 {% elif drivinglicense.license_renew_status == 'EXPIRED' %}bg-red-100 text-red-800 {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ drivinglicense.get_license_renew_status_display }}
+                        </span>
+                    </p>
+                </div>
             </div>
-
-            <!-- License No -->
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">License No</label>
-                <p class="text-base text-gray-900">{{ drivinglicense.license_no }}</p>
-            </div>
-
-            <!-- License Expiry Date -->
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">License Expiry Date</label>
-                <p class="text-base text-gray-900">{{ drivinglicense.license_expiry_date|date:"M d, Y" }}</p>
-            </div>
-
-            <!-- License Renewed -->
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">License Renewed</label>
-                <p class="text-base">
-                    {% if drivinglicense.license_renewed %}
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                        <i class="fas fa-check-circle"></i> Yes
-                    </span>
-                    {% else %}
-                    <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
-                        <i class="fas fa-times-circle"></i> No
-                    </span>
+            <!-- Metadata Section -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Record Information</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">Created By:</span>
+                        <span class="ml-2 font-medium text-gray-800">
+                            {{ drivinglicense.created_by.get_full_name|default:drivinglicense.created_by.username }}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Created At:</span>
+                        <span class="ml-2 font-medium text-gray-800">{{ drivinglicense.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                    {% if drivinglicense.updated_by %}
+                        <div>
+                            <span class="text-gray-600">Updated By:</span>
+                            <span class="ml-2 font-medium text-gray-800">
+                                {{ drivinglicense.updated_by.get_full_name|default:drivinglicense.updated_by.username }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Updated At:</span>
+                            <span class="ml-2 font-medium text-gray-800">{{ drivinglicense.updated_at|date:"M d, Y H:i" }}</span>
+                        </div>
                     {% endif %}
-                </p>
+                </div>
             </div>
-
-            <!-- License Renew Status -->
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">License Renew Status</label>
-                <p class="text-base">
-                    <span class="px-3 py-1 rounded-full text-sm font-medium
-                        {% if drivinglicense.license_renew_status == 'RENEWED' %}bg-green-100 text-green-800
-                        {% elif drivinglicense.license_renew_status == 'PENDING' %}bg-yellow-100 text-yellow-800
-                        {% elif drivinglicense.license_renew_status == 'EXPIRED' %}bg-red-100 text-red-800
-                        {% else %}bg-gray-100 text-gray-800{% endif %}">
-                        {{ drivinglicense.get_license_renew_status_display }}
-                    </span>
-                </p>
+            <!-- Actions -->
+            <div class="mt-8 flex gap-4">
+                <a href="{% url 'employee:update' drivinglicense.employee.pk %}"
+                   class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit License</span>
+                </a>
+                <a href="{% url 'driving_license:list' %}"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to List</span>
+                </a>
             </div>
-        </div>
-
-        <!-- Metadata Section -->
-        <div class="mt-8 pt-6 border-t border-gray-200">
-            <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                <i class="fas fa-info-circle"></i>
-                <span>Record Information</span>
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                    <span class="text-gray-600">Created By:</span>
-                    <span class="ml-2 font-medium text-gray-800">
-                        {{ drivinglicense.created_by.get_full_name|default:drivinglicense.created_by.username }}
-                    </span>
-                </div>
-                <div>
-                    <span class="text-gray-600">Created At:</span>
-                    <span class="ml-2 font-medium text-gray-800">
-                        {{ drivinglicense.created_at|date:"M d, Y H:i" }}
-                    </span>
-                </div>
-                {% if drivinglicense.updated_by %}
-                <div>
-                    <span class="text-gray-600">Updated By:</span>
-                    <span class="ml-2 font-medium text-gray-800">
-                        {{ drivinglicense.updated_by.get_full_name|default:drivinglicense.updated_by.username }}
-                    </span>
-                </div>
-                <div>
-                    <span class="text-gray-600">Updated At:</span>
-                    <span class="ml-2 font-medium text-gray-800">
-                        {{ drivinglicense.updated_at|date:"M d, Y H:i" }}
-                    </span>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="mt-8 flex gap-4">
-            <a href="{% url 'employee:update' drivinglicense.employee.pk %}" 
-               class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
-                <i class="fas fa-edit"></i>
-                <span>Edit License</span>
-            </a>
-            <a href="{% url 'driving_license:list' %}" 
-               class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i>
-                <span>Back to List</span>
-            </a>
         </div>
     </div>
-</div>
 {% endblock %}
