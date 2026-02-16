@@ -23,11 +23,34 @@
 
 
 {% block content %}
-<div class="container  px-4 py-8 ">
+<div class="container  px-4 py-8 "> 
     <!-- Form Section -->
     <div class="bg-white rounded-lg shadow-sm p-8">
         <form method="post" class="space-y-6">
             {% csrf_token %}
+
+            <!-- Form Errors (non-field errors) -->
+            {% if form.non_field_errors %}
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4 rounded">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                            Validation Error
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Vehicle -->
@@ -112,4 +135,56 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const employeesWithVehicles = [
+        {% for emp in employees_with_vehicles %}
+        {{ emp.id }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    const fromEmployeeSelect = document.getElementById('{{ form.from_employee.id_for_label }}');
+    const toEmployeeSelect = document.getElementById('{{ form.to_employee.id_for_label }}');
+    
+    // Create alert container if it doesn't exist
+    let alertContainer = document.getElementById('employee-alert');
+    if (!alertContainer) {
+        alertContainer = document.createElement('div');
+        alertContainer.id = 'employee-alert';
+        alertContainer.className = 'hidden bg-red-50 border-l-4 border-red-400 p-4 mb-4 rounded';
+        alertContainer.innerHTML = `
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-red-800" id="employee-alert-message"></p>
+                </div>
+            </div>
+        `;
+        fromEmployeeSelect.parentElement.appendChild(alertContainer);
+    }
+    
+    // Check if selected employee has vehicles
+    if (fromEmployeeSelect) {
+        fromEmployeeSelect.addEventListener('change', function() {
+            const selectedEmployeeId = parseInt(this.value);
+            if (selectedEmployeeId && !employeesWithVehicles.includes(selectedEmployeeId)) {
+                const selectedOption = this.options[this.selectedIndex];
+                const employeeName = selectedOption ? selectedOption.text : 'This employee';
+                alertContainer.classList.remove('hidden');
+                document.getElementById('employee-alert-message').textContent = 
+                    `Warning: ${employeeName} does not have any vehicle currently assigned. Please select an employee with an assigned vehicle.`;
+            } else {
+                alertContainer.classList.add('hidden');
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

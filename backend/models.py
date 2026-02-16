@@ -745,6 +745,25 @@ class Contact(models.Model):
     def __str__(self):
         return f"Contact - {self.employee.full_name}"
     
+    # Helper properties to return empty string instead of None
+    def get_phone_no_alt_display(self):
+        return self.phone_no_alt or ""
+    
+    def get_roommate_phone_display(self):
+        return self.roommate_phone or ""
+    
+    def get_relative_qatar_phone_display(self):
+        return self.relative_qatar_phone or ""
+    
+    def get_home_phone_display(self):
+        return self.home_phone or ""
+    
+    def get_home_phone_alt_display(self):
+        return self.home_phone_alt or ""
+    
+    def get_home_email_display(self):
+        return self.home_email or ""
+    
     class Meta:
         ordering = ['-created_at']
 
@@ -765,6 +784,19 @@ class Address(models.Model):
 
     def __str__(self):
         return f"Address - {self.employee.full_name}"
+    
+    # Helper properties to return empty string or user-friendly text instead of None
+    def get_present_address_display(self):
+        return self.present_address or ""
+    
+    def get_permanent_address_display(self):
+        return self.permanent_address or ""
+    
+    def get_national_address_display(self):
+        return self.national_address or ""
+    
+    def get_room_address_display(self):
+        return self.room_address or ""
     
     class Meta:
         ordering = ['-created_at']

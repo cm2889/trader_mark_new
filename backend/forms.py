@@ -492,6 +492,46 @@ class VehicleHandoverForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        vehicle_locked = kwargs.pop('vehicle_locked', False)
+        super().__init__(*args, **kwargs)
+
+        if vehicle_locked:
+            self.fields['vehicle'].widget.attrs.update({
+                'readonly': True,
+                'class': TAILWIND_SELECT + ' bg-gray-100 pointer-events-none'
+            })
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        vehicle = cleaned_data.get('vehicle')
+        from_employee = cleaned_data.get('from_employee')
+        to_employee = cleaned_data.get('to_employee')
+
+        if vehicle and from_employee:
+            # Check if the from_employee has this vehicle assigned
+            active_assignment = VehicleAssign.objects.filter(
+                vehicle=vehicle,
+                employee=from_employee,
+                is_active=True,
+                status='ASSIGNED'
+            ).first()
+
+            if not active_assignment:
+                raise forms.ValidationError(
+                    f"The vehicle {vehicle.plate_no} is not currently assigned to {from_employee.full_name}. "
+                    "Please verify the vehicle assignment before creating a handover."
+                )
+
+        if from_employee and to_employee and from_employee == to_employee:
+            raise forms.ValidationError(
+                "The 'From Employee' and 'To Employee' cannot be the same person."
+            )
+
+        return cleaned_data
+ 
+    
+
 
 class ViolationTypeForm(forms.ModelForm):
     class Meta:

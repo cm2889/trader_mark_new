@@ -191,36 +191,36 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Phone No</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.phone_no }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.phone_no|default:"Not Available" }}</p>
                         </div>
                         {% if employee.contact.phone_no_alt %}
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Phone No (Alt)</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.phone_no_alt }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.phone_no_alt|default:"Not Available" }}</p>
                         </div>
                         {% endif %}
                         {% if employee.contact.home_email %}
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Home Email</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_email }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_email|default:"Not Available" }}</p>
                         </div>
                         {% endif %}
                         {% if employee.contact.home_phone %}
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Home Phone</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_phone }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.home_phone|default:"Not Available" }}</p>
                         </div>
                         {% endif %}
                         {% if employee.contact.roommate_phone %}
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Roommate Phone</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.roommate_phone }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.roommate_phone|default:"Not Available" }}</p>
                         </div>
                         {% endif %}
                         {% if employee.contact.relative_qatar_phone %}
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Relative Qatar Phone</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.relative_qatar_phone }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.contact.relative_qatar_phone|default:"Not Available" }}</p>
                         </div>
                         {% endif %}
                     </div>
@@ -238,19 +238,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Present Address</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.present_address }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.present_address|default:"Not Available" }}</p>
                         </div>
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Permanent Address</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.permanent_address }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.permanent_address|default:"Not Available" }}</p>
                         </div>
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">National Address</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.national_address }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.national_address|default:"Not Available" }}</p>
                         </div>
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Room Address</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.room_address }}</p>
+                            <p class="text-sm text-[var(--text-color)]">{{ employee.address.room_address|default:"Not Available" }}</p>
                         </div>
                     </div>
                 </div>
@@ -423,32 +423,6 @@
             </div>
             {% endif %}
 
-            <!-- Audit Information -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="px-6 py-4 border-b border-[var(--border-color)]">
-                    <h3 class="text-base font-medium text-[var(--text-color)]">Audit Information</h3>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Created By</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.created_by.username }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Created At</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.created_at|date:"M d, Y H:i" }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Updated By</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.updated_by.username|default:'-' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Updated At</p>
-                            <p class="text-sm text-[var(--text-color)]">{{ employee.updated_at|date:"M d, Y H:i" }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

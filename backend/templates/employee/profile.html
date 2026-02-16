@@ -1,84 +1,231 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Employee Profile - {{ employee.full_name }}{% endblock %}
+{% block page_title %}{{ employee.full_name }} - Employee Profile - {{ site_setting.site_title|default:'' }}{% endblock %}
+{% block meta_description %}Comprehensive profile view for employee {{ employee.full_name }} including employment history, vehicles, uniforms, and more{% endblock %}
+
+{% block title %}{{ employee.full_name }}{% endblock %}
+
+{% block subtitle %}
+<p class="text-sm text-[var(--text-light-color)] mt-1">
+    HR File: {{ employee.hr_file_no }} | QID: {{ employee.qid_no }}
+</p>
+{% endblock %}
 
 {% block breadcrumb %}
-<span class="mx-1">›</span>
-<a href="{% url 'employee:list' %}" class="hover:underline">Employee</a>
-<span class="mx-1">›</span>
-<span>Profile</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<a href="{% url 'employee:list' %}" class="hover:text-[var(--primary-color)] transition-colors">Employees</a>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
+<span class="font-medium text-[var(--primary-color)]">{{ employee.full_name }}</span>
 {% endblock %}
 
 {% block header_actions %}
-<a href="{% url 'employee:list' %}"
-    class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7" />
+<!-- Quick Actions -->
+<a href="{% url 'employee:update' employee.pk %}" 
+   class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
     </svg>
-    <span>Back to List</span>
+    Edit Profile
+</a>
+<a href="{% url 'employee:detail' employee.pk %}" 
+   class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    View Details
+</a>
+<a href="{% url 'employee:list' %}"
+   class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+    </svg>
+    Back to List
 </a>
 {% endblock %}
 
 
 {% block content %}
-<div class="container mx-auto px-4 py-6 text-[var(--text-color)]   ">
 
-    <!-- Profile Header -->
-    <div class="p-10 rounded-2xl mb-8 shadow-none">
-        <h1 class="text-4xl text-[var(--text-color)] mb-2">{{ employee.full_name }}</h1>
-        <p class="text-lg mb-1 text-[var(--text-light-color)]">
-            <strong>HR File No:</strong> {{ employee.hr_file_no }} |
-            <strong>QID No:</strong> {{ employee.qid_no }} |
-            <strong>Gender:</strong> {{ employee.get_gender_display }}
-        </p>
-        <p class="text-lg">
-            <strong>Nationality:</strong> {{ employee.nationality.name|default:"N/A" }} |
-            <strong>Joined:</strong> {{ employee.joining_at|date:"d M, Y" }}
-        </p>
-    </div>
-
-
-    <!-- Employment Information -->
-    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-         Employment Information
-    </div>
-
-    {% if current_employment %}
-    <div
-        class="  rounded-xl p-6 mb-6 shadow-none hover:shadow-none transition-all duration-300 hover:-translate-y-1">
-        <h3 class=" text-2xl border-b-2  pb-3 mb-5">Current Employment Status</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class=" p-4 rounded-lg ">
-                <label class="block  text-xs  tracking-wider mb-1">Work Status</label>
-                <div class=" text-lg ">
-                    <span
-                        class="inline-block px-3 py-1 rounded-full text-sm    border ">
-                        {{ current_employment.get_work_status_display }}
-                    </span>
+<!-- Employee Profile Summary Card -->
+<div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
+    <div class="p-6">
+        <div class="flex flex-col md:flex-row md:items-start gap-6">
+            <!-- Avatar -->
+            <div class="flex-shrink-0">
+                <div class="w-32 h-32 bg-gradient-to-br from-[var(--primary-color)]  rounded-full flex items-center justify-center  text-4xl font-bold shadow-lg">
+                    {{ employee.first_name|slice:":1"|upper }}{{ employee.last_name|slice:":1"|upper }}
                 </div>
             </div>
-            <div class=" p-4 rounded-lg ">
-                <label class="block  text-xs  tracking-wider mb-1">Work Permit No</label>
-                <div class=" text-lg ">{{ current_employment.work_permit_no }}</div>
-            </div>
-            <div class=" p-4 rounded-lg ">
-                <label class="block  text-xs  tracking-wider mb-1">Work ID</label>
-                <div class=" text-lg ">{{ current_employment.work_id }}</div>
-            </div>
-            <div class=" p-4 rounded-lg ">
-                <label class="block  text-xs  tracking-wider mb-1">RP Expiry Date</label>
-                <div class=" text-lg ">{{ current_employment.rp_expiry_date|date:"d M, Y" }}</div>
-            </div>
-            <div class=" p-4 rounded-lg ">
-                <label class="block  text-xs  tracking-wider mb-1">QID Renew Status</label>
-                <div class=" text-lg ">{{ current_employment.get_qid_renew_status_display }}</div>
-            </div>
-            <div class=" p-4 rounded-lg ">
-                <label class="block  text-xs  tracking-wider mb-1">QID Lost Status</label>
-                <div class=" text-lg ">{{ current_employment.get_qid_lost_status_display }}</div>
+            
+            <!-- Employee Info -->
+            <div class="flex-1">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h2 class="text-3xl font-bold text-[var(--text-color)] mb-2">{{ employee.full_name }}</h2>
+                        <div class="flex flex-wrap items-center gap-3 mb-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
+                                </svg>
+                                {{ employee.hr_file_no }}
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                                </svg>
+                                {{ employee.qid_no }}
+                            </span>
+                            {% if employee.gender == 'M' %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                                Male
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                                Female
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Basic Info Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                    {% if employee.company %}
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Company</p>
+                        <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.company.name }}</p>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Nationality</p>
+                        <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.nationality.name|default:"Not Provided" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Joined Date</p>
+                        <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.joining_at|date:"d M, Y" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Email</p>
+                        <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.email|default:"Not Provided" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Phone</p>
+                        <p class="text-sm font-medium text-[var(--text-color)]">{{ employee.phone_number|default:"Not Provided" }}</p>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] mb-6">
+    <div class="border-b border-[var(--border-color)]">
+        <nav class="flex flex-wrap -mb-px">
+            <button onclick="showTab('employment')" id="tab-employment" class="tab-button active px-6 py-4 text-sm font-medium border-b-2 border-[var(--primary-color)] text-[var(--primary-color)] transition-colors">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Employment
+            </button>
+            <button onclick="showTab('passport')" id="tab-passport" class="tab-button px-6 py-4 text-sm font-medium border-b-2 border-transparent text-[var(--text-light-color)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] transition-colors">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Passport
+            </button>
+            <button onclick="showTab('license')" id="tab-license" class="tab-button px-6 py-4 text-sm font-medium border-b-2 border-transparent text-[var(--text-light-color)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] transition-colors">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                </svg>
+                Driving License
+            </button>
+            <button onclick="showTab('contact')" id="tab-contact" class="tab-button px-6 py-4 text-sm font-medium border-b-2 border-transparent text-[var(--text-light-color)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] transition-colors">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+                Contact
+            </button>
+            <button onclick="showTab('uniform')" id="tab-uniform" class="tab-button px-6 py-4 text-sm font-medium border-b-2 border-transparent text-[var(--text-light-color)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] transition-colors">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                </svg>
+                Uniform
+            </button>
+            <button onclick="showTab('vehicle')" id="tab-vehicle" class="tab-button px-6 py-4 text-sm font-medium border-b-2 border-transparent text-[var(--text-light-color)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] transition-colors">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
+                </svg>
+                Vehicle
+            </button>
+        </nav>
+    </div>
+</div>
+
+<!-- Tab Content Container -->
+<div class="space-y-6">
+
+<!-- EMPLOYMENT TAB -->
+<div id="content-employment" class="tab-content">
+    {% if current_employment %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-[var(--text-color)]">Current Employment Status</h3>
+            {% if current_employment.work_status == 'ACTIVE' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                Active
+            </span>
+            {% else %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                {{ current_employment.get_work_status_display }}
+            </span>
+            {% endif %}
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Work Permit No</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_employment.work_permit_no }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Work ID</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_employment.work_id }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">RP Expiry Date</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_employment.rp_expiry_date|date:"d M, Y" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">QID Renew Status</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_employment.get_qid_renew_status_display }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">QID Lost Status</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_employment.get_qid_lost_status_display }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Joining Date</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_employment.joining_at|date:"d M, Y"|default:"N/A" }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6">
+        <p class="text-center text-[var(--text-light-color)]">No current employment record found</p>
     </div>
     {% endif %}
 
@@ -153,37 +300,338 @@
     {% endif %}
 
     <!-- ===================================== -->
-    <!-- UNIFORM SECTION -->
+    <!-- PASSPORT TAB CONTENT -->
     <!-- ===================================== -->
-    <!-- ===================================== -->
-    <!-- UNIFORM SECTION -->
-    <!-- ===================================== -->
-    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-         Uniform Management
+</div>
+
+<div id="content-passport" class="tab-content hidden">
+    <!-- Passport Statistics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Total Passports</p>
+            <p class="text-3xl font-bold text-[var(--primary-color)]">{{ passport_stats.total }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Renewed</p>
+            <p class="text-3xl font-bold text-green-600">{{ passport_stats.renewed }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Active</p>
+            <p class="text-3xl font-bold text-blue-600">{{ passports.count }}</p>
+        </div>
+    </div>
+
+    <!-- Current Passport -->
+    {% if current_passport %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-[var(--text-color)]">Current Passport</h3>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                Active
+            </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Passport Number</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_passport.passport_no }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Expiry Date</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_passport.passport_expiry_date|date:"d M, Y" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Renewal Status</p>
+                <span class="inline-block px-3 py-1 rounded-full text-sm border">
+                    {% if current_passport.passport_renewed %}Renewed{% else %}Not Renewed{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <p class="text-center text-[var(--text-light-color)]">No current passport record found</p>
+    </div>
+    {% endif %}
+
+    <!-- Passport History -->
+    {% if passport_history %}
+    <div class="rounded-xl p-6 mb-6 shadow-none">
+        <h3 class="text-2xl border-b-2 pb-3 mb-5">Passport History</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="border-b-2">
+                    <tr>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Passport Number</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Expiry Date</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Renewed</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Created At</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    {% for passport in passport_history %}
+                    <tr class="hover:bg-gray-100 transition-colors duration-200">
+                        <td class="px-4 py-4">{{ passport.passport_no }}</td>
+                        <td class="px-4 py-4">{{ passport.passport_expiry_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full text-sm border">
+                                {% if passport.passport_renewed %}Yes{% else %}No{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4">{{ passport.created_at|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full text-sm border">
+                                {% if passport.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-10 italic bg-gray-100 rounded-xl my-5">No passport records found</div>
+    {% endif %}
+</div>
+
+<!-- ===================================== -->
+<!-- DRIVING LICENSE TAB CONTENT -->
+<!-- ===================================== -->
+<div id="content-license" class="tab-content hidden">
+    <!-- License Statistics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Total Licenses</p>
+            <p class="text-3xl font-bold text-[var(--primary-color)]">{{ license_stats.total }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Renewed</p>
+            <p class="text-3xl font-bold text-green-600">{{ license_stats.renewed }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Active</p>
+            <p class="text-3xl font-bold text-blue-600">{{ driving_licenses.count }}</p>
+        </div>
+    </div>
+
+    <!-- Current License -->
+    {% if current_license %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-[var(--text-color)]">Current Driving License</h3>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                Active
+            </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">License Number</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_license.license_no }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Expiry Date</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ current_license.license_expiry_date|date:"d M, Y" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Renewal Status</p>
+                <span class="inline-block px-3 py-1 rounded-full text-sm border">
+                    {{ current_license.get_license_renew_status_display }}
+                </span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <p class="text-center text-[var(--text-light-color)]">No current driving license record found</p>
+    </div>
+    {% endif %}
+
+    <!-- License History -->
+    {% if driving_license_history %}
+    <div class="rounded-xl p-6 mb-6 shadow-none">
+        <h3 class="text-2xl border-b-2 pb-3 mb-5">Driving License History</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="border-b-2">
+                    <tr>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">License Number</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Expiry Date</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Renewed</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Renew Status</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Created At</th>
+                        <th class="px-4 py-4 text-left text-xs tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    {% for license in driving_license_history %}
+                    <tr class="hover:bg-gray-100 transition-colors duration-200">
+                        <td class="px-4 py-4">{{ license.license_no }}</td>
+                        <td class="px-4 py-4">{{ license.license_expiry_date|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full text-sm border">
+                                {% if license.license_renewed %}Yes{% else %}No{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4">{{ license.get_license_renew_status_display }}</td>
+                        <td class="px-4 py-4">{{ license.created_at|date:"d M, Y" }}</td>
+                        <td class="px-4 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full text-sm border">
+                                {% if license.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-10 italic bg-gray-100 rounded-xl my-5">No driving license records found</div>
+    {% endif %}
+</div>
+
+<!-- ===================================== -->
+<!-- CONTACT TAB CONTENT -->
+<!-- ===================================== -->
+<div id="content-contact" class="tab-content hidden">
+    <!-- Contact Information -->
+    {% if contact %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <h3 class="text-xl font-semibold text-[var(--text-color)] mb-6 border-b pb-3">Qatar Contact Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Primary Phone</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ contact.phone_no|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Alternative Phone</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ contact.phone_no_alt|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Roommate Phone</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ contact.roommate_phone|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Relative in Qatar</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ contact.relative_qatar_phone|default:"Not Provided" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <h3 class="text-xl font-semibold text-[var(--text-color)] mb-6 border-b pb-3">Home Country Contact Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Home Phone</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ contact.home_phone|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Alternative Home Phone</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ contact.home_phone_alt|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Home Email</p>
+                <p class="text-base font-medium text-[var(--text-color)]">{{ contact.home_email|default:"Not Provided" }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <p class="text-center text-[var(--text-light-color)]">No contact information found</p>
+    </div>
+    {% endif %}
+
+    <!-- Address Information -->
+    {% if address %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <h3 class="text-xl font-semibold text-[var(--text-color)] mb-6 border-b pb-3">Address Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Present Address</p>
+                <p class="text-base text-[var(--text-color)]">{{ address.present_address|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-2">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Permanent Address</p>
+                <p class="text-base text-[var(--text-color)]">{{ address.permanent_address|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-2">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">National Address</p>
+                <p class="text-base text-[var(--text-color)]">{{ address.national_address|default:"Not Provided" }}</p>
+            </div>
+            <div class="space-y-2">
+                <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Room Address</p>
+                <p class="text-base text-[var(--text-color)]">{{ address.room_address|default:"Not Provided" }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
+        <p class="text-center text-[var(--text-light-color)]">No address information found</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ===================================== -->
+<!-- UNIFORM TAB CONTENT -->
+<!-- ===================================== -->
+</div>
+
+<div id="content-uniform" class="tab-content hidden">
+    <!-- Quick Actions for Uniform -->
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'uniform_issuance:list' %}?employee={{ employee.id }}" 
+               class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                View All Issuances
+            </a>
+            <a href="{% url 'uniform_issuance:create' %}" 
+               class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Issue New Uniform
+            </a>
+            <a href="{% url 'uniform:list' %}" 
+               class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                Uniform Catalog
+            </a>
+        </div>
     </div>
 
     <!-- Uniform Statistics Summary -->
-    <!-- Uniform Statistics Summary -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-8">
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Total Issued</h4>
-            <p class="text-4xl ">{{ uniform_stats.total_issued }}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Total Issued</p>
+            <p class="text-3xl font-bold text-[var(--primary-color)]">{{ uniform_stats.total_issued }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Currently Active</h4>
-            <p class="text-4xl ">{{ uniform_stats.active }}</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Currently Active</p>
+            <p class="text-3xl font-bold text-green-600">{{ uniform_stats.active }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Returned</h4>
-            <p class="text-4xl ">{{ uniform_stats.returned }}</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Returned</p>
+            <p class="text-3xl font-bold text-blue-600">{{ uniform_stats.returned }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Lost</h4>
-            <p class="text-4xl ">{{ uniform_stats.lost }}</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Lost</p>
+            <p class="text-3xl font-bold text-red-600">{{ uniform_stats.lost }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Damaged</h4>
-            <p class="text-4xl ">{{ uniform_stats.damaged }}</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Damaged</p>
+            <p class="text-3xl font-bold text-orange-600">{{ uniform_stats.damaged }}</p>
         </div>
     </div>
 
@@ -313,41 +761,70 @@
     {% endif %}
 
     <!-- ===================================== -->
-    <!-- VEHICLE SECTION -->
+    <!-- VEHICLE TAB CONTENT -->
     <!-- ===================================== -->
-    <!-- ===================================== -->
-    <!-- VEHICLE SECTION -->
-    <!-- ===================================== -->
-    <div class="  px-5 py-4 border-b-2  my-8 text-2xl rounded-none">
-         Vehicle Management
+</div>
+
+<div id="content-vehicle" class="tab-content hidden">
+    <!-- Quick Actions for Vehicle -->
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'vehicle_assign:list' %}?employee={{ employee.id }}" 
+               class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                View Assignments
+            </a>
+            <a href="{% url 'vehicle_purchase:list' %}?employee={{ employee.id }}" 
+               class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                View Purchases
+            </a>
+            <a href="{% url 'vehicle_info:list' %}" 
+               class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                All Vehicles
+            </a>
+            <a href="{% url 'traffic_violation:list' %}" 
+               class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                Violations
+            </a>
+        </div>
     </div>
 
     <!-- Vehicle Statistics Summary -->
-    <!-- Vehicle Statistics Summary -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Total Vehicles</h4>
-            <p class="text-4xl ">{{ vehicle_stats.total_assigned }}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Total Vehicles</p>
+            <p class="text-3xl font-bold text-[var(--primary-color)]">{{ vehicle_stats.total_assigned }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Purchases</h4>
-            <p class="text-4xl ">{{ vehicle_stats.total_purchases }}</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Purchases</p>
+            <p class="text-3xl font-bold text-green-600">{{ vehicle_stats.total_purchases }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Total Spent</h4>
-            <p class="text-2xl ">{{ vehicle_stats.total_purchase_amount|floatformat:2 }} QR</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Total Spent</p>
+            <p class="text-2xl font-bold text-blue-600">{{ vehicle_stats.total_purchase_amount|floatformat:2 }} QR</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Violations</h4>
-            <p class="text-4xl ">{{ vehicle_stats.total_violations }}</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Violations</p>
+            <p class="text-3xl font-bold text-red-600">{{ vehicle_stats.total_violations }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Accidents</h4>
-            <p class="text-4xl ">{{ vehicle_stats.total_accidents }}</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Accidents</p>
+            <p class="text-3xl font-bold text-orange-600">{{ vehicle_stats.total_accidents }}</p>
         </div>
-        <div class="   p-6 rounded-xl shadow-none text-center">
-            <h4 class="text-sm  tracking-wide mb-2">Maintenance</h4>
-            <p class="text-2xl ">{{ vehicle_stats.total_maintenance_cost|floatformat:2 }} QR</p>
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 text-center">
+            <p class="text-sm font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-2">Maintenance</p>
+            <p class="text-2xl font-bold text-purple-600">{{ vehicle_stats.total_maintenance_cost|floatformat:2 }} QR</p>
         </div>
     </div>
 
@@ -715,4 +1192,41 @@
     {% endif %}
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showTab(tabName) {
+    // Hide all tab content
+    const allTabContent = document.querySelectorAll('.tab-content');
+    allTabContent.forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // Remove active class from all tabs
+    const allTabs = document.querySelectorAll('.tab-button');
+    allTabs.forEach(tab => {
+        tab.classList.remove('active', 'border-[var(--primary-color)]', 'text-[var(--primary-color)]');
+        tab.classList.add('border-transparent', 'text-[var(--text-light-color)]');
+    });
+    
+    // Show selected tab content
+    const selectedContent = document.getElementById(`content-${tabName}`);
+    if (selectedContent) {
+        selectedContent.classList.remove('hidden');
+    }
+    
+    // Add active class to selected tab
+    const selectedTab = document.getElementById(`tab-${tabName}`);
+    if (selectedTab) {
+        selectedTab.classList.add('active', 'border-[var(--primary-color)]', 'text-[var(--primary-color)]');
+        selectedTab.classList.remove('border-transparent', 'text-[var(--text-light-color)]');
+    }
+}
+
+// Initialize on load - show employment tab by default
+document.addEventListener('DOMContentLoaded', function() {
+    showTab('employment');
+});
+</script>
 {% endblock %}

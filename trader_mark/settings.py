@@ -100,6 +100,10 @@ USE_I18N = True
 USE_TZ = True
 
 
+LOGIN_URL = '/backend/login'
+LOGOUT_REDIRECT_URL = 'login'
+
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

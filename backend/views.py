@@ -1418,7 +1418,7 @@ class EmployeeListView(ListView):
         context['get_param'] = get_param.urlencode() 
         return context 
 
-
+      
 @login_required 
 def employee_profile(request, pk):
     """
@@ -1433,14 +1433,25 @@ def employee_profile(request, pk):
     # Basic Employee Information
     employments = Employment.objects.filter(employee=employee, is_active=True).order_by('-created_at')
     employment_history = Employment.objects.filter(employee=employee).order_by('-created_at')
+    current_employment = employments.first() if employments.exists() else None
     
     # Passport Information
     passports = Passport.objects.filter(employee=employee, is_active=True).order_by('-created_at')
     passport_history = Passport.objects.filter(employee=employee).order_by('-created_at')
+    current_passport = passports.first() if passports.exists() else None
+    
+    # Passport Statistics
+    total_passports = passport_history.count()
+    renewed_passports = passport_history.filter(passport_renewed=True).count()
     
     # Driving License Information
     driving_licenses = DrivingLicense.objects.filter(employee=employee, is_active=True).order_by('-created_at')
     driving_license_history = DrivingLicense.objects.filter(employee=employee).order_by('-created_at')
+    current_license = driving_licenses.first() if driving_licenses.exists() else None
+    
+    # License Statistics
+    total_licenses = driving_license_history.count()
+    renewed_licenses = driving_license_history.filter(license_renewed=True).count()
     
     # Health Insurance & Contact
     health_insurance = HealthInsurance.objects.filter(employee=employee, is_active=True).first()
@@ -1554,15 +1565,23 @@ def employee_profile(request, pk):
         # Employment Details
         'employments': employments,
         'employment_history': employment_history,
-        'current_employment': employments.first() if employments.exists() else None,
+        'current_employment': current_employment,
         
         # Passport & License
         'passports': passports,
         'passport_history': passport_history,
-        'current_passport': passports.first() if passports.exists() else None,
+        'current_passport': current_passport,
+        'passport_stats': {
+            'total': total_passports,
+            'renewed': renewed_passports,
+        },
         'driving_licenses': driving_licenses,
         'driving_license_history': driving_license_history,
-        'current_license': driving_licenses.first() if driving_licenses.exists() else None,
+        'current_license': current_license,
+        'license_stats': {
+            'total': total_licenses,
+            'renewed': renewed_licenses,
+        },
         
         # Health & Contact
         'health_insurance': health_insurance,
@@ -3225,23 +3244,80 @@ def vehicle_handover_create(request):
         messages.error(request, "You do not have permission to add vehicle handovers.")
         return render(request, "403.html", status=403)
 
+    vehicle_id = request.GET.get('vehicle')
+
+    initial_data = {}
+
+    if vehicle_id:
+        try:
+            vehicle = Vehicle.objects.get(id=vehicle_id, is_active=True)
+            initial_data['vehicle'] = vehicle
+            
+            # Pre-fill from_employee with current assignment
+            current_assignment = VehicleAssign.objects.filter(
+                vehicle=vehicle,
+                is_active=True,
+                status='ASSIGNED'
+            ).first()
+            
+            if current_assignment:
+                initial_data['from_employee'] = current_assignment.employee
+        except Vehicle.DoesNotExist:
+            pass
+
     if request.method == 'POST':
         form = VehicleHandoverForm(request.POST)
         if form.is_valid():
             handover = form.save(commit=False)
             handover.created_by = request.user
             handover.save()
+            
+            # Update vehicle assignments
+            # Mark old assignment as RETURNED
+            old_assignment = VehicleAssign.objects.filter(
+                vehicle=handover.vehicle,
+                employee=handover.from_employee,
+                is_active=True,
+                status='ASSIGNED'
+            ).first()
+            
+            if old_assignment:
+                old_assignment.status = 'RETURNED'
+                old_assignment.save()
+            
+            # Create new assignment for to_employee
+            VehicleAssign.objects.create(
+                vehicle=handover.vehicle,
+                employee=handover.to_employee,
+                assigned_date=handover.handover_date,
+                status='ASSIGNED',
+                remarks=f"Vehicle handed over from {handover.from_employee.full_name}",
+                created_by=request.user,
+                is_active=True
+            )
+            
             messages.success(request, "Vehicle handover created successfully.")
             return redirect('vehicle_handover:list')
     else:
-        form = VehicleHandoverForm()
+        form = VehicleHandoverForm(initial=initial_data)
+
+    # Get employees who have vehicles assigned
+    employees_with_vehicles = Employee.objects.filter(
+        vehicle_assignments__is_active=True,
+        vehicle_assignments__status='ASSIGNED',
+        is_active=True
+    ).distinct()
 
     context = {
         'form': form,
         'vehicles': Vehicle.objects.filter(is_active=True),
         'employees': Employee.objects.filter(is_active=True),
+        'employees_with_vehicles': employees_with_vehicles,
+        'vehicle_id': vehicle_id,
     }
+
     return render(request, 'vehicle_handover/create.html', context)
+
 
 
 @login_required
@@ -3255,7 +3331,9 @@ def vehicle_handover_update(request, pk):
     if request.method == 'POST':
         form = VehicleHandoverForm(request.POST, instance=handover)
         if form.is_valid():
-            form.save()
+            updated_handover = form.save(commit=False)
+            updated_handover.updated_by = request.user
+            updated_handover.save()
             messages.success(request, "Vehicle handover updated successfully.")
             return redirect('vehicle_handover:list')
     else:
