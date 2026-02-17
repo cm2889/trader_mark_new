@@ -546,11 +546,15 @@ def dash_board(request):
         return render(request, "403.html", status=403)
 
     from datetime import date, timedelta
+    from django.db import connection
     
     today = date.today()
     next_30_days = today + timedelta(days=30)
     next_60_days = today + timedelta(days=60)
     next_90_days = today + timedelta(days=90)
+    
+    # Enable query logging for debugging (optional - remove in production)
+    # print(f"Dashboard queries starting at {timezone.now()}")
 
     # ========== EMPLOYEE STATS ==========
     total_employees = Employee.objects.filter(is_active=True, deleted=False).count()
@@ -565,11 +569,15 @@ def dash_board(request):
     male_employees = Employee.objects.filter(is_active=True, deleted=False, gender='M').count()
     female_employees = Employee.objects.filter(is_active=True, deleted=False, gender='F').count()
 
-    # Employees by Company
-    employees_by_company = Employee.objects.filter(is_active=True, deleted=False, company__isnull=False).values('company__name').annotate(count=Count('id')).order_by('-count')[:5]
+    # Employees by Company (limit to top 5)
+    employees_by_company = Employee.objects.filter(
+        is_active=True, deleted=False, company__isnull=False
+    ).values('company__name').annotate(count=Count('id')).order_by('-count')[:5]
 
-    # Employees by Nationality
-    employees_by_nationality = Employee.objects.filter(is_active=True, deleted=False, nationality__isnull=False).values('nationality__name').annotate(count=Count('id')).order_by('-count')
+    # Employees by Nationality (limit to top 10 for chart readability)
+    employees_by_nationality = Employee.objects.filter(
+        is_active=True, deleted=False, nationality__isnull=False
+    ).values('nationality__name').annotate(count=Count('id')).order_by('-count')[:10]
 
     # ========== PASSPORT STATS ==========
     total_passports = Passport.objects.filter(is_active=True, deleted=False).count()
@@ -591,11 +599,15 @@ def dash_board(request):
     returned_uniforms = UniformIssuance.objects.filter(is_active=True, deleted=False, status='RETURNED').aggregate(total=Sum('quantity'))['total'] or 0
     low_stock_items = UniformStock.objects.filter(is_active=True, deleted=False, quantity__lte=10).count()
 
-    # Uniforms by Type
-    uniforms_by_type = UniformStock.objects.filter(is_active=True, deleted=False).values('uniform__uniform_type').annotate(total_qty=Sum('quantity')).order_by('-total_qty')
+    # Uniforms by Type (limit to top 8 for chart readability)
+    uniforms_by_type = UniformStock.objects.filter(
+        is_active=True, deleted=False, uniform__uniform_type__isnull=False
+    ).values('uniform__uniform_type').annotate(total_qty=Sum('quantity')).order_by('-total_qty')[:8]
 
     # Uniform Status Distribution
-    uniform_status_dist = UniformIssuance.objects.filter(is_active=True, deleted=False).values('status').annotate(count=Count('id'))
+    uniform_status_dist = UniformIssuance.objects.filter(
+        is_active=True, deleted=False
+    ).values('status').annotate(count=Count('id'))
 
     # ========== VEHICLE STATS ==========
     total_vehicles = Vehicle.objects.filter(is_active=True, deleted=False).count()
@@ -741,6 +753,12 @@ def dash_board(request):
         'recent_violations': recent_violations,
         'recent_uniform_issuances': recent_uniform_issuances,
     }
+    
+    # Debug: Log query count (uncomment for debugging)
+    # from django.db import connection
+    # print(f"Dashboard queries: {len(connection.queries)} total queries")
+    # print(f"Dashboard loaded at {timezone.now()}")
+    
     return render(request, 'report/dashboard.html', context )
 
 

@@ -479,10 +479,36 @@
             </div>
         </div>
     </div>
-    <!-- Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script>
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Verify Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js library is not loaded! Charts will not display.');
+        console.error('Please check your internet connection or CDN availability.');
+        return;
+    }
+    
+    console.log('✓ Chart.js version:', Chart.version);
+    console.log('✓ Dashboard initialization started');
+    
+    // Log data for debugging
+    console.log('Dashboard Data Check:', {
+        employees: {
+            active: {{ active_employees|default:0 }},
+            inactive: {{ inactive_employees|default:0 }},
+            onLeave: {{ on_leave_employees|default:0 }},
+            terminated: {{ terminated_employees|default:0 }}
+        },
+        vehicles: {
+            cars: {{ cars|default:0 }},
+            bikes: {{ bikes|default:0 }},
+            inactive: {{ inactive_vehicles|default:0 }}
+        }
+    });
+    
     // Display current date
     const currentDate = new Date().toLocaleDateString('en-US', { 
         weekday: 'long', 
@@ -546,23 +572,28 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const employeeStatusCtx = document.getElementById('employeeStatusChart');
         if (employeeStatusCtx) {
+            const employeeData = [
+                {{ active_employees|default:0 }},
+                {{ inactive_employees|default:0 }},
+                {{ on_leave_employees|default:0 }},
+                {{ terminated_employees|default:0 }}
+            ];
+            
+            // Check if all data is zero
+            const hasData = employeeData.some(val => val > 0);
+            
             new Chart(employeeStatusCtx.getContext('2d'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Active', 'Inactive', 'On Leave', 'Terminated'],
+                    labels: hasData ? ['Active', 'Inactive', 'On Leave', 'Terminated'] : ['No Data Available'],
                     datasets: [{
-                        data: [
-                            {{ active_employees }},
-                            {{ inactive_employees }},
-                            {{ on_leave_employees }},
-                            {{ terminated_employees }}
-                        ],
-                        backgroundColor: [
+                        data: hasData ? employeeData : [1],
+                        backgroundColor: hasData ? [
                             colors.status.active,
                             colors.status.inactive,
                             colors.status.warning,
                             colors.status.neutral
-                        ],
+                        ] : ['#E5E7EB'],
                         borderWidth: 3,
                         borderColor: '#ffffff',
                         hoverOffset: 8,
@@ -600,13 +631,22 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const vehicleTypeCtx = document.getElementById('vehicleTypeChart');
         if (vehicleTypeCtx) {
+            const vehicleData = [
+                {{ cars|default:0 }}, 
+                {{ bikes|default:0 }}, 
+                {{ inactive_vehicles|default:0 }}
+            ];
+            
+            // Check if all data is zero
+            const hasData = vehicleData.some(val => val > 0);
+            
             new Chart(vehicleTypeCtx.getContext('2d'), {
                 type: 'pie',
                 data: {
-                    labels: ['Cars', 'Bikes', 'Inactive'],
+                    labels: hasData ? ['Cars', 'Bikes', 'Inactive'] : ['No Data Available'],
                     datasets: [{
-                        data: [{{ cars }}, {{ bikes }}, {{ inactive_vehicles }}],
-                        backgroundColor: ['#3B82F6', '#10B981', '#EF4444'],
+                        data: hasData ? vehicleData : [1],
+                        backgroundColor: hasData ? ['#3B82F6', '#10B981', '#EF4444'] : ['#E5E7EB'],
                         borderWidth: 3,
                         borderColor: '#ffffff',
                         hoverOffset: 8,
@@ -645,14 +685,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (nationalityCtx) {
             const nationalityLabels = [
                 {% for item in employees_by_nationality %}
-                    '{{ item.nationality__name }}'{% if not forloop.last %},{% endif %}
+                    '{{ item.nationality__name|escapejs }}'{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    'No Data'
                 {% endfor %}
             ];
             const nationalityData = [
                 {% for item in employees_by_nationality %}
-                    {{ item.count }}{% if not forloop.last %},{% endif %}
+                    {{ item.count|default:0 }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    0
                 {% endfor %}
             ];
+            
+            // Check if we have valid data
+            if (nationalityData.length === 0 || nationalityData.every(val => val === 0)) {
+                nationalityLabels.push('No Data Available');
+                nationalityData.push(1);
+            }
             
             new Chart(nationalityCtx.getContext('2d'), {
                 type: 'pie',
@@ -699,14 +749,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (uniformTypeCtx) {
             const uniformTypeLabels = [
                 {% for item in uniforms_by_type %}
-                    '{{ item.uniform__uniform_type }}'{% if not forloop.last %},{% endif %}
+                    '{{ item.uniform__uniform_type|escapejs }}'{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    'No Data'
                 {% endfor %}
             ];
             const uniformTypeData = [
                 {% for item in uniforms_by_type %}
-                    {{ item.total_qty }}{% if not forloop.last %},{% endif %}
+                    {{ item.total_qty|default:0 }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    0
                 {% endfor %}
             ];
+            
+            // Check if we have valid data
+            if (uniformTypeData.length === 0 || uniformTypeData.every(val => val === 0)) {
+                uniformTypeLabels.push('No Data Available');
+                uniformTypeData.push(0);
+            }
             
             new Chart(uniformTypeCtx.getContext('2d'), {
                 type: 'bar',
@@ -782,14 +842,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (uniformStatusCtx) {
             const uniformStatusLabels = [
                 {% for item in uniform_status_dist %}
-                    '{{ item.status }}'{% if not forloop.last %},{% endif %}
+                    '{{ item.status|escapejs }}'{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    'No Data'
                 {% endfor %}
             ];
             const uniformStatusData = [
                 {% for item in uniform_status_dist %}
-                    {{ item.count }}{% if not forloop.last %},{% endif %}
+                    {{ item.count|default:0 }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    0
                 {% endfor %}
             ];
+            
+            // Check if we have valid data
+            if (uniformStatusData.length === 0 || uniformStatusData.every(val => val === 0)) {
+                uniformStatusLabels.push('No Data Available');
+                uniformStatusData.push(1);
+            }
             
             new Chart(uniformStatusCtx.getContext('2d'), {
                 type: 'doughnut',
@@ -830,6 +900,23 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
         console.error('Error creating Uniform Status Chart:', error);
     }
+
+    // Log successful initialization
+    console.log('✅ Dashboard charts initialization completed successfully');
+    console.log('✅ Total charts created: 5');
+    
+    // Warn if any data appears to be missing
+    const totalEmployees = {{ active_employees|default:0 }} + {{ inactive_employees|default:0 }} + {{ on_leave_employees|default:0 }} + {{ terminated_employees|default:0 }};
+    const totalVehicles = {{ cars|default:0 }} + {{ bikes|default:0 }};
+    
+    if (totalEmployees === 0) {
+        console.warn('⚠️ No employee data found. Check Employment table and filters (is_active=True, deleted=False, work_status)');
+    }
+    if (totalVehicles === 0) {
+        console.warn('⚠️ No vehicle data found. Check Vehicle table and filters.');
+    }
+    
+    console.log('📊 Dashboard ready!');
 
     // Smooth scroll animations
     const observerOptions = {
