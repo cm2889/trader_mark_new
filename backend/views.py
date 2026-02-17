@@ -559,11 +559,21 @@ def dash_board(request):
     # ========== EMPLOYEE STATS ==========
     total_employees = Employee.objects.filter(is_active=True, deleted=False).count()
     
-    # Employees by Work Status
+    # Employees by Work Status - Check Employment table first, fallback to Employee
+    # Try to get from Employment model (more detailed)
     active_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='ACTIVE').count()
     inactive_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='INACTIVE').count()
     on_leave_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='ON_LEAVE').count()
     terminated_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='TERMINATED').count()
+    
+    # If Employment data is not available, use Employee table as fallback
+    total_employment_records = active_employees + inactive_employees + on_leave_employees + terminated_employees
+    if total_employment_records == 0 and total_employees > 0:
+        # Fallback: Use employee is_active status
+        active_employees = Employee.objects.filter(is_active=True, deleted=False).count()
+        inactive_employees = 0
+        on_leave_employees = 0
+        terminated_employees = Employee.objects.filter(is_active=False, deleted=False).count() if Employee.objects.filter(is_active=False, deleted=False).exists() else 0
 
     # Employees by Gender
     male_employees = Employee.objects.filter(is_active=True, deleted=False, gender='M').count()
@@ -624,9 +634,26 @@ def dash_board(request):
         is_active=True, deleted=False, status='ASSIGNED'
     ).count()
 
-    # Vehicles by Type
-    bikes = Vehicle.objects.filter(is_active=True, deleted=False, vehicle_type='BIKE').count()
-    cars = Vehicle.objects.filter(is_active=True, deleted=False, vehicle_type='CAR').count()
+    # Vehicles by Type - Use case-insensitive matching to handle different data formats
+    from django.db.models import Q
+    bikes = Vehicle.objects.filter(
+        is_active=True, deleted=False
+    ).filter(
+        Q(vehicle_type__iexact='BIKE') | Q(vehicle_type__iexact='Bike') | 
+        Q(vehicle_type__iexact='MOTORCYCLE') | Q(vehicle_type__iexact='Motorbike')
+    ).count()
+    
+    cars = Vehicle.objects.filter(
+        is_active=True, deleted=False
+    ).filter(
+        Q(vehicle_type__iexact='CAR') | Q(vehicle_type__iexact='Car') | 
+        Q(vehicle_type__iexact='VEHICLE') | Q(vehicle_type__iexact='Auto')
+    ).count()
+    
+    # Calculate remaining vehicles as "other" if bikes + cars don't match total
+    other_vehicles = total_vehicles - (bikes + cars + inactive_vehicles)
+    if other_vehicles < 0:
+        other_vehicles = 0
 
     # Expiring Insurance
     expiring_insurance_30 = Vehicle.objects.filter(
@@ -754,10 +781,16 @@ def dash_board(request):
         'recent_uniform_issuances': recent_uniform_issuances,
     }
     
-    # Debug: Log query count (uncomment for debugging)
+    # Debug: Log query count and data issues (uncomment for debugging)
     # from django.db import connection
     # print(f"Dashboard queries: {len(connection.queries)} total queries")
-    # print(f"Dashboard loaded at {timezone.now()}")
+    # print(f"Employee data: active={active_employees}, inactive={inactive_employees}")
+    # print(f"Vehicle data: cars={cars}, bikes={bikes}, inactive={inactive_vehicles}")
+    # if total_employment_records == 0 and total_employees > 0:
+    #     print(f"⚠️ WARNING: {total_employees} employees found but 0 Employment records - using fallback")
+    # # Log actual vehicle types in database
+    # vehicle_types = Vehicle.objects.filter(is_active=True, deleted=False).values_list('vehicle_type', flat=True).distinct()
+    # print(f"Vehicle types in database: {list(vehicle_types)}")
     
     return render(request, 'report/dashboard.html', context )
 

@@ -381,7 +381,7 @@
                             <a href="{% url 'employee:detail' employee.id %}" class="block group">
                                 <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:border border-blue-200 transition-all">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12  rounded-full flex items-center justify-center`` font-bold text-sm shadow-sm">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center font-bold text-sm shadow-sm text-blue-700">
                                             {{ employee.first_name.0 }}{{ employee.last_name.0 }}
                                         </div>
                                     </div>
@@ -495,19 +495,43 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✓ Dashboard initialization started');
     
     // Log data for debugging
-    console.log('Dashboard Data Check:', {
+    console.log('📊 Dashboard Data Check:', {
         employees: {
+            total: {{ total_employees|default:0 }},
             active: {{ active_employees|default:0 }},
             inactive: {{ inactive_employees|default:0 }},
             onLeave: {{ on_leave_employees|default:0 }},
             terminated: {{ terminated_employees|default:0 }}
         },
         vehicles: {
+            total: {{ total_vehicles|default:0 }},
             cars: {{ cars|default:0 }},
             bikes: {{ bikes|default:0 }},
-            inactive: {{ inactive_vehicles|default:0 }}
+            inactive: {{ inactive_vehicles|default:0 }},
+            active: {{ active_vehicles|default:0 }}
+        },
+        uniforms: {
+            totalStock: {{ total_uniform_stock|default:0 }},
+            issued: {{ issued_uniforms|default:0 }},
+            returned: {{ returned_uniforms|default:0 }}
         }
     });
+    
+    // Check for data issues
+    const totalEmpCheck = {{ total_employees|default:0 }};
+    const totalEmpStatus = {{ active_employees|default:0 }} + {{ inactive_employees|default:0 }} + {{ on_leave_employees|default:0 }} + {{ terminated_employees|default:0 }};
+    
+    if (totalEmpCheck > 0 && totalEmpStatus === 0) {
+        console.error('🔴 DATA ISSUE: ' + totalEmpCheck + ' employees found but 0 with employment status!');
+        console.error('🔧 FIX: Check if Employment records exist and have work_status field set');
+    }
+    
+    const totalVehCheck = {{ total_vehicles|default:0 }};
+    const totalVehTypes = {{ cars|default:0 }} + {{ bikes|default:0 }};
+    if (totalVehCheck > totalVehTypes && totalVehCheck > 0) {
+        console.warn('⚠️ Vehicle data mismatch: ' + totalVehCheck + ' total vehicles but only ' + totalVehTypes + ' categorized (Cars: ' + {{ cars|default:0 }} + ', Bikes: ' + {{ bikes|default:0 }} + ')');
+        console.warn('🔧 Check vehicle_type field values in database - they may not match "CAR" or "BIKE" exactly');
+    }
     
     // Display current date
     const currentDate = new Date().toLocaleDateString('en-US', { 
