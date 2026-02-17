@@ -95,6 +95,22 @@
       "is_sub_child_menu": true,
       "is_active": true
     }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 102,
+    "fields": {
+      "module_name": "User Dashboard",
+      "menu_name": "Dashboard",
+      "menu_url": "/backend/dashboard/",
+      "menu_icon": "fa-solid fa-chart-line",
+      "menu_description": "View dashboard.",
+      "parent": 4,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
   },
 
   {

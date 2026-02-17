@@ -196,7 +196,8 @@ backend_patterns = ([
     path('user/password/reset/<str:data_id>/', views.reset_password, name='reset_password'),
     path('user/permission/<int:user_id>/', views.user_permission, name='user_permission'),
     
-    # Vehicle Management Dashboard
+    # Dashboards
+    path('dashboard/', views.dash_board, name='dash_board'),
     path('vehicle-management/', views.vehicle_management, name='vehicle_management'),
 
 ], 'backend')

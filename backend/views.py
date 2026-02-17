@@ -539,6 +539,211 @@ def user_permission(request, user_id):
     return render(request, 'user/user_permission.html', context)
 
 
+@login_required
+def dash_board(request):
+    if not checkUserPermission(request, "can_view", "/backend/dashboard/"):
+        messages.error(request, "You do not have permission to view the dashboard.") 
+        return render(request, "403.html", status=403)
+
+    from datetime import date, timedelta
+    
+    today = date.today()
+    next_30_days = today + timedelta(days=30)
+    next_60_days = today + timedelta(days=60)
+    next_90_days = today + timedelta(days=90)
+
+    # ========== EMPLOYEE STATS ==========
+    total_employees = Employee.objects.filter(is_active=True, deleted=False).count()
+    
+    # Employees by Work Status
+    active_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='ACTIVE').count()
+    inactive_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='INACTIVE').count()
+    on_leave_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='ON_LEAVE').count()
+    terminated_employees = Employment.objects.filter(is_active=True, deleted=False, work_status='TERMINATED').count()
+
+    # Employees by Gender
+    male_employees = Employee.objects.filter(is_active=True, deleted=False, gender='M').count()
+    female_employees = Employee.objects.filter(is_active=True, deleted=False, gender='F').count()
+
+    # Employees by Company
+    employees_by_company = Employee.objects.filter(is_active=True, deleted=False, company__isnull=False).values('company__name').annotate(count=Count('id')).order_by('-count')[:5]
+
+    # Employees by Nationality
+    employees_by_nationality = Employee.objects.filter(is_active=True, deleted=False, nationality__isnull=False).values('nationality__name').annotate(count=Count('id')).order_by('-count')
+
+    # ========== PASSPORT STATS ==========
+    total_passports = Passport.objects.filter(is_active=True, deleted=False).count()
+    expiring_passports_30 = Passport.objects.filter(is_active=True, deleted=False, passport_expiry_date__gte=today, passport_expiry_date__lte=next_30_days).count()
+    expiring_passports_60 = Passport.objects.filter(is_active=True, deleted=False, passport_expiry_date__gte=today, passport_expiry_date__lte=next_60_days).count()
+    expired_passports = Passport.objects.filter(is_active=True, deleted=False,passport_expiry_date__lt=today).count()
+
+    # ========== DRIVING LICENSE STATS ==========
+    total_licenses = DrivingLicense.objects.filter(is_active=True, deleted=False).count()
+    expiring_licenses_30 = DrivingLicense.objects.filter(is_active=True, deleted=False, license_expiry_date__gte=today, license_expiry_date__lte=next_30_days).count()
+    expiring_licenses_60 = DrivingLicense.objects.filter(is_active=True, deleted=False, license_expiry_date__gte=today, license_expiry_date__lte=next_60_days).count()
+    expired_licenses = DrivingLicense.objects.filter( is_active=True, deleted=False, license_expiry_date__lt=today).count()
+
+    # ========== UNIFORM STATS ==========
+    total_uniform_types = Uniform.objects.filter(is_active=True, deleted=False).count()
+    
+    total_uniform_stock = UniformStock.objects.filter( is_active=True, deleted=False).aggregate(total=Sum('quantity'))['total'] or 0
+    issued_uniforms = UniformIssuance.objects.filter(is_active=True, deleted=False, status='ISSUED').aggregate(total=Sum('quantity'))['total'] or 0
+    returned_uniforms = UniformIssuance.objects.filter(is_active=True, deleted=False, status='RETURNED').aggregate(total=Sum('quantity'))['total'] or 0
+    low_stock_items = UniformStock.objects.filter(is_active=True, deleted=False, quantity__lte=10).count()
+
+    # Uniforms by Type
+    uniforms_by_type = UniformStock.objects.filter(is_active=True, deleted=False).values('uniform__uniform_type').annotate(total_qty=Sum('quantity')).order_by('-total_qty')
+
+    # Uniform Status Distribution
+    uniform_status_dist = UniformIssuance.objects.filter(is_active=True, deleted=False).values('status').annotate(count=Count('id'))
+
+    # ========== VEHICLE STATS ==========
+    total_vehicles = Vehicle.objects.filter(is_active=True, deleted=False).count()
+    
+    active_vehicles = Vehicle.objects.filter(
+        is_active=True, deleted=False, status='ACTIVE'
+    ).count()
+    
+    inactive_vehicles = Vehicle.objects.filter(
+        is_active=True, deleted=False, status='INACTIVE'
+    ).count()
+
+    assigned_vehicles = VehicleAssign.objects.filter(
+        is_active=True, deleted=False, status='ASSIGNED'
+    ).count()
+
+    # Vehicles by Type
+    bikes = Vehicle.objects.filter(is_active=True, deleted=False, vehicle_type='BIKE').count()
+    cars = Vehicle.objects.filter(is_active=True, deleted=False, vehicle_type='CAR').count()
+
+    # Expiring Insurance
+    expiring_insurance_30 = Vehicle.objects.filter(
+        is_active=True, deleted=False,
+        insurance_expiry_date__gte=today,
+        insurance_expiry_date__lte=next_30_days
+    ).count()
+
+    # Expiring Istemara
+    expiring_istemara_30 = Vehicle.objects.filter(
+        is_active=True, deleted=False,
+        istemara_expiry_date__gte=today,
+        istemara_expiry_date__lte=next_30_days
+    ).count()
+
+    # ========== FINANCIAL & COMPLIANCE STATS ==========
+    pending_installments = VehicleInstallment.objects.filter(
+        is_active=True, deleted=False, payment_status='PENDING'
+    ).count()
+    
+    pending_installments_amount = VehicleInstallment.objects.filter(
+        is_active=True, deleted=False, payment_status='PENDING'
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    overdue_installments = VehicleInstallment.objects.filter(
+        is_active=True, deleted=False, 
+        payment_status='OVERDUE'
+    ).count()
+
+    total_violations = TrafficViolation.objects.filter(is_active=True, deleted=False).count()
+    
+    pending_penalties = TrafficViolationPenalty.objects.filter(
+        is_active=True, deleted=False, payment_status='PENDING'
+    ).count()
+    
+    pending_penalties_amount = TrafficViolationPenalty.objects.filter(
+        is_active=True, deleted=False, payment_status='PENDING'
+    ).aggregate(total=Sum('fine_amount'))['total'] or 0
+
+    total_maintenance_cost = VehicleMaintenance.objects.filter(
+        is_active=True, deleted=False
+    ).aggregate(total=Sum('cost'))['total'] or 0
+
+    pending_maintenance = VehicleMaintenance.objects.filter(
+        is_active=True, deleted=False, status='PENDING'
+    ).count()
+
+    total_accidents = VehicleAccident.objects.filter(is_active=True, deleted=False).count()
+    
+    pending_insurance_claims = InsuranceClaim.objects.filter(
+        is_active=True, deleted=False, claim_status='PENDING'
+    ).count()
+
+    # ========== RECENT ACTIVITIES ==========
+    recent_employees = Employee.objects.filter(
+        is_active=True, deleted=False
+    ).order_by('-created_at')[:5]
+
+    recent_violations = TrafficViolation.objects.filter(
+        is_active=True, deleted=False
+    ).select_related('vehicle', 'violation_type').order_by('-violation_date')[:5]
+
+    recent_uniform_issuances = UniformIssuance.objects.filter(
+        is_active=True, deleted=False
+    ).select_related('employee', 'uniform_stock__uniform').order_by('-issued_date')[:5]
+
+    context = {
+        # Employee Stats
+        'total_employees': total_employees,
+        'active_employees': active_employees,
+        'inactive_employees': inactive_employees,
+        'on_leave_employees': on_leave_employees,
+        'terminated_employees': terminated_employees,
+        'male_employees': male_employees,
+        'female_employees': female_employees,
+        'employees_by_company': employees_by_company,
+        'employees_by_nationality': employees_by_nationality,
+        
+        # Passport Stats
+        'total_passports': total_passports,
+        'expiring_passports_30': expiring_passports_30,
+        'expiring_passports_60': expiring_passports_60,
+        'expired_passports': expired_passports,
+        
+        # License Stats
+        'total_licenses': total_licenses,
+        'expiring_licenses_30': expiring_licenses_30,
+        'expiring_licenses_60': expiring_licenses_60,
+        'expired_licenses': expired_licenses,
+        
+        # Uniform Stats
+        'total_uniform_types': total_uniform_types,
+        'total_uniform_stock': total_uniform_stock,
+        'issued_uniforms': issued_uniforms,
+        'returned_uniforms': returned_uniforms,
+        'low_stock_items': low_stock_items,
+        'uniforms_by_type': uniforms_by_type,
+        'uniform_status_dist': uniform_status_dist,
+        
+        # Vehicle Stats
+        'total_vehicles': total_vehicles,
+        'active_vehicles': active_vehicles,
+        'inactive_vehicles': inactive_vehicles,
+        'assigned_vehicles': assigned_vehicles,
+        'bikes': bikes,
+        'cars': cars,
+        'expiring_insurance_30': expiring_insurance_30,
+        'expiring_istemara_30': expiring_istemara_30,
+        
+        # Financial & Compliance
+        'pending_installments': pending_installments,
+        'pending_installments_amount': pending_installments_amount,
+        'overdue_installments': overdue_installments,
+        'total_violations': total_violations,
+        'pending_penalties': pending_penalties,
+        'pending_penalties_amount': pending_penalties_amount,
+        'total_maintenance_cost': total_maintenance_cost,
+        'pending_maintenance': pending_maintenance,
+        'total_accidents': total_accidents,
+        'pending_insurance_claims': pending_insurance_claims,
+        
+        # Recent Activities
+        'recent_employees': recent_employees,
+        'recent_violations': recent_violations,
+        'recent_uniform_issuances': recent_uniform_issuances,
+    }
+    return render(request, 'report/dashboard.html', context )
+
+
 # =========================================================
 # Company Management Views
 # =========================================================

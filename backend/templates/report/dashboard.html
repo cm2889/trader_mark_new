@@ -1,0 +1,904 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Business Platform{% endblock %}
+
+{% block content %}
+<div class="min-h-screen ">
+    <!-- Header Section -->
+    <div class="bg-white shadow-sm border-b border-gray-200 mb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
+                        <i class="fas fa-chart-line text-indigo-600 mr-3"></i>
+                        Dashboard Overview
+                    </h1>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Real-time business analytics and operational insights
+                    </p>
+                </div>
+                <div class="flex items-center space-x-3  px-4 py-2 rounded-lg border border-gray-200">
+                    <i class="far fa-calendar-alt text-gray-500"></i>
+                    <span id="currentDate" class="text-sm font-medium text-gray-700"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        
+        <!-- Key Metrics Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Employees Card -->
+            <a href="{% url 'employee:list' %}" class="block group">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            
+                            <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Employees</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">{{ total_employees }}</p>
+                            <div class="flex items-center mt-3 text-sm">
+                                <span class="text-green-600 font-semibold">{{ active_employees }} Active</span>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-gray-500">{{ inactive_employees }} Inactive</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </a>
+
+            <!-- Total Vehicles Card -->
+            <a href="{% url 'vehicle_info:list' %}" class="block group">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            
+                            <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Vehicles</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">{{ total_vehicles }}</p>
+                            <div class="flex items-center mt-3 text-sm">
+                                <span class="text-green-600 font-semibold">{{ active_vehicles }} Active</span>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-gray-500">{{ inactive_vehicles }} Inactive</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all duration-200"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Uniform Stock Card -->
+            <a href="{% url 'uniform_stock:list' %}" class="block group">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            
+                            <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Uniform Stock</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">{{ total_uniform_stock }}</p>
+                            <div class="flex items-center mt-3 text-sm">
+                                <span class="text-purple-600 font-semibold">{{ issued_uniforms }} Issued</span>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-gray-500">{{ returned_uniforms }} Returned</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </a>
+
+            <!-- Pending Penalties Card -->
+            <a href="{% url 'traffic_violation_penalty:list' %}" class="block group">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                           
+                            <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Pending Penalties</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">{{ pending_penalties }}</p>
+                            <div class="flex items-center mt-3 text-sm">
+                                <span class=" font-semibold">QAR {{ pending_penalties_amount|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Employee Status Chart -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">
+                            
+                            Employee Status Distribution
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">Current workforce status breakdown</p>
+                    </div>
+                    <a href="{% url 'employee:list' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center group">
+                        View All
+                        <i class="fas fa-arrow-right ml-1 text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="employeeStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Vehicle Type Distribution -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">
+                            Vehicle Fleet Distribution
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">Fleet composition by vehicle type</p>
+                    </div>
+                    <a href="{% url 'vehicle_info:list' %}" class="text-sm text-green-600 hover:text-green-700 font-medium flex items-center group">
+                        View All
+                        <i class="fas fa-arrow-right ml-1 text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="vehicleTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 - Nationality & Uniform -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Employees by Nationality Chart -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">
+                            Employees by Nationality
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">Workforce diversity by nationality</p>
+                    </div>
+                    <a href="{% url 'employee:list' %}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center group">
+                        View All
+                        <i class="fas fa-arrow-right ml-1 text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="nationalityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Uniform Distribution by Type -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">
+                            Uniform Stock by Type
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">Inventory levels by uniform category</p>
+                    </div>
+                    <a href="{% url 'uniform_stock:list' %}" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center group">
+                        View All
+                        <i class="fas fa-arrow-right ml-1 text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="uniformTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+       
+
+        <!-- Alerts & Warnings Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Document Expiry Alerts -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold flex items-center">
+                        Document Alerts
+                    </h3>
+                    <a href="{% url 'employee:list' %}" class="text-xs text-[var(--text-color)] hover: font-medium">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4  rounded-lg border-l-4  hover: transition-colors cursor-pointer">
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">Expired Passports</p>
+                            <p class="text-xs text-[var(--text-color)] mt-1">Immediate action required</p>
+                        </div>
+                        <span class="text-2xl font-bold ">{{ expired_passports }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4  rounded-lg border-l-4  hover: transition-colors cursor-pointer">
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">Expiring Soon (30d)</p>
+                            <p class="text-xs text-[var(--text-color)] mt-1">Passports need renewal</p>
+                        </div>
+                        <span class="text-2xl font-bold text-orange-600">{{ expiring_passports_30 }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4  rounded-lg border-l-4  hover: transition-colors cursor-pointer">
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">Expired Licenses</p>
+                            <p class="text-xs text-[var(--text-color)] mt-1">Driving licenses expired</p>
+                        </div>
+                        <span class="text-2xl font-bold text-yellow-600">{{ expired_licenses }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Alerts -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-car-crash text-orange-600 mr-2"></i>
+                        Vehicle Alerts
+                    </h3>
+                    <a href="{% url 'vehicle_info:list' %}" class="text-xs text-gray-500 hover:text-orange-600 font-medium">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4  rounded-lg border-l-4  hover: transition-colors cursor-pointer">
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">Expiring Insurance</p>
+                            <p class="text-xs text-gray-600 mt-1">Next 30 days</p>
+                        </div>
+                        <span class="text-2xl font-bold text-orange-600">{{ expiring_insurance_30 }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4  rounded-lg border-l-4  hover: transition-colors cursor-pointer">
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">Expiring Istemara</p>
+                            <p class="text-xs text-gray-600 mt-1">Next 30 days</p>
+                        </div>
+                        <span class="text-2xl font-bold ">{{ expiring_istemara_30 }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4  rounded-lg border-l-4  hover: transition-colors cursor-pointer">
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">Pending Maintenance</p>
+                            <p class="text-xs text-gray-600 mt-1">Requires attention</p>
+                        </div>
+                        <span class="text-2xl font-bold text-purple-600">{{ pending_maintenance }}</span>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+            <!-- Gender Distribution -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
+                    <i class="fas fa-users text-indigo-600 mr-2"></i>
+                    Gender Distribution
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3  rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2  rounded-lg">
+                                <i class="fas fa-male text-blue-600 text-lg"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Male</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">{{ male_employees }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3  rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2  rounded-lg">
+                                <i class="fas fa-female text-pink-600 text-lg"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Female</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">{{ female_employees }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- License Stats -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
+                    <i class="fas fa-id-card text-green-600 mr-2"></i>
+                    License Status
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3  rounded-lg">
+                        <span class="text-sm font-medium text-gray-700">Total Licenses</span>
+                        <span class="text-xl font-bold text-gray-900">{{ total_licenses }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3  rounded-lg">
+                        <span class="text-sm font-medium text-gray-700">Expiring (30d)</span>
+                        <span class="text-xl font-bold text-orange-600">{{ expiring_licenses_30 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Violation Stats -->
+            <a href="{% url 'traffic_violation:list' %}" class="block group">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
+                        <i class="fas fa-exclamation-triangle  mr-2"></i>
+                        Traffic Violations
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3  rounded-lg">
+                            <span class="text-sm font-medium text-gray-700">Total Violations</span>
+                            <span class="text-xl font-bold ">{{ total_violations }}</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3  rounded-lg">
+                            <span class="text-sm font-medium text-gray-700">Total Accidents</span>
+                            <span class="text-xl font-bold ">{{ total_accidents }}</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Uniform Stats -->
+            <a href="{% url 'uniform:list' %}" class="block group">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
+                        <i class="fas fa-box text-purple-600 mr-2"></i>
+                        Uniform Inventory
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3  rounded-lg">
+                            <span class="text-sm font-medium text-gray-700">Low Stock Items</span>
+                            <span class="text-xl font-bold text-orange-600">{{ low_stock_items }}</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3  rounded-lg">
+                            <span class="text-sm font-medium text-gray-700">Returned</span>
+                            <span class="text-xl font-bold text-green-600">{{ returned_uniforms }}</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Recent Activities Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Recent Employees -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-user-plus text-blue-600 mr-2"></i>
+                        Recent Employees
+                    </h3>
+                    <a href="{% url 'employee:list' %}" class="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center group">
+                        View All
+                    </a>
+                </div>
+                <div class="space-y-3">
+                    {% for employee in recent_employees %}
+                    <a href="{% url 'employee:detail' employee.id %}" class="block group">
+                        <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:border border-blue-200 transition-all">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12  rounded-full flex items-center justify-center`` font-bold text-sm shadow-sm">
+                                    {{ employee.first_name.0 }}{{ employee.last_name.0 }}
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold  truncate group-hover:text-blue-600 transition-colors">{{ employee.full_name }}</p>
+                                <p class="text-xs text-gray-500">{{ employee.hr_file_no }}</p>
+                            </div>
+                            <i class="fas fa-chevron-right  group-hover:text-blue-600 group-hover:translate-x-1 transition-all text-xs"></i>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-users text-gray-300 text-3xl mb-2"></i>
+                        <p class="text-sm text-gray-500">No recent employees</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Recent Violations -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-exclamation-circle  mr-2"></i>
+                        Recent Violations
+                    </h3>
+                    <a href="{% url 'traffic_violation:list' %}" class="text-xs  hover:text-red-700 font-medium flex items-center group">
+                        View All
+                        <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                <div class="space-y-3">
+                    {% for violation in recent_violations %}
+                    <a href="{% url 'traffic_violation:detail' violation.id %}" class="block group">
+                        <div class="p-4  rounded-lg border-l-4 border-red-500 hover: hover:shadow-sm transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-car "></i>
+                                    <p class="text-sm font-semibold text-gray-900 group-hover:text-red-700">{{ violation.vehicle.plate_no }}</p>
+                                </div>
+                                <span class="text-xs text-gray-600 bg-white px-2 py-1 rounded">{{ violation.violation_date|date:"M d, Y" }}</span>
+                            </div>
+                            <p class="text-xs text-gray-700 leading-relaxed">{{ violation.violation_type.name }}</p>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-check-circle text-gray-300 text-3xl mb-2"></i>
+                        <p class="text-sm text-gray-500">No recent violations</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Recent Uniform Issuances -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-share-square text-purple-600 mr-2"></i>
+                        Recent Issuances
+                    </h3>
+                    <a href="{% url 'uniform_issuance:list' %}" class="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center group">
+                        View All
+                        <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                <div class="space-y-3">
+                    {% for issuance in recent_uniform_issuances %}
+                    <a href="{% url 'uniform_issuance:detail' issuance.id %}" class="block group">
+                        <div class="p-4  rounded-lg border-l-4 border-purple-500 hover: hover:shadow-sm transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-tshirt text-purple-600"></i>
+                                    <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-purple-700">{{ issuance.employee.full_name|truncatechars:20 }}</p>
+                                </div>
+                                <span class="text-xs text-gray-600 bg-white px-2 py-1 rounded">{{ issuance.issued_date|date:"M d, Y" }}</span>
+                            </div>
+                            <p class="text-xs text-gray-700 leading-relaxed">{{ issuance.uniform_stock.uniform.name }} ({{ issuance.quantity }})</p>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-tshirt text-gray-300 text-3xl mb-2"></i>
+                        <p class="text-sm text-gray-500">No recent issuances</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Display current date
+    const currentDate = new Date().toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+    document.getElementById('currentDate').textContent = currentDate;
+
+    // Chart.js default configuration
+    Chart.defaults.font.family = "'Inter', 'system-ui', '-apple-system', 'sans-serif'";
+    Chart.defaults.plugins.legend.position = 'bottom';
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.plugins.legend.labels.padding = 20;
+    Chart.defaults.plugins.legend.labels.font = { size: 12, weight: '500' };
+
+    // Professional color palettes
+    const colors = {
+        primary: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'],
+        gradients: {
+            blue: { start: 'rgba(59, 130, 246, 0.8)', end: 'rgba(59, 130, 246, 0.2)' },
+            green: { start: 'rgba(16, 185, 129, 0.8)', end: 'rgba(16, 185, 129, 0.2)' },
+            purple: { start: 'rgba(139, 92, 246, 0.8)', end: 'rgba(139, 92, 246, 0.2)' }
+        }
+    };
+
+    // Common tooltip configuration
+    const tooltipConfig = {
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        padding: 16,
+        titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+        cornerRadius: 8,
+        displayColors: true,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1
+    };
+
+    // Employee Status Chart (Doughnut)
+    const employeeStatusCtx = document.getElementById('employeeStatusChart').getContext('2d');
+    new Chart(employeeStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Active', 'Inactive', 'On Leave', 'Terminated'],
+            datasets: [{
+                data: [
+                    {{ active_employees }},
+                    {{ inactive_employees }},
+                    {{ on_leave_employees }},
+                    {{ terminated_employees }}
+                ],
+                backgroundColor: ['#10B981', '#EF4444', '#F59E0B', '#6B7280'],
+                borderWidth: 4,
+                borderColor: '#ffffff',
+                hoverOffset: 15,
+                hoverBorderWidth: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, weight: '600' },
+                        padding: 20,
+                        color: '#374151'
+                    }
+                },
+                tooltip: tooltipConfig
+            },
+            cutout: '65%'
+        }
+    });
+
+    // Vehicle Type Chart (Pie)
+    const vehicleTypeCtx = document.getElementById('vehicleTypeChart').getContext('2d');
+    new Chart(vehicleTypeCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Cars', 'Bikes', 'Inactive'],
+            datasets: [{
+                data: [{{ cars }}, {{ bikes }}, {{ inactive_vehicles }}],
+                backgroundColor: ['#3B82F6', '#10B981', '#EF4444'],
+                borderWidth: 4,
+                borderColor: '#ffffff',
+                hoverOffset: 15,
+                hoverBorderWidth: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, weight: '600' },
+                        padding: 20,
+                        color: '#374151'
+                    }
+                },
+                tooltip: tooltipConfig
+            }
+        }
+    });
+
+    // Nationality Chart (Pie)
+    const nationalityCtx = document.getElementById('nationalityChart').getContext('2d');
+    const nationalityLabels = [
+        {% for item in employees_by_nationality %}
+            '{{ item.nationality__name }}'{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    const nationalityData = [
+        {% for item in employees_by_nationality %}
+            {{ item.count }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    new Chart(nationalityCtx, {
+        type: 'pie',
+        data: {
+            labels: nationalityLabels,
+            datasets: [{
+                data: nationalityData,
+                backgroundColor: colors.primary,
+                borderWidth: 4,
+                borderColor: '#ffffff',
+                hoverOffset: 15,
+                hoverBorderWidth: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, weight: '600' },
+                        padding: 20,
+                        color: '#374151'
+                    }
+                },
+                tooltip: tooltipConfig
+            }
+        }
+    });
+
+    // Uniform Type Chart (Bar)
+    const uniformTypeCtx = document.getElementById('uniformTypeChart').getContext('2d');
+    const uniformTypeLabels = [
+        {% for item in uniforms_by_type %}
+            '{{ item.uniform__uniform_type }}'{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    const uniformTypeData = [
+        {% for item in uniforms_by_type %}
+            {{ item.total_qty }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    new Chart(uniformTypeCtx, {
+        type: 'bar',
+        data: {
+            labels: uniformTypeLabels,
+            datasets: [{
+                label: 'Quantity',
+                data: uniformTypeData,
+                backgroundColor: colors.primary,
+                borderRadius: 8,
+                borderWidth: 0,
+                hoverBackgroundColor: colors.primary.map(c => c + 'dd')
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: tooltipConfig
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 11, weight: '600' },
+                        color: '#6B7280',
+                        padding: 8
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.06)',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 11, weight: '600' },
+                        color: '#6B7280',
+                        padding: 8
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Uniform Status Chart (Doughnut)
+    const uniformStatusCtx = document.getElementById('uniformStatusChart').getContext('2d');
+    const uniformStatusLabels = [
+        {% for item in uniform_status_dist %}
+            '{{ item.status }}'{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    const uniformStatusData = [
+        {% for item in uniform_status_dist %}
+            {{ item.count }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    new Chart(uniformStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: uniformStatusLabels,
+            datasets: [{
+                data: uniformStatusData,
+                backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'],
+                borderWidth: 4,
+                borderColor: '#ffffff',
+                hoverOffset: 15,
+                hoverBorderWidth: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, weight: '600' },
+                        padding: 20,
+                        color: '#374151'
+                    }
+                },
+                tooltip: tooltipConfig
+            },
+            cutout: '65%'
+        }
+    });
+
+    // Smooth scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, index * 50);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Apply animations to all cards
+    document.querySelectorAll('.bg-white').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        observer.observe(el);
+    });
+});
+</script>
+
+<style>
+    /* Professional Dashboard Styles */
+    
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f3f4f6;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #9ca3af;
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+    }
+
+    /* Card hover effects */
+    .group:hover {
+        cursor: pointer;
+    }
+
+    /* Smooth transitions for all interactive elements */
+    a, button, .transition-all, .transition-transform, .transition-colors, .transition-shadow {
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Enhanced shadows for depth */
+    .shadow-sm {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .shadow-md {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .hover\:shadow-md:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .hover\:shadow-lg:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Professional typography */
+    body {
+        font-family: 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Enhanced border styles */
+    .border {
+        border-width: 1px;
+    }
+
+    /* Gradient backgrounds for special elements */
+    .bg-gradient-to-br {
+        background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+    }
+
+    /* Chart container styling */
+    canvas {
+        max-height: 100%;
+    }
+
+    /* Improved focus states for accessibility */
+    a:focus, button:focus {
+        outline: 2px solid #3B82F6;
+        outline-offset: 2px;
+    }
+
+    /* Loading animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadeInUp {
+        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Print optimization */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        body {
+            background: white !important;
+        }
+        
+        .shadow-sm, .shadow-md, .shadow-lg {
+            box-shadow: none !important;
+        }
+        
+        .rounded-xl {
+            border: 1px solid #e5e7eb !important;
+        }
+    }
+
+    /* Mobile responsiveness improvements */
+    @media (max-width: 640px) {
+        .text-3xl {
+            font-size: 1.5rem;
+        }
+        
+        .text-4xl {
+            font-size: 2rem;
+        }
+    }
+
+    /* Enhanced card borders */
+    .border-gray-200 {
+        border-color: #e5e7eb;
+    }
+
+    /* Status badge styling */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
