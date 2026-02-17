@@ -926,21 +926,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Log successful initialization
-    console.log('✅ Dashboard charts initialization completed successfully');
-    console.log('✅ Total charts created: 5');
+    console.log('Dashboard charts initialization completed successfully');
+    console.log('Total charts created: 5');
     
     // Warn if any data appears to be missing
     const totalEmployees = {{ active_employees|default:0 }} + {{ inactive_employees|default:0 }} + {{ on_leave_employees|default:0 }} + {{ terminated_employees|default:0 }};
     const totalVehicles = {{ cars|default:0 }} + {{ bikes|default:0 }};
     
     if (totalEmployees === 0) {
-        console.warn('⚠️ No employee data found. Check Employment table and filters (is_active=True, deleted=False, work_status)');
+        console.warn('No employee data found. Check Employment table and filters (is_active=True, deleted=False, work_status)');
     }
     if (totalVehicles === 0) {
-        console.warn('⚠️ No vehicle data found. Check Vehicle table and filters.');
+        console.warn('No vehicle data found. Check Vehicle table and filters.');
     }
     
-    console.log('📊 Dashboard ready!');
+    console.log('Dashboard ready!');
 
     // Smooth scroll animations
     const observerOptions = {
