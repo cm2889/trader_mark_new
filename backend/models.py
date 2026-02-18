@@ -345,6 +345,81 @@ class Visitor(models.Model):
     class Meta:
         ordering = ['-created_at'] 
 
+
+class Lead(models.Model):
+
+    LEAD_STAGE_CHOICES = (
+        ('prospect', 'Prospect'),
+        ('qualified', 'Qualified'),
+        ('negotiation', 'Negotiation'),
+        ('closed_won', 'Closed Won'),
+        ('closed_lost', 'Closed Lost'),
+    ) 
+
+    LEAD_SOURCE = (
+        ('walkin', 'Walk-in'),
+        ('website', 'Website'),
+        ('facebook', 'Facebook'),
+        ('referral', 'Referral'),
+        ('call', 'Phone Call'),
+        ('other', 'Other'),
+    )
+
+    visitor = models.OneToOneField(Visitor, on_delete=models.CASCADE, related_name='lead') 
+    source = models.CharField(max_length=20, choices=LEAD_SOURCE, default='walkin') 
+    stage = models.CharField(max_length=20, choices=LEAD_STAGE_CHOICES, default='prospect') 
+    is_converted = models.BooleanField(default=False) 
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lead_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lead_updated_by', null=True, blank=True) 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False) 
+
+    def __str__(self):
+        return f"Lead: {self.visitor.first_name} {self.visitor.last_name} - Stage: {self.get_stage_display()}" 
+
+
+class FollowUp(models.Model):
+    FOLLOWUP_TYPE_CHOICES = (
+        ('call', 'Phone Call'),
+        ('email', 'Email'),
+        ('meeting', 'Meeting'),
+        ('visit', 'Visit'),
+        ('whatsapp', 'WhatsApp'),
+        ('other', 'Other'),
+    ) 
+
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='follow_ups')
+    followup_type = models.CharField(max_length=20, choices=FOLLOWUP_TYPE_CHOICES, default='call')
+    followup_date = models.DateTimeField(null=True, blank=True) 
+    discussion = models.TextField(blank=True, null=True) 
+    next_followup_date = models.DateTimeField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followup_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followup_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Follow-up for {self.lead.visitor.first_name} {self.lead.visitor.last_name} - Type: {self.get_followup_type_display()}" 
+    
+
+class FollowUpReminder(models.Model):
+    follow_up = models.ForeignKey(FollowUp, on_delete=models.CASCADE, related_name='reminders')
+    reminder_time = models.DateTimeField()
+    is_done = models.BooleanField(default=False) 
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followup_reminder_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followup_reminder_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Reminder for Follow-up ID {self.follow_up.id} at {self.reminder_time}" 
+
+
 class Employee(models.Model):
     
     GENDER_CHOICES = (

@@ -8,7 +8,7 @@ from backend.models import (
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment, VehiclePurchase,
     VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType, 
     Uniform, UniformStock, UniformIssuance, UniformClearance, 
-    UniformStockTransactionLog, 
+    UniformStockTransactionLog, Lead, FollowUp, FollowUpReminder
 )
 
 TAILWIND_TEXT = (
@@ -792,4 +792,122 @@ class InstallmentPaymentForm(forms.ModelForm):
         widgets = {
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks (optional)'}),
         }
+
+
+# ========================================
+# Lead Management Forms
+# ========================================
+
+class LeadForm(forms.ModelForm):
+    """Form for creating/updating Lead"""
+    
+    class Meta:
+        model = Lead
+        fields = ['visitor', 'source', 'stage', 'is_converted']
+        widgets = {
+            'visitor': forms.Select(attrs={
+                'class': TAILWIND_SELECT,
+                'required': True
+            }),
+            'source': forms.Select(attrs={
+                'class': TAILWIND_SELECT,
+                'required': True
+            }),
+            'stage': forms.Select(attrs={
+                'class': TAILWIND_SELECT,
+                'required': True
+            }),
+            'is_converted': forms.CheckboxInput(attrs={
+                'class': 'w-4 h-4 text-[var(--primary-color)] rounded focus:ring-[var(--primary-color)] focus:ring-2'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only show visitors without leads
+        from django.db.models import Q
+        self.fields['visitor'].queryset = Visitor.objects.filter(
+            is_active=True, 
+            deleted=False
+        ).filter(Q(lead__isnull=True) | Q(id=self.instance.visitor_id if self.instance.pk else None))
+        
+        self.fields['visitor'].label_from_instance = lambda obj: f"{obj.first_name} {obj.last_name} - {obj.phone_number or obj.email or 'No contact'}"
+
+
+class FollowUpForm(forms.ModelForm):
+    """Form for creating/updating FollowUp"""
+    
+    class Meta:
+        model = FollowUp
+        fields = ['lead', 'followup_type', 'followup_date', 'discussion', 'next_followup_date']
+        widgets = {
+            'lead': forms.Select(attrs={
+                'class': TAILWIND_SELECT,
+                'required': True
+            }),
+            'followup_type': forms.Select(attrs={
+                'class': TAILWIND_SELECT,
+                'required': True
+            }),
+            'followup_date': forms.DateTimeInput(attrs={
+                'class': TAILWIND_TEXT,
+                'type': 'datetime-local',
+                'required': True
+            }),
+            'discussion': forms.Textarea(attrs={
+                'class': TAILWIND_TEXTAREA + ' h-24',
+                'rows': 4,
+                'placeholder': 'Enter discussion notes...'
+            }),
+            'next_followup_date': forms.DateTimeInput(attrs={
+                'class': TAILWIND_TEXT,
+                'type': 'datetime-local'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['lead'].queryset = Lead.objects.filter(is_active=True, deleted=False, is_converted=False)
+        self.fields['lead'].label_from_instance = lambda obj: f"{obj.visitor.first_name} {obj.visitor.last_name} - {obj.get_stage_display()}"
+
+
+class FollowUpReminderForm(forms.ModelForm):
+    """Form for creating/updating FollowUpReminder"""
+    
+    class Meta:
+        model = FollowUpReminder
+        fields = ['follow_up', 'reminder_time', 'is_done']
+        widgets = {
+            'follow_up': forms.Select(attrs={
+                'class': TAILWIND_SELECT,
+                'required': True
+            }),
+            'reminder_time': forms.DateTimeInput(attrs={
+                'class': TAILWIND_TEXT,
+                'type': 'datetime-local',
+                'required': True
+            }),
+            'is_done': forms.CheckboxInput(attrs={
+                'class': 'w-4 h-4 text-[var(--primary-color)] rounded focus:ring-[var(--primary-color)] focus:ring-2'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['follow_up'].queryset = FollowUp.objects.all().select_related('lead__visitor')
+        self.fields['follow_up'].label_from_instance = lambda obj: f"{obj.lead.visitor.first_name} {obj.lead.visitor.last_name} - {obj.get_followup_type_display()} on {obj.followup_date.strftime('%Y-%m-%d') if obj.followup_date else 'TBD'}"
+
+
+class QuickLeadConversionForm(forms.Form):
+    """Quick form to convert visitor to lead"""
+    source = forms.ChoiceField(
+        choices=Lead.LEAD_SOURCE,
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT}),
+        initial='walkin'
+    )
+    stage = forms.ChoiceField(
+        choices=Lead.LEAD_STAGE_CHOICES,
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT}),
+        initial='prospect'
+    )
 

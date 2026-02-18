@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lead Management{% endblock %}
+{% block breadcrumb %}
+    <a href="{% url "lead:list" %}">Lead Management</a>
+    <span class="mx-1">›</span>
+    <span>Lead List</span>
+{% endblock %}
+{% block content %}
+    <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Total Leads -->
+            <div class="bg-white rounded-lg shadow-sm p-5 border border-[var(--border-color)]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Leads</p>
+                        <p class="text-2xl font-bold text-[var(--text-color)] mt-1">{{ total_leads }}</p>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <!-- Prospect Leads -->
+            <div class="bg-white rounded-lg shadow-sm p-5 border border-[var(--border-color)]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Prospects</p>
+                        <p class="text-2xl font-bold text-yellow-600 mt-1">{{ prospect_leads }}</p>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <!-- Qualified Leads -->
+            <div class="bg-white rounded-lg shadow-sm p-5 border border-[var(--border-color)]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Qualified</p>
+                        <p class="text-2xl font-bold text-green-600 mt-1">{{ qualified_leads }}</p>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- Converted Leads -->
+            <div class="bg-white rounded-lg shadow-sm p-5 border border-[var(--border-color)]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Converted</p>
+                        <p class="text-2xl font-bold text-purple-600 mt-1">{{ converted_leads }}</p>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-[var(--text-color)]">Lead Management</h1>
+                <p class="text-sm text-[var(--text-light-color)] mt-1">Track and manage your sales leads</p>
+            </div>
+            <div class="mt-4 sm:mt-0 flex gap-3">
+                <button onclick="openFilterModal()"
+                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+                <a href="{% url 'lead:create' %}"
+                   class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                    <i class="fas fa-plus mr-2"></i>Add Lead
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Modal -->
+        <div id="filterModal"
+             class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+             onclick="closeFilterModal(event)">
+            <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
+                 onclick="event.stopPropagation()">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
+                    <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Leads</h3>
+                    <button onclick="closeFilterModal()"
+                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <form method="get" id="filterForm">
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Stage Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Stage</label>
+                                <select name="stage"
+                                        class="w-full select2-items px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Stages</option>
+                                    {% for value, label in stage_choices %}
+                                        <option value="{{ value }}" {% if request.GET.stage == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Source Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Source</label>
+                                <select name="source"
+                                        class="w-full select2-items px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All Sources</option>
+                                    {% for value, label in source_choices %}
+                                        <option value="{{ value }}" {% if request.GET.source == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Conversion Status -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Status</label>
+                                <select name="is_converted"
+                                        class="w-full select2-items px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">All</option>
+                                    <option value="false" {% if request.GET.is_converted == 'false' %}selected{% endif %}>Active</option>
+                                    <option value="true" {% if request.GET.is_converted == 'true' %}selected{% endif %}>Converted</option>
+                                </select>
+                            </div>
+
+                            <!-- Search -->
+                            <div>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Search</label>
+                                <input type="text" name="search" value="{{ request.GET.search }}"
+                                       class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                                       placeholder="Name, email, phone...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
+                        <a href="{% url 'lead:list' %}"
+                           class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                            Clear Filters
+                        </a>
+                        <button type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                            Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Leads Table -->
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-[var(--border-color)]">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Lead Info
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Contact
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Source
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Stage
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Created
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-[var(--border-color)]">
+                        {% for lead in leads %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                            <span class="font-semibold text-sm">
+                                                {{ lead.visitor.first_name|slice:":1" }}{{ lead.visitor.last_name|slice:":1" }}
+                                            </span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-[var(--text-color)]">
+                                                {{ lead.visitor.first_name }} {{ lead.visitor.last_name }}
+                                            </div>
+                                            <div class="text-xs text-gray-500">
+                                                ID: #{{ lead.id }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-[var(--text-color)]">
+                                        {% if lead.visitor.email %}
+                                            <div class="flex items-center mb-1">
+                                                <i class="fas fa-envelope text-gray-400 mr-2 text-xs"></i>
+                                                {{ lead.visitor.email }}
+                                            </div>
+                                        {% endif %}
+                                        {% if lead.visitor.phone_number %}
+                                            <div class="flex items-center">
+                                                <i class="fas fa-phone text-gray-400 mr-2 text-xs"></i>
+                                                {{ lead.visitor.phone_number }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ lead.get_source_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if lead.stage == 'prospect' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-star mr-1"></i>{{ lead.get_stage_display }}
+                                        </span>
+                                    {% elif lead.stage == 'qualified' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i>{{ lead.get_stage_display }}
+                                        </span>
+                                    {% elif lead.stage == 'negotiation' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                            <i class="fas fa-handshake mr-1"></i>{{ lead.get_stage_display }}
+                                        </span>
+                                    {% elif lead.stage == 'closed_won' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            <i class="fas fa-trophy mr-1"></i>{{ lead.get_stage_display }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-times-circle mr-1"></i>{{ lead.get_stage_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if lead.is_converted %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            <i class="fas fa-user-check mr-1"></i>Converted
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-circle mr-1 text-xs"></i>Active
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ lead.created_at|date:"M d, Y" }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+
+                                    <div class="flex justify-center gap-2">
+                                    <div class="inline-block" data-menu-wrap>
+                                        <button type="button"
+                                                class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
+                                                data-menu-btn
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                                onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                                            ⋯
+                                        </button>
+                                        <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                             data-menu
+                                             role="menu">
+                                            <a href="{% url 'lead:detail' lead.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                               role="menuitem"
+                                               onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                <i class="fas fa-eye text-gray-400"></i>Lead Details 
+                                            </a>
+                                            <a href="{% url 'lead:update' lead.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                               title="Edit">
+                                                <i class="fas fa-edit text-gray-400"></i>Edit Lead 
+                                            </a>
+                                            <div class="border-t border-[var(--border-color)]"></div>
+                                            {% if not lead.is_converted %}
+                                                <a href="{% url 'followup:create' %}?lead_id={{ lead.id }}"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                                   title="Add Follow-up">
+                                                    <i class="fas fa-plus-circle text-gray-400"></i>Add Follow-up
+                                                </a>
+                                            {% endif %}
+                                            <a href="{% url 'lead:delete' lead.pk %}"
+                                               onclick="return confirm('Are you sure you want to delete this lead?')"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
+                                               title="Delete">
+                                                <i class="fas fa-trash text-red-400"></i>Delete Lead
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="fas fa-users text-gray-300 text-5xl mb-4"></i>
+                                        <p class="text-gray-500 text-lg font-medium">No leads found</p>
+                                        <p class="text-gray-400 text-sm mt-1">Start by creating a new lead</p>
+                                        <a href="{% url 'lead:create' %}"
+                                           class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                                            <i class="fas fa-plus mr-2"></i>Create Lead
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if paginator.num_pages > 1 %}
+                <div class="bg-gray-50 px-6 py-4 border-t border-[var(--border-color)]">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            Showing page {{ leads.number }} of {{ paginator.num_pages }}
+                        </div>
+                        <nav class="flex gap-2">
+                            {% if leads.has_previous %}
+                                <a href="?page=1&{{ get_params }}"
+                                   class="px-3 py-1 text-sm border border-[var(--border-color)] rounded hover:bg-gray-100 transition-colors">
+                                    First
+                                </a>
+                                <a href="?page={{ leads.previous_page_number }}&{{ get_params }}"
+                                   class="px-3 py-1 text-sm border border-[var(--border-color)] rounded hover:bg-gray-100 transition-colors">
+                                    Previous
+                                </a>
+                            {% endif %}
+
+                            {% for num in paginator_list %}
+                                <a href="?page={{ num }}&{{ get_params }}"
+                                   class="px-3 py-1 text-sm border {% if leads.number == num %}bg-[var(--primary-color)] text-white border-[var(--primary-color)]{% else %}border-[var(--border-color)] hover:bg-gray-100{% endif %} rounded transition-colors">
+                                    {{ num }}
+                                </a>
+                            {% endfor %}
+
+                            {% if leads.has_next %}
+                                <a href="?page={{ leads.next_page_number }}&{{ get_params }}"
+                                   class="px-3 py-1 text-sm border border-[var(--border-color)] rounded hover:bg-gray-100 transition-colors">
+                                    Next
+                                </a>
+                                <a href="?page={{ last_page_number }}&{{ get_params }}"
+                                   class="px-3 py-1 text-sm border border-[var(--border-color)] rounded hover:bg-gray-100 transition-colors">
+                                    Last
+                                </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.select2-items').select2();
+        });
+        
+        function openFilterModal() {
+            document.getElementById('filterModal').classList.remove('hidden');
+        }
+
+        function closeFilterModal(event) {
+            if (event && event.target.id !== 'filterModal') return;
+            document.getElementById('filterModal').classList.add('hidden');
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeFilterModal({ target: { id: 'filterModal' } });
+            }
+        });
+    </script>
+{% endblock %}

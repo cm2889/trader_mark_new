@@ -28,7 +28,7 @@
             </div>
             <!-- Filter Modal -->
             <div id="filterModal"
-                 class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+                 class="hidden fixed inset-0 bg-gray-600 bg-opacity-50  h-full w-full z-50"
                  onclick="closeFilterModal(event)">
                 <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
                      onclick="event.stopPropagation()">
@@ -109,8 +109,8 @@
                 </div>
             </div>
             <!-- Table Section -->
-            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
-                <div class="overflow-x-auto">
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] ">
+                <div class="">
                     <table class="w-full">
                         <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                             <tr>
@@ -142,11 +142,11 @@
                                                     onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
                                                 ⋯
                                             </button>
-                                            <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                            <div class="hidden absolute right-4 mt-1 w-[180px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
                                                  data-menu
                                                  role="menu">
                                                 <a href="{% url 'visitor:update' visitor.pk %}"
-                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start hover:bg-gray-50"
                                                    role="menuitem"
                                                    onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -159,8 +159,26 @@
                                                     Edit
                                                 </a>
                                                 <div class="border-t border-[var(--border-color)]"></div>
+                                                {% if not visitor.lead %}
+                                                <button onclick="convertToLead({{ visitor.pk }}, '{{ visitor.first_name }} {{ visitor.last_name }}'); this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');"
+                                                   class="w-full block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-blue-600 hover:bg-blue-50"
+                                                   role="menuitem">
+                                                    <i class="fas fa-user-plus w-4"></i>
+                                                    Convert to Lead
+                                                </button>
+                                                <div class="border-t border-[var(--border-color)]"></div>
+                                                {% else %}
+                                                <a href="{% url 'lead:detail' visitor.lead.pk %}"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-green-600 hover:bg-green-50"
+                                                   role="menuitem"
+                                                   onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                    <i class="fas fa-eye w-4"></i>
+                                                    View Lead
+                                                </a>
+                                                <div class="border-t border-[var(--border-color)]"></div>
+                                                {% endif %}
                                                 <a href="{% url 'visitor:delete' visitor.pk %}"
-                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
+                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600 hover:bg-red-50"
                                                    role="menuitem"
                                                    onclick="if(!confirm('Are you sure you want to delete this visitor?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -287,5 +305,39 @@
             closeFilterModal();
         }
     });
+
+    // Convert visitor to lead
+    function convertToLead(visitorId, visitorName) {
+        if (confirm(`Convert "${visitorName}" to a lead?`)) {
+            fetch(`/backend/visitor/convert-to-lead/${visitorId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    source: 'walkin',
+                    stage: 'prospect'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Visitor converted to lead successfully!');
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while converting to lead');
+            });
+        }
+    }
     </script>
 {% endblock %}

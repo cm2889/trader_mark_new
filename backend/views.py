@@ -41,7 +41,7 @@ from backend.models import (
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
     ViolationType, VehicleMaintananceType, 
-    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase 
+    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase, Lead, FollowUp,FollowUpReminder 
 )
 
 from backend.forms import (
@@ -51,7 +51,7 @@ from backend.forms import (
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
     VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm, 
     UniformForm, UniformStockForm, UniformIssuanceForm, UniformClearanceForm,
-    VehiclePurchaseForm, InstallmentPaymentForm
+    VehiclePurchaseForm, InstallmentPaymentForm, LeadForm, FollowUpForm, FollowUpReminderForm, QuickLeadConversionForm
 ) 
 
 from backend.common_func import checkUserPermission
@@ -1077,10 +1077,502 @@ def visitor_delete(request, pk):
 
 
 @login_required
+def laed__list(request):
+
+    context = {
+
+    }
+    return render(request, 'laed/list.html', context)
+
+
+@login_required
+def list_management(request):
+
+    context = {
+
+    }
+    return render(request, 'list_management/list.html', context)
+
+
+# =========================================================
+# Lead Management Views
+# =========================================================
+
+@method_decorator(login_required, name='dispatch')
+class LeadListView(ListView):
+    """List view for all leads with filters"""
+    model = Lead
+    template_name = "lead/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/lead/"):
+            messages.error(request, "You do not have permission to view leads.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Lead.objects.filter(is_active=True, deleted=False).select_related('visitor', 'created_by')
+
+        # Filters
+        stage = self.request.GET.get('stage', '')
+        source = self.request.GET.get('source', '')
+        is_converted = self.request.GET.get('is_converted', '')
+        search = self.request.GET.get('search', '')
+
+        if stage:
+            queryset = queryset.filter(stage=stage)
+        if source:
+            queryset = queryset.filter(source=source)
+        if is_converted:
+            queryset = queryset.filter(is_converted=(is_converted == 'true'))
+        if search:
+            queryset = queryset.filter(
+                Q(visitor__first_name__icontains=search) |
+                Q(visitor__last_name__icontains=search) |
+                Q(visitor__email__icontains=search) |
+                Q(visitor__phone_number__icontains=search)
+            )
+
+        return queryset.order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['leads'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        
+        # Pagination
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(
+            self.request, context['page_num'], context['leads']
+        )
+        
+        # Filter parameters
+        get_params = self.request.GET.copy()
+        if 'page' in get_params:
+            get_params.pop('page')
+        context['get_params'] = get_params.urlencode()
+        
+        # Statistics
+        all_leads = Lead.objects.filter(is_active=True, deleted=False)
+        context['total_leads'] = all_leads.count()
+        context['prospect_leads'] = all_leads.filter(stage='prospect').count()
+        context['qualified_leads'] = all_leads.filter(stage='qualified').count()
+        context['negotiation_leads'] = all_leads.filter(stage='negotiation').count()
+        context['closed_won'] = all_leads.filter(stage='closed_won').count()
+        context['closed_lost'] = all_leads.filter(stage='closed_lost').count()
+        context['converted_leads'] = all_leads.filter(is_converted=True).count()
+        
+        # Choices for filters
+        context['stage_choices'] = Lead.LEAD_STAGE_CHOICES
+        context['source_choices'] = Lead.LEAD_SOURCE
+        
+        return context
+
+
+@login_required
+def lead_create(request):
+    """Create new lead"""
+    if not checkUserPermission(request, "can_add", "/backend/lead/"):
+        messages.error(request, "You do not have permission to create leads.")
+        return render(request, "403.html", status=403)
+
+    if request.method == 'POST':
+        form = LeadForm(request.POST)
+        if form.is_valid():
+            lead = form.save(commit=False)
+            lead.created_by = request.user
+            lead.updated_by = request.user
+            lead.save()
+            messages.success(request, f"Lead for {lead.visitor.first_name} {lead.visitor.last_name} has been created successfully.")
+            return redirect('lead:list')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = LeadForm()
+
+    return render(request, 'lead/create.html', {'form': form})
+
+
+@login_required
+def lead_update(request, pk):
+    """Update existing lead"""
+    if not checkUserPermission(request, "can_update", "/backend/lead/"):
+        messages.error(request, "You do not have permission to update leads.")
+        return render(request, "403.html", status=403)
+
+    lead = get_object_or_404(Lead, pk=pk, is_active=True, deleted=False)
+
+    if request.method == 'POST':
+        form = LeadForm(request.POST, instance=lead)
+        if form.is_valid():
+            lead = form.save(commit=False)
+            lead.updated_by = request.user
+            lead.save()
+            messages.success(request, f"Lead for {lead.visitor.first_name} {lead.visitor.last_name} has been updated successfully.")
+            return redirect('lead:detail', pk=lead.pk)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = LeadForm(instance=lead)
+
+    return render(request, 'lead/update.html', {'form': form, 'lead': lead})
+
+
+@login_required
+def lead_detail(request, pk):
+    """Detailed view of lead with follow-ups and reminders"""
+    if not checkUserPermission(request, "can_view", "/backend/lead/"):
+        messages.error(request, "You do not have permission to view lead details.")
+        return render(request, "403.html", status=403)
+
+    lead = get_object_or_404(Lead.objects.select_related('visitor', 'created_by'), pk=pk, is_active=True, deleted=False)
+    
+    # Get all follow-ups for this lead
+    followups = FollowUp.objects.filter(lead=lead).select_related('created_by').order_by('-followup_date')
+    
+    # Get upcoming reminders
+    upcoming_reminders = FollowUpReminder.objects.filter(
+        follow_up__lead=lead,
+        is_done=False,
+        reminder_time__gte=timezone.now()
+    ).select_related('follow_up', 'created_by').order_by('reminder_time')[:5]
+
+    context = {
+        'lead': lead,
+        'followups': followups,
+        'upcoming_reminders': upcoming_reminders,
+        'followup_count': followups.count(),
+        'reminder_count': upcoming_reminders.count(),
+    }
+    
+    return render(request, 'lead/detail.html', context)
+
+
+@login_required
+def lead_delete(request, pk):
+    """Soft delete lead"""
+    if not checkUserPermission(request, "can_delete", "/backend/lead/"):
+        messages.error(request, "You do not have permission to delete leads.")
+        return render(request, "403.html", status=403)
+
+    lead = get_object_or_404(Lead, pk=pk)
+    visitor_name = f"{lead.visitor.first_name} {lead.visitor.last_name}"
+    
+    lead.is_active = False
+    lead.deleted = True
+    lead.save()
+
+    messages.success(request, f"Lead for {visitor_name} has been deleted successfully.")
+    return redirect('lead:list')
+
+
+@login_required
+def lead_convert_to_employee(request, pk):
+    """Convert lead to employee (redirect to employee create with pre-filled data)"""
+    if not checkUserPermission(request, "can_add", "/backend/employee/"):
+        messages.error(request, "You do not have permission to convert leads to employees.")
+        return render(request, "403.html", status=403)
+
+    lead = get_object_or_404(Lead, pk=pk, is_active=True, deleted=False)
+    
+    if lead.is_converted:
+        messages.warning(request, "This lead has already been converted.")
+        return redirect('lead:detail', pk=pk)
+    
+    # Mark as converted
+    lead.is_converted = True
+    lead.stage = 'closed_won'
+    lead.updated_by = request.user
+    lead.save()
+    
+    messages.success(request, f"Lead for {lead.visitor.first_name} {lead.visitor.last_name} has been marked as converted. Please complete the employee registration.")
+    
+    # Redirect to employee create with query params
+    return redirect(f"{reverse('employee:create')}?visitor_id={lead.visitor_id}&lead_id={lead.id}")
+
+
+@login_required
+def visitor_convert_to_lead(request, visitor_id):
+    """Quick conversion of visitor to lead (AJAX)"""
+    if not checkUserPermission(request, "can_add", "/backend/lead/"):
+        return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
+
+    visitor = get_object_or_404(Visitor, pk=visitor_id, is_active=True, deleted=False)
+    
+    # Check if lead already exists
+    if hasattr(visitor, 'lead'):
+        return JsonResponse({
+            'success': False, 
+            'message': 'This visitor already has a lead.',
+            'lead_id': visitor.lead.id
+        })
+
+    if request.method == 'POST':
+        import json
+        try:
+            # Parse JSON body
+            data = json.loads(request.body)
+            source = data.get('source', 'walkin')
+            stage = data.get('stage', 'prospect')
+            
+            # Create lead
+            lead = Lead.objects.create(
+                visitor=visitor,
+                source=source,
+                stage=stage,
+                created_by=request.user,
+                updated_by=request.user
+            )
+            messages.success(request, f"Visitor {visitor.first_name} {visitor.last_name} has been converted to a lead.")
+            return JsonResponse({
+                'success': True,
+                'message': 'Lead created successfully',
+                'lead_id': lead.id,
+                'redirect_url': reverse('lead:detail', args=[lead.id])
+            })
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=400)
+
+
+# =========================================================
+# Follow-Up Management Views
+# =========================================================
+
+@method_decorator(login_required, name='dispatch')
+class FollowUpListView(ListView):
+    """List view for all follow-ups"""
+    model = FollowUp
+    template_name = "followup/list.html"
+    paginate_by = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/followup/"):
+            messages.error(request, "You do not have permission to view follow-ups.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = FollowUp.objects.select_related('lead__visitor', 'created_by')
+
+        # Filters
+        lead_id = self.request.GET.get('lead', '')
+        followup_type = self.request.GET.get('type', '')
+        date_from = self.request.GET.get('date_from', '')
+        date_to = self.request.GET.get('date_to', '')
+
+        if lead_id:
+            queryset = queryset.filter(lead_id=lead_id)
+        if followup_type:
+            queryset = queryset.filter(followup_type=followup_type)
+        if date_from:
+            queryset = queryset.filter(followup_date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(followup_date__lte=date_to)
+
+        return queryset.order_by('-followup_date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['followups'] = self.get_queryset()
+        context['page_num'] = self.request.GET.get('page', 1)
+        
+        # Pagination
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(
+            self.request, context['page_num'], context['followups']
+        )
+        
+        # Filter parameters
+        get_params = self.request.GET.copy()
+        if 'page' in get_params:
+            get_params.pop('page')
+        context['get_params'] = get_params.urlencode()
+        
+        # For filter dropdowns
+        context['leads'] = Lead.objects.filter(is_active=True, deleted=False).select_related('visitor')
+        context['followup_types'] = FollowUp.FOLLOWUP_TYPE_CHOICES
+        
+        return context
+
+
+@login_required
+def followup_create(request):
+    """Create new follow-up"""
+    if not checkUserPermission(request, "can_add", "/backend/followup/"):
+        messages.error(request, "You do not have permission to create follow-ups.")
+        return render(request, "403.html", status=403)
+
+    # Check if lead_id is passed (from lead detail page)
+    lead_id = request.GET.get('lead_id')
+    initial_data = {}
+    if lead_id:
+        initial_data['lead'] = lead_id
+
+    if request.method == 'POST':
+        form = FollowUpForm(request.POST)
+        if form.is_valid():
+            followup = form.save(commit=False)
+            followup.created_by = request.user
+            followup.updated_by = request.user
+            followup.save()
+            messages.success(request, "Follow-up has been created successfully.")
+            return redirect('lead:detail', pk=followup.lead.pk)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = FollowUpForm(initial=initial_data)
+
+    return render(request, 'followup/create.html', {'form': form})
+
+
+@login_required
+def followup_update(request, pk):
+    """Update existing follow-up"""
+    if not checkUserPermission(request, "can_update", "/backend/followup/"):
+        messages.error(request, "You do not have permission to update follow-ups.")
+        return render(request, "403.html", status=403)
+
+    followup = get_object_or_404(FollowUp, pk=pk)
+
+    if request.method == 'POST':
+        form = FollowUpForm(request.POST, instance=followup)
+        if form.is_valid():
+            followup = form.save(commit=False)
+            followup.updated_by = request.user
+            followup.save()
+            messages.success(request, "Follow-up has been updated successfully.")
+            return redirect('lead:detail', pk=followup.lead.pk)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = FollowUpForm(instance=followup)
+
+    return render(request, 'followup/update.html', {'form': form, 'followup': followup})
+
+
+@login_required
+def followup_delete(request, pk):
+    """Delete follow-up"""
+    if not checkUserPermission(request, "can_delete", "/backend/followup/"):
+        messages.error(request, "You do not have permission to delete follow-ups.")
+        return render(request, "403.html", status=403)
+
+    followup = get_object_or_404(FollowUp, pk=pk)
+    lead_pk = followup.lead.pk
+    followup.delete()
+
+    messages.success(request, "Follow-up has been deleted successfully.")
+    return redirect('lead:detail', pk=lead_pk)
+
+
+# =========================================================
+# Follow-Up Reminder Management Views
+# =========================================================
+
+@login_required
+def reminder_create(request):
+    """Create new reminder"""
+    if not checkUserPermission(request, "can_add", "/backend/followup/"):
+        messages.error(request, "You do not have permission to create reminders.")
+        return render(request, "403.html", status=403)
+
+    # Check if followup_id is passed
+    followup_id = request.GET.get('followup_id')
+    initial_data = {}
+    if followup_id:
+        initial_data['follow_up'] = followup_id
+
+    if request.method == 'POST':
+        form = FollowUpReminderForm(request.POST)
+        if form.is_valid():
+            reminder = form.save(commit=False)
+            reminder.created_by = request.user
+            reminder.updated_by = request.user
+            reminder.save()
+            messages.success(request, "Reminder has been created successfully.")
+            return redirect('lead:detail', pk=reminder.follow_up.lead.pk)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = FollowUpReminderForm(initial=initial_data)
+
+    return render(request, 'reminder/create.html', {'form': form})
+
+
+@login_required
+def reminder_update(request, pk):
+    """Update existing reminder"""
+    if not checkUserPermission(request, "can_update", "/backend/followup/"):
+        messages.error(request, "You do not have permission to update reminders.")
+        return render(request, "403.html", status=403)
+
+    reminder = get_object_or_404(FollowUpReminder, pk=pk)
+
+    if request.method == 'POST':
+        form = FollowUpReminderForm(request.POST, instance=reminder)
+        if form.is_valid():
+            reminder = form.save(commit=False)
+            reminder.updated_by = request.user
+            reminder.save()
+            messages.success(request, "Reminder has been updated successfully.")
+            return redirect('lead:detail', pk=reminder.follow_up.lead.pk)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = FollowUpReminderForm(instance=reminder)
+
+    return render(request, 'reminder/update.html', {'form': form, 'reminder': reminder})
+
+
+@login_required
+def reminder_mark_done(request, pk):
+    """Mark reminder as done (AJAX)"""
+    if not checkUserPermission(request, "can_update", "/backend/followup/"):
+        return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
+
+    reminder = get_object_or_404(FollowUpReminder, pk=pk)
+    reminder.is_done = True
+    reminder.updated_by = request.user
+    reminder.save()
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Reminder marked as done',
+        'reminder_id': reminder.id
+    })
+
+
+@login_required
+def reminder_delete(request, pk):
+    """Delete reminder"""
+    if not checkUserPermission(request, "can_delete", "/backend/followup/"):
+        messages.error(request, "You do not have permission to delete reminders.")
+        return render(request, "403.html", status=403)
+
+    reminder = get_object_or_404(FollowUpReminder, pk=pk)
+    lead_pk = reminder.follow_up.lead.pk
+    reminder.delete()
+
+    messages.success(request, "Reminder has been deleted successfully.")
+    return redirect('lead:detail', pk=lead_pk)
+
+
+@login_required
 def get_visitor_by_contact(request):
-    """
-    AJAX endpoint to fetch visitor data by email or phone number
-    """
+
     email = request.GET.get('email', '').strip()
     phone = request.GET.get('phone', '').strip()
     

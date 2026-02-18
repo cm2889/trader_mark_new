@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}Update Follow-up{% endblock %}
+{% block breadcrumb %}
+    <a href="{% url 'followup:list' %}" class="hover:underline">Follow-ups</a>
+    <span class="mx-1">›</span>
+    <span>Update</span>
+{% endblock %}
+{% block header_actions %}
+    <a href="{% url 'lead:detail' followup.lead.pk %}"
+       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to Lead
+    </a>
+{% endblock %}
+{% block content %}
+    <div class="container px-4 py-8">
+        <div class="bg-white rounded-lg shadow-sm p-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Update Follow-up</h2>
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Lead (Read-only display) -->
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 mb-6">
+                    <div class="text-sm">
+                        <span class="font-medium text-gray-700">Lead:</span>
+                        <span class="text-gray-900 ml-2">
+                            {{ followup.lead.visitor.first_name }} {{ followup.lead.visitor.last_name }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="hidden">
+                    {{ form.lead }}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Follow-up Type -->
+                    <div>
+                        <label for="{{ form.followup_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Follow-up Type <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.followup_type }}
+                        {% if form.followup_type.errors %}
+                            <div class="mt-2 text-sm text-red-600">
+                                {% for error in form.followup_type.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Follow-up Date -->
+                    <div>
+                        <label for="{{ form.followup_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Follow-up Date & Time <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.followup_date }}
+                        {% if form.followup_date.errors %}
+                            <div class="mt-2 text-sm text-red-600">
+                                {% for error in form.followup_date.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Next Follow-up Date -->
+                    <div>
+                        <label for="{{ form.next_followup_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Next Follow-up Date & Time
+                        </label>
+                        {{ form.next_followup_date }}
+                        {% if form.next_followup_date.errors %}
+                            <div class="mt-2 text-sm text-red-600">
+                                {% for error in form.next_followup_date.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Discussion -->
+                    <div class="md:col-span-2">
+                        <label for="{{ form.discussion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Discussion Notes
+                        </label>
+                        {{ form.discussion }}
+                        {% if form.discussion.errors %}
+                            <div class="mt-2 text-sm text-red-600">
+                                {% for error in form.discussion.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-gray-200">
+                    <a href="{% url 'lead:detail' followup.lead.pk %}"
+                       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7" />
+                        </svg>
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-6 h-11 text-sm font-medium text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Update Follow-up
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

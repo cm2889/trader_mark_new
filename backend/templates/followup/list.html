@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}Follow-ups - {{ site_setting.site_title|default:'' }}{% endblock %}
+{% block meta_description %}
+    Track all lead communication and activities
+{% endblock %}
+{% block title %}Follow-ups{% endblock %}
+{% block subtitle %}
+    <p class="text-sm text-[var(--text-light-color)] mt-1">Track all lead communication and activities</p>
+{% endblock %}
+{% block breadcrumb %}
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="font-medium text-[var(--primary-color)]">Follow-ups</span>
+{% endblock %}
+{% block header_actions %}
+    <button onclick="openFilterModal()"
+            class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            aria-label="Filter follow-ups">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+            </path>
+        </svg>
+        <span>Filter</span>
+    </button>
+    <a href="{% url 'followup:create' %}"
+       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Add Follow-up</span>
+    </a>
+{% endblock %}
+{% block content %}
+
+    <!-- Filter Modal -->
+    <div id="filterModal"
+         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+         onclick="closeFilterModal(event)">
+        <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
+             onclick="event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
+                <h3 class="text-lg font-semibold text-[var(--text-color)]">Filter Follow-ups</h3>
+                <button onclick="closeFilterModal()"
+                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form method="get" id="filterForm">
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Lead Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Lead</label>
+                            <select name="lead"
+                                    class="w-full select2-items px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All Leads</option>
+                                {% for lead in leads %}
+                                    <option value="{{ lead.id }}" {% if request.GET.lead == lead.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ lead.visitor.first_name }} {{ lead.visitor.last_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Type Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Type</label>
+                            <select name="type"
+                                    class="w-full select2-items px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                <option value="">All Types</option>
+                                {% for value, label in followup_types %}
+                                    <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Date From Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Date From</label>
+                            <input type="date" name="date_from" value="{{ request.GET.date_from }}"
+                                   class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                        </div>
+
+                        <!-- Date To Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Date To</label>
+                            <input type="date" name="date_to" value="{{ request.GET.date_to }}"
+                                   class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
+                    <a href="{% url 'followup:list' %}"
+                       class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                        Reset
+                    </a>
+                    <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                        Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    {% if followups %}
+        <div class="mb-4">
+            <p class="text-gray-600">
+                Found <span class="font-semibold text-gray-800">{{ paginator.count }}</span>
+                {{ paginator.count|pluralize:"follow-up,follow-ups" }}
+            </p>
+        </div>
+    {% endif %}
+
+    <!-- Table Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Lead</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Follow-up Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Discussion</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Next Follow-up</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Created By</th>
+                        <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border-color)]">
+                    {% for followup in followups %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                {{ forloop.counter }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{% url 'lead:detail' followup.lead.pk %}"
+                                   class="flex items-center gap-3 text-sm text-[var(--text-color)] hover:text-[var(--primary-color)]">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
+                                            {{ followup.lead.visitor.first_name|slice:":1"|upper }}
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-[var(--text-color)]">
+                                                {{ followup.lead.visitor.first_name }} {{ followup.lead.visitor.last_name }}
+                                            </p>
+                                            <p class="text-xs text-[var(--text-light-color)]">
+                                                {{ followup.lead.visitor.email|default:followup.lead.visitor.phone_number|default:"-" }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if followup.followup_type == 'call' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-phone mr-1"></i>{{ followup.get_followup_type_display }}
+                                    </span>
+                                {% elif followup.followup_type == 'email' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        <i class="fas fa-envelope mr-1"></i>{{ followup.get_followup_type_display }}
+                                    </span>
+                                {% elif followup.followup_type == 'meeting' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-handshake mr-1"></i>{{ followup.get_followup_type_display }}
+                                    </span>
+                                {% elif followup.followup_type == 'whatsapp' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                                        <i class="fab fa-whatsapp mr-1"></i>{{ followup.get_followup_type_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <i class="fas fa-comment mr-1"></i>{{ followup.get_followup_type_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                {% if followup.followup_date %}
+                                    {{ followup.followup_date|date:"M d, Y - g:i A" }}
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-[var(--text-color)]">
+                                <div class="max-w-xs truncate" title="{{ followup.discussion }}">
+                                    {{ followup.discussion|default:"-"|truncatewords:10 }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                {% if followup.next_followup_date %}
+                                    <span class="text-purple-600">
+                                        <i class="fas fa-clock mr-1"></i>{{ followup.next_followup_date|date:"M d, Y - g:i A" }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
+                                {{ followup.created_by.get_full_name|default:followup.created_by.username }}
+                            </td>
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
+                                <div class="flex justify-center gap-2">
+                                    <a href="{% url 'followup:update' followup.pk %}"
+                                       class="inline-flex items-center px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-xs font-medium transition-all duration-200"
+                                       title="Edit">
+                                        <i class="fas fa-edit mr-1"></i>Edit
+                                    </a>
+                                    <a href="{% url 'followup:delete' followup.pk %}"
+                                       onclick="return confirm('Are you sure you want to delete this follow-up?')"
+                                       class="inline-flex items-center px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-medium transition-all duration-200"
+                                       title="Delete">
+                                        <i class="fas fa-trash mr-1"></i>Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center text-gray-500">
+                                    <i class="fas fa-tasks text-5xl mb-4 text-gray-300"></i>
+                                    <p class="text-lg font-medium">No follow-ups found</p>
+                                    <p class="text-sm mt-1 text-gray-400">Start by adding a follow-up</p>
+                                    <a href="{% url 'followup:create' %}"
+                                       class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                                        <i class="fas fa-plus mr-2"></i>Add Follow-up
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination Section -->
+    {% if paginator.num_pages > 1 %}
+        <div class="mt-6 flex justify-center">
+            <nav class="flex items-center gap-2">
+                {% if followups.has_previous %}
+                    <a href="?page=1{% if get_params %}&{{ get_params }}{% endif %}"
+                       class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    <a href="?page={{ followups.previous_page_number }}{% if get_params %}&{{ get_params }}{% endif %}"
+                       class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                {% endif %}
+
+                {% for num in paginator_list %}
+                    {% if num == followups.number %}
+                        <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ num }}</span>
+                    {% else %}
+                        <a href="?page={{ num }}{% if get_params %}&{{ get_params }}{% endif %}"
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                            {{ num }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if followups.has_next %}
+                    <a href="?page={{ followups.next_page_number }}{% if get_params %}&{{ get_params }}{% endif %}"
+                       class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ paginator.num_pages }}{% if get_params %}&{{ get_params }}{% endif %}"
+                       class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    {% endif %}
+
+    <script>
+        $(document).ready(function () {
+            $('.select2-items').select2();
+        });
+
+        function openFilterModal() {
+            document.getElementById('filterModal').classList.remove('hidden');
+        }
+
+        function closeFilterModal(event) {
+            if (event && event.target.id !== 'filterModal') return;
+            document.getElementById('filterModal').classList.add('hidden');
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeFilterModal({ target: { id: 'filterModal' } });
+            }
+        });
+
+        // Close dropdown menus when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('[data-menu-wrap]')) {
+                document.querySelectorAll('[data-menu]').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+                document.querySelectorAll('[data-menu-btn]').forEach(btn => {
+                    btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+    </script>
+{% endblock %}

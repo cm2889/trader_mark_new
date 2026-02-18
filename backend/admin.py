@@ -7,7 +7,8 @@ from .models import (
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
     Visitor, TrafficViolationPenalty, InsuranceClaim, Uniform, UniformStock,
-    UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase, UniformStockTransactionLog 
+    UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase, UniformStockTransactionLog,
+    Lead, FollowUp, FollowUpReminder, 
 )
 
 @admin.register(WebImages)
@@ -27,6 +28,19 @@ class LoginLogAdmin(admin.ModelAdmin):
     list_display = ('username', 'login_ip', 'login_status', 'created_at')
     search_fields = ('username', 'login_ip')
     list_filter = ('login_status',)
+
+
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
+    list_display = ('visitor', 'source', 'stage',)
+
+@admin.register(FollowUp)
+class FollowUpAdmin(admin.ModelAdmin):
+    list_display = ('lead', 'followup_type', 'followup_date',)
+
+@admin.register(FollowUpReminder)
+class FollowUpReminderAdmin(admin.ModelAdmin):
+    list_display = ('follow_up', 'reminder_time', 'is_done')
 
 @admin.register(BackendMenu)
 class BackendMenuAdmin(admin.ModelAdmin):

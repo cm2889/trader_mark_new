@@ -177,6 +177,38 @@
       "is_active": true
     }
   },
+  {
+    "model": "backend.backendmenu",
+    "pk": 154,
+    "fields": {
+      "module_name": "Lead Management",
+      "menu_name": "Lead List",
+      "menu_url": "/backend/lead/",
+      "menu_icon": "fa-solid fa-user-tie",
+      "menu_description": "View and manage leads.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 155,
+    "fields": {
+      "module_name": "Lead Management",
+      "menu_name": "Follow-ups",
+      "menu_url": "/backend/followup/",
+      "menu_icon": "fa-solid fa-tasks",
+      "menu_description": "Track lead follow-ups and communications.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
 
   {
     "model": "backend.backendmenu",
@@ -547,6 +579,22 @@
       "is_sub_child_menu": true,
       "is_active": true
     } 
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 6,
+    "fields": {
+      "module_name": "Lead Management",
+      "menu_name": "Lead Management",
+      "menu_url": "lead-management",
+      "menu_icon": "fa-solid fa-user-tie",
+      "menu_description": "Manage leads and track sales pipeline.",
+      "parent": null,
+      "is_main_menu": true,
+      "is_sub_menu": false,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
   }
 ]
 

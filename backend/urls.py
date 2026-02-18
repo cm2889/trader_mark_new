@@ -28,7 +28,34 @@ visitor_patterns = ([
     path('create/', views.VisitorCreateView.as_view(), name='create'),
     path('update/<int:pk>/', views.VisitorUpdateView.as_view(), name='update'),
     path('delete/<int:pk>/', views.visitor_delete, name='delete'),
+    path('convert-to-lead/<int:visitor_id>/', views.visitor_convert_to_lead, name='convert_to_lead'),
 ], 'visitor')
+
+# Lead Management URL patterns
+lead_patterns = ([
+    path('', views.LeadListView.as_view(), name='list'),
+    path('create/', views.lead_create, name='create'),
+    path('update/<int:pk>/', views.lead_update, name='update'),
+    path('detail/<int:pk>/', views.lead_detail, name='detail'),
+    path('delete/<int:pk>/', views.lead_delete, name='delete'),
+    path('convert-to-employee/<int:pk>/', views.lead_convert_to_employee, name='convert_to_employee'),
+], 'lead')
+
+# Follow-Up URL patterns
+followup_patterns = ([
+    path('', views.FollowUpListView.as_view(), name='list'),
+    path('create/', views.followup_create, name='create'),
+    path('update/<int:pk>/', views.followup_update, name='update'),
+    path('delete/<int:pk>/', views.followup_delete, name='delete'),
+], 'followup')
+
+# Reminder URL patterns
+reminder_patterns = ([
+    path('create/', views.reminder_create, name='create'),
+    path('update/<int:pk>/', views.reminder_update, name='update'),
+    path('mark-done/<int:pk>/', views.reminder_mark_done, name='mark_done'),
+    path('delete/<int:pk>/', views.reminder_delete, name='delete'),
+], 'reminder')
 
 # Employee URL patterns
 employee_patterns = ([
@@ -208,6 +235,9 @@ urlpatterns = [
     path('company/', include(company_patterns)),
     path('nationality/', include(nationality_patterns)), 
     path('visitor/', include(visitor_patterns)), 
+    path('lead/', include(lead_patterns)),
+    path('followup/', include(followup_patterns)),
+    path('reminder/', include(reminder_patterns)),
     path('employee/', include(employee_patterns)),
     path('vehicle-info/', include(vehicle_patterns)),
     path('vehicle-assign/', include(vehicle_assign_patterns)), 
