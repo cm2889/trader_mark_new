@@ -1,143 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Permit / RP Expiry Notification</title>
-</head>
-<body style="margin:0;padding:0;font-family:'Inter','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#f3f4f6;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f3f4f6;padding:40px 0;">
-        <tr>
-            <td align="center">
-                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-                    <!-- Header -->
-                    <tr>
-                        <td style="background-color:#4354A3;padding:32px 40px;text-align:center;">
-                            <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">{{ site_title }}</h1>
-                            <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.8);">Document Expiry Notification</p>
-                        </td>
-                    </tr>
-                    <!-- Alert Banner -->
-                    <tr>
-                        <td style="padding:0 40px;">
-                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
-                                <tr>
-                                    <td style="background-color:{% if is_expired %}#fef2f2{% else %}#fffbeb{% endif %};border:1px solid {% if is_expired %}#fecaca{% else %}#fde68a{% endif %};border-radius:8px;padding:16px 20px;">
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td style="font-size:14px;font-weight:600;color:{% if is_expired %}#991b1b{% else %}#92400e{% endif %};">
-                                                    {% if is_expired %}
-                                                        &#9888; Work Permit / Residence Permit Has Expired
-                                                    {% else %}
-                                                        &#9888; Work Permit / Residence Permit Expiring Soon
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-size:13px;color:{% if is_expired %}#b91c1c{% else %}#b45309{% endif %};padding-top:4px;">
-                                                    {% if is_expired %}
-                                                        This work permit expired {{ days_remaining|cut:"-" }} days ago. Immediate action is required to avoid legal consequences.
-                                                    {% elif days_remaining == 0 %}
-                                                        This work permit expires today. Please take immediate action.
-                                                    {% else %}
-                                                        This work permit will expire in {{ days_remaining }} day{{ days_remaining|pluralize }}. Please initiate the renewal process.
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <!-- Content -->
-                    <tr>
-                        <td style="padding:24px 40px;">
-                            <p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">
-                                Dear <strong>{{ employee_name }}</strong>,
-                            </p>
-                            <p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.6;">
-                                This is to notify you regarding your Work Permit / Residence Permit status. Please review the details below:
-                            </p>
-                            <!-- Details Table -->
-                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
-                                <tr>
-                                    <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:140px;">Employee Name</td>
-                                                <td style="font-size:14px;font-weight:600;color:#111827;">{{ employee_name }}</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:140px;">Work Permit No</td>
-                                                <td style="font-size:14px;font-weight:600;color:#111827;font-family:monospace;">{{ work_permit_no }}</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:140px;">Work ID</td>
-                                                <td style="font-size:14px;font-weight:600;color:#111827;font-family:monospace;">{{ work_id }}</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:140px;">RP Expiry Date</td>
-                                                <td style="font-size:14px;font-weight:600;color:{% if is_expired %}#dc2626{% else %}#111827{% endif %};">{{ expiry_date|date:"F d, Y" }}</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:14px 20px;">
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:140px;">Status</td>
-                                                <td>
-                                                    {% if is_expired %}
-                                                        <span style="display:inline-block;padding:4px 12px;background-color:#fef2f2;color:#dc2626;border-radius:9999px;font-size:12px;font-weight:600;border:1px solid #fecaca;">Expired</span>
-                                                    {% elif days_remaining <= 30 %}
-                                                        <span style="display:inline-block;padding:4px 12px;background-color:#fffbeb;color:#d97706;border-radius:9999px;font-size:12px;font-weight:600;border:1px solid #fde68a;">Expiring Soon</span>
-                                                    {% else %}
-                                                        <span style="display:inline-block;padding:4px 12px;background-color:#f0fdf4;color:#16a34a;border-radius:9999px;font-size:12px;font-weight:600;border:1px solid #bbf7d0;">Valid</span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                            <!-- Action Note -->
-                            <p style="margin:24px 0 0;font-size:13px;color:#6b7280;line-height:1.6;">
-                                Work permit and residence permit renewal is a legal requirement. Please ensure the renewal process is initiated well before the expiry date to avoid any legal issues or work interruption. Contact the HR department for assistance with the renewal procedure.
-                            </p>
-                        </td>
-                    </tr>
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color:#f9fafb;padding:24px 40px;border-top:1px solid #e5e7eb;">
-                            <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center;line-height:1.5;">
-                                This is an automated notification from {{ site_title }}.<br>
-                                Please do not reply to this email.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Work Permit / RP Expiry Notification</title>
+    </head>
+    <body style="margin:0;
+                 padding:0;
+                 font-family:'Inter','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+                 background-color:#f3f4f6">
+        <table role="presentation"
+               width="100%"
+               cellpadding="0"
+               cellspacing="0"
+               style="background-color:#f3f4f6;
+                      padding:40px 0">
+            <tr>
+                <td align="center">
+                    <table role="presentation"
+                           width="600"
+                           cellpadding="0"
+                           cellspacing="0"
+                           style="background-color:#ffffff;
+                                  border-radius:8px;
+                                  overflow:hidden;
+                                  box-shadow:0 1px 3px rgba(0,0,0,0.1)">
+                        <!-- Header -->
+                        <tr>
+                            <td style="background-color:#4354A3;padding:32px 40px;text-align:center;">
+                                <h1 style="margin:0;
+                                           font-size:22px;
+                                           font-weight:700;
+                                           color:#ffffff;
+                                           letter-spacing:-0.5px">{{ site_title }}</h1>
+                                <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.8);">Document Expiry Notification</p>
+                            </td>
+                        </tr>
+                        <!-- Alert Banner -->
+                        <tr>
+                            <td style="padding:0 40px;">
+                                <table role="presentation"
+                                       width="100%"
+                                       cellpadding="0"
+                                       cellspacing="0"
+                                       style="margin-top:24px">
+                                    <tr>
+                                        <td style="background-color:{% if is_expired %}#fef2f2{% else %}#fffbeb{% endif %};
+                                                   border:1px solid {% if is_expired %}#fecaca{% else %}#fde68a{% endif %};
+                                                   border-radius:8px;
+                                                   padding:16px 20px">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="font-size:14px;
+                                                               font-weight:600;
+                                                               color:{% if is_expired %}#991b1b{% else %}#92400e{% endif %}">
+                                                        {% if is_expired %}
+                                                            &#9888; Work Permit / Residence Permit Has Expired
+                                                        {% else %}
+                                                            &#9888; Work Permit / Residence Permit Expiring Soon
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:13px;
+                                                               color:{% if is_expired %}#b91c1c{% else %}#b45309{% endif %};
+                                                               padding-top:4px">
+                                                        {% if is_expired %}
+                                                            This work permit expired {{ days_remaining|cut:"-" }} days ago. Immediate action is required to avoid legal consequences.
+                                                        {% elif days_remaining == 0 %}
+                                                            This work permit expires today. Please take immediate action.
+                                                        {% else %}
+                                                            This work permit will expire in {{ days_remaining }} day{{ days_remaining|pluralize }}. Please initiate the renewal process.
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Content -->
+                        <tr>
+                            <td style="padding:24px 40px;">
+                                <p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">
+                                    Dear <strong>{{ employee_name }}</strong>,
+                                </p>
+                                <p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.6;">
+                                    This is to notify you regarding your Work Permit / Residence Permit status. Please review the details below:
+                                </p>
+                                <!-- Details Table -->
+                                <table role="presentation"
+                                       width="100%"
+                                       cellpadding="0"
+                                       cellspacing="0"
+                                       style="background-color:#f9fafb;
+                                              border:1px solid #e5e7eb;
+                                              border-radius:8px;
+                                              overflow:hidden">
+                                    <tr>
+                                        <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="font-size:12px;
+                                                               color:#6b7280;
+                                                               text-transform:uppercase;
+                                                               letter-spacing:0.05em;
+                                                               width:140px">Employee Name</td>
+                                                    <td style="font-size:14px;font-weight:600;color:#111827;">{{ employee_name }}</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="font-size:12px;
+                                                               color:#6b7280;
+                                                               text-transform:uppercase;
+                                                               letter-spacing:0.05em;
+                                                               width:140px">Work Permit No</td>
+                                                    <td style="font-size:14px;
+                                                               font-weight:600;
+                                                               color:#111827;
+                                                               font-family:monospace">{{ work_permit_no }}</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="font-size:12px;
+                                                               color:#6b7280;
+                                                               text-transform:uppercase;
+                                                               letter-spacing:0.05em;
+                                                               width:140px">Work ID</td>
+                                                    <td style="font-size:14px;
+                                                               font-weight:600;
+                                                               color:#111827;
+                                                               font-family:monospace">{{ work_id }}</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:14px 20px;border-bottom:1px solid #e5e7eb;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="font-size:12px;
+                                                               color:#6b7280;
+                                                               text-transform:uppercase;
+                                                               letter-spacing:0.05em;
+                                                               width:140px">RP Expiry Date</td>
+                                                    <td style="font-size:14px;
+                                                               font-weight:600;
+                                                               color:{% if is_expired %}#dc2626{% else %}#111827{% endif %}">
+                                                        {{ expiry_date|date:"F d, Y" }}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:14px 20px;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="font-size:12px;
+                                                               color:#6b7280;
+                                                               text-transform:uppercase;
+                                                               letter-spacing:0.05em;
+                                                               width:140px">Status</td>
+                                                    <td>
+                                                        {% if is_expired %}
+                                                            <span style="display:inline-block;
+                                                                         padding:4px 12px;
+                                                                         background-color:#fef2f2;
+                                                                         color:#dc2626;
+                                                                         border-radius:9999px;
+                                                                         font-size:12px;
+                                                                         font-weight:600;
+                                                                         border:1px solid #fecaca">Expired</span>
+                                                        {% elif days_remaining <= 30 %}
+                                                            <span style="display:inline-block;
+                                                                         padding:4px 12px;
+                                                                         background-color:#fffbeb;
+                                                                         color:#d97706;
+                                                                         border-radius:9999px;
+                                                                         font-size:12px;
+                                                                         font-weight:600;
+                                                                         border:1px solid #fde68a">Expiring Soon</span>
+                                                        {% else %}
+                                                            <span style="display:inline-block;
+                                                                         padding:4px 12px;
+                                                                         background-color:#f0fdf4;
+                                                                         color:#16a34a;
+                                                                         border-radius:9999px;
+                                                                         font-size:12px;
+                                                                         font-weight:600;
+                                                                         border:1px solid #bbf7d0">Valid</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- Action Note -->
+                                <p style="margin:24px 0 0;font-size:13px;color:#6b7280;line-height:1.6;">
+                                    Work permit and residence permit renewal is a legal requirement. Please ensure the renewal process is initiated well before the expiry date to avoid any legal issues or work interruption. Contact the HR department for assistance with the renewal procedure.
+                                </p>
+                            </td>
+                        </tr>
+                        <!-- Footer -->
+                        <tr>
+                            <td style="background-color:#f9fafb;
+                                       padding:24px 40px;
+                                       border-top:1px solid #e5e7eb">
+                                <p style="margin:0;
+                                          font-size:12px;
+                                          color:#9ca3af;
+                                          text-align:center;
+                                          line-height:1.5">
+                                    This is an automated notification from {{ site_title }}.
+                                    <br>
+                                    Please do not reply to this email.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
 </html>

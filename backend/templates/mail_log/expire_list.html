@@ -14,8 +14,12 @@
 {% block header_actions %}
     <a href="{% url 'mail_log:mail_logs' %}"
        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+            </path>
         </svg>
         Mail Logs
     </a>
@@ -90,41 +94,55 @@
             </div>
         </div>
     </div>
-
     <!-- Filters Bar -->
     <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
-        <form method="get" id="filterForm" class="flex flex-col lg:flex-row lg:items-end gap-4">
+        <form method="get"
+              id="filterForm"
+              class="flex flex-col lg:flex-row lg:items-end gap-4">
             <!-- Search -->
             <div class="flex-1">
                 <label class="block text-xs font-medium text-[var(--text-light-color)] mb-1 uppercase tracking-wider">Search</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-3 flex items-center">
-                        <svg class="w-4 h-4 text-[var(--text-light-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-[var(--text-light-color)]"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="7"></circle>
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
                     </span>
-                    <input type="text" name="search" value="{{ search_query }}"
+                    <input type="text"
+                           name="search"
+                           value="{{ search_query }}"
                            placeholder="Search by name, ID, document no..."
                            class="w-full pl-10 pr-4 py-2.5 text-sm border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                 </div>
             </div>
             <!-- Document Type -->
             <div class="lg:w-48">
-                <label class="block text-xs font-medium text-[var(--text-light-color)] mb-1 uppercase tracking-wider">Document Type</label>
+                <label class="block text-xs font-medium text-[var(--text-light-color)] mb-1 uppercase tracking-wider">
+                    Document Type
+                </label>
                 <select name="type"
                         class="w-full px-3 py-2.5 text-sm border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                     <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Types</option>
-                    <option value="passport" {% if filter_type == 'passport' %}selected{% endif %}>Passport</option>
+                    <option value="passport"
+                            {% if filter_type == 'passport' %}selected{% endif %}>Passport</option>
                     <option value="license" {% if filter_type == 'license' %}selected{% endif %}>Driving License</option>
-                    <option value="work_permit" {% if filter_type == 'work_permit' %}selected{% endif %}>Work Permit / RP</option>
-                    <option value="vehicle_insurance" {% if filter_type == 'vehicle_insurance' %}selected{% endif %}>Vehicle Insurance</option>
-                    <option value="istemara" {% if filter_type == 'istemara' %}selected{% endif %}>Istemara</option>
+                    <option value="work_permit"
+                            {% if filter_type == 'work_permit' %}selected{% endif %}>Work Permit / RP</option>
+                    <option value="vehicle_insurance"
+                            {% if filter_type == 'vehicle_insurance' %}selected{% endif %}>Vehicle Insurance</option>
+                    <option value="istemara"
+                            {% if filter_type == 'istemara' %}selected{% endif %}>Istemara</option>
                 </select>
             </div>
             <!-- Expiry Window -->
             <div class="lg:w-48">
-                <label class="block text-xs font-medium text-[var(--text-light-color)] mb-1 uppercase tracking-wider">Expiry Window</label>
+                <label class="block text-xs font-medium text-[var(--text-light-color)] mb-1 uppercase tracking-wider">
+                    Expiry Window
+                </label>
                 <select name="days"
                         class="w-full px-3 py-2.5 text-sm border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                     <option value="all" {% if days_filter == 'all' %}selected{% endif %}>All Records</option>
@@ -139,8 +157,12 @@
             <div class="flex items-center gap-2">
                 <button type="submit"
                         class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--button-text-color)] bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    <svg class="w-4 h-4 mr-1.5"
+                         fill="none"
+                         stroke="currentColor"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                        </path>
                     </svg>
                     Filter
                 </button>
@@ -151,9 +173,10 @@
             </div>
         </form>
     </div>
-
     <!-- Bulk Actions Form -->
-    <form method="post" action="{% url 'mail_log:send_bulk_mail' %}" id="bulkForm">
+    <form method="post"
+          action="{% url 'mail_log:send_bulk_mail' %}"
+          id="bulkForm">
         {% csrf_token %}
         <!-- Table Section -->
         <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
@@ -161,18 +184,27 @@
             <div class="px-6 py-3 border-b border-[var(--border-color)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[var(--table-header)]">
                 <div class="flex items-center gap-3">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="selectAll" class="w-4 h-4 rounded border-gray-300 text-[var(--primary-color)] focus:ring-[var(--primary-color)]">
+                        <input type="checkbox"
+                               id="selectAll"
+                               class="w-4 h-4 rounded border-gray-300 text-[var(--primary-color)] focus:ring-[var(--primary-color)]">
                         <span class="text-sm font-medium text-[var(--text-color)]">Select All</span>
                     </label>
-                    <span id="selectedCount" class="text-xs text-[var(--text-light-color)] hidden">
+                    <span id="selectedCount"
+                          class="text-xs text-[var(--text-light-color)] hidden">
                         (<span id="selectedNum">0</span> selected)
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="submit" id="bulkSendBtn" disabled
+                    <button type="submit"
+                            id="bulkSendBtn"
+                            disabled
                             class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--button-text-color)] bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        <svg class="w-4 h-4 mr-1.5"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
                         </svg>
                         Send Bulk Notification
                     </button>
@@ -188,10 +220,18 @@
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider w-10"></th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Employee / Vehicle</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Document Type</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Document No</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Expiry Date</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                                Employee / Vehicle
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                                Document Type
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                                Document No
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                                Expiry Date
+                            </th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Days Left</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Status</th>
                             <th class="px-4 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
@@ -203,7 +243,8 @@
                                 <!-- Checkbox -->
                                 <td class="px-4 py-3">
                                     {% if record.employee_email %}
-                                        <input type="checkbox" name="selected_items"
+                                        <input type="checkbox"
+                                               name="selected_items"
                                                value="{{ record.doc_type_key }}:{{ record.id }}:{{ record.employee_email }}"
                                                class="row-checkbox w-4 h-4 rounded border-gray-300 text-[var(--primary-color)] focus:ring-[var(--primary-color)]">
                                     {% else %}
@@ -291,8 +332,12 @@
                                                 onclick="openSendMailModal('{{ record.doc_type_key }}', '{{ record.id }}', '{{ record.employee_email|escapejs }}', '{{ record.employee_name|escapejs }}', '{{ record.doc_type }}', '{{ record.doc_number|escapejs }}')"
                                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[var(--primary-color)] bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
                                                 title="Send notification email">
-                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            <svg class="w-3.5 h-3.5 mr-1"
+                                                 fill="none"
+                                                 stroke="currentColor"
+                                                 viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                                </path>
                                             </svg>
                                             Send Mail
                                         </button>
@@ -361,7 +406,6 @@
             {% endif %}
         </div>
     </form>
-
     <!-- Send Single Mail Modal -->
     <div id="sendMailModal" class="fixed inset-0 z-50 hidden">
         <div class="fixed inset-0 bg-black/50" onclick="closeSendMailModal()"></div>
@@ -370,7 +414,8 @@
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)]">
                     <h3 class="text-lg font-semibold text-[var(--text-color)]">Send Expiry Notification</h3>
-                    <button type="button" onclick="closeSendMailModal()"
+                    <button type="button"
+                            onclick="closeSendMailModal()"
                             class="text-gray-400 hover:text-gray-600 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -387,35 +432,46 @@
                         <div class="bg-gray-50 rounded-lg p-4 space-y-2">
                             <div class="flex items-center justify-between">
                                 <span class="text-xs text-[var(--text-light-color)] uppercase tracking-wider">Employee / Vehicle</span>
-                                <span class="text-sm font-medium text-[var(--text-color)]" id="modalEmployeeName"></span>
+                                <span class="text-sm font-medium text-[var(--text-color)]"
+                                      id="modalEmployeeName"></span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-xs text-[var(--text-light-color)] uppercase tracking-wider">Document</span>
-                                <span class="text-sm font-medium text-[var(--text-color)]" id="modalDocTypeDisplay"></span>
+                                <span class="text-sm font-medium text-[var(--text-color)]"
+                                      id="modalDocTypeDisplay"></span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-xs text-[var(--text-light-color)] uppercase tracking-wider">Document No</span>
-                                <span class="text-sm font-medium text-[var(--text-color)] font-mono" id="modalDocNumber"></span>
+                                <span class="text-sm font-medium text-[var(--text-color)] font-mono"
+                                      id="modalDocNumber"></span>
                             </div>
                         </div>
                         <!-- Email Input -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1.5">Recipient Email</label>
-                            <input type="email" name="recipient_email" id="modalRecipientEmail" required
+                            <input type="email"
+                                   name="recipient_email"
+                                   id="modalRecipientEmail"
+                                   required
                                    class="w-full px-3 py-2.5 text-sm border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
                                    placeholder="Enter email address">
                         </div>
                     </div>
                     <!-- Modal Footer -->
                     <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--border-color)] bg-gray-50 rounded-b-lg">
-                        <button type="button" onclick="closeSendMailModal()"
+                        <button type="button"
+                                onclick="closeSendMailModal()"
                                 class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
                             Cancel
                         </button>
                         <button type="submit"
                                 class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--button-text-color)] bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            <svg class="w-4 h-4 mr-1.5"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
                             </svg>
                             Send Notification
                         </button>
@@ -424,7 +480,6 @@
             </div>
         </div>
     </div>
-
     <!-- Bulk Confirm Modal -->
     <div id="bulkConfirmModal" class="fixed inset-0 z-50 hidden">
         <div class="fixed inset-0 bg-black/50" onclick="closeBulkConfirmModal()"></div>
@@ -432,8 +487,12 @@
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative">
                 <div class="text-center">
                     <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-[var(--primary-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        <svg class="w-8 h-8 text-[var(--primary-color)]"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-lg font-semibold text-[var(--text-color)] mb-2">Confirm Bulk Send</h3>
@@ -441,14 +500,20 @@
                         Send expiry notification emails to <span id="bulkCount" class="font-semibold text-[var(--text-color)]">0</span> selected recipients?
                     </p>
                     <div class="flex items-center justify-center gap-3">
-                        <button type="button" onclick="closeBulkConfirmModal()"
+                        <button type="button"
+                                onclick="closeBulkConfirmModal()"
                                 class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
                             Cancel
                         </button>
-                        <button type="button" onclick="submitBulkForm()"
+                        <button type="button"
+                                onclick="submitBulkForm()"
                                 class="inline-flex items-center px-4 py-2 text-sm font-medium text-[var(--button-text-color)] bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            <svg class="w-4 h-4 mr-1.5"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
                             </svg>
                             Send All
                         </button>

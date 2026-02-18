@@ -19,8 +19,12 @@
 {% block header_actions %}
     <a href="{% url 'mail_log:expire_report' %}"
        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <svg class="w-4 h-4 mr-2"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
         </svg>
         Expiry Tracker
     </a>
@@ -56,7 +60,6 @@
             <p class="text-2xl font-bold text-red-600">{{ total_failed }}</p>
         </div>
     </div>
-
     <!-- Filters Bar -->
     <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-4 mb-6">
         <form method="get" class="flex flex-col sm:flex-row sm:items-end gap-4">
@@ -65,12 +68,17 @@
                 <label class="block text-xs font-medium text-[var(--text-light-color)] mb-1 uppercase tracking-wider">Search</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-3 flex items-center">
-                        <svg class="w-4 h-4 text-[var(--text-light-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-[var(--text-light-color)]"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="7"></circle>
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
                     </span>
-                    <input type="text" name="search" value="{{ search_query }}"
+                    <input type="text"
+                           name="search"
+                           value="{{ search_query }}"
                            placeholder="Search by email, subject..."
                            class="w-full pl-10 pr-4 py-2.5 text-sm border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                 </div>
@@ -89,8 +97,12 @@
             <div class="flex items-center gap-2">
                 <button type="submit"
                         class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--button-text-color)] bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    <svg class="w-4 h-4 mr-1.5"
+                         fill="none"
+                         stroke="currentColor"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                        </path>
                     </svg>
                     Filter
                 </button>
@@ -101,7 +113,6 @@
             </div>
         </form>
     </div>
-
     <!-- Table Section -->
     <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
         <div class="overflow-x-auto">
@@ -124,7 +135,8 @@
                             <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ log.from_mail|default:"-" }}</td>
                             <td class="px-6 py-4 text-sm text-[var(--text-color)] font-medium">{{ log.to_mail }}</td>
                             <td class="px-6 py-4">
-                                <p class="text-sm text-[var(--text-color)] max-w-xs truncate" title="{{ log.subject }}">{{ log.subject|default:"-" }}</p>
+                                <p class="text-sm text-[var(--text-color)] max-w-xs truncate"
+                                   title="{{ log.subject }}">{{ log.subject|default:"-" }}</p>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if log.status == 'SENT' %}
@@ -137,7 +149,9 @@
                                     </span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 text-sm text-[var(--text-light-color)] whitespace-nowrap">{{ log.created_at|date:"M d, Y H:i" }}</td>
+                            <td class="px-6 py-4 text-sm text-[var(--text-light-color)] whitespace-nowrap">
+                                {{ log.created_at|date:"M d, Y H:i" }}
+                            </td>
                             <td class="px-6 py-4 text-center">
                                 <button type="button"
                                         onclick="openDetailModal('{{ log.from_mail|default:''|escapejs }}', '{{ log.to_mail|escapejs }}', '{{ log.subject|default:''|escapejs }}', '{{ log.message|default:''|escapejs }}', '{{ log.status|escapejs }}', '{{ log.created_at|date:'M d, Y H:i'|escapejs }}')"
@@ -205,7 +219,6 @@
             </div>
         {% endif %}
     </div>
-
     <!-- Detail Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 hidden">
         <div class="fixed inset-0 bg-black/50" onclick="closeDetailModal()"></div>
@@ -213,7 +226,8 @@
             <div class="bg-white rounded-lg shadow-xl max-w-lg w-full relative">
                 <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)]">
                     <h3 class="text-lg font-semibold text-[var(--text-color)]">Mail Log Details</h3>
-                    <button type="button" onclick="closeDetailModal()"
+                    <button type="button"
+                            onclick="closeDetailModal()"
                             class="text-gray-400 hover:text-gray-600 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -228,11 +242,13 @@
                         </div>
                         <div class="flex items-start justify-between">
                             <span class="text-xs text-[var(--text-light-color)] uppercase tracking-wider w-20 flex-shrink-0 pt-0.5">To</span>
-                            <span class="text-sm font-medium text-[var(--text-color)] text-right" id="detailTo"></span>
+                            <span class="text-sm font-medium text-[var(--text-color)] text-right"
+                                  id="detailTo"></span>
                         </div>
                         <div class="flex items-start justify-between">
                             <span class="text-xs text-[var(--text-light-color)] uppercase tracking-wider w-20 flex-shrink-0 pt-0.5">Subject</span>
-                            <span class="text-sm text-[var(--text-color)] text-right" id="detailSubject"></span>
+                            <span class="text-sm text-[var(--text-color)] text-right"
+                                  id="detailSubject"></span>
                         </div>
                         <div class="flex items-start justify-between">
                             <span class="text-xs text-[var(--text-light-color)] uppercase tracking-wider w-20 flex-shrink-0 pt-0.5">Status</span>
@@ -245,11 +261,13 @@
                     </div>
                     <div>
                         <label class="block text-xs text-[var(--text-light-color)] uppercase tracking-wider mb-1.5">Message</label>
-                        <div class="bg-gray-50 rounded-lg p-4 text-sm text-[var(--text-color)] max-h-40 overflow-y-auto" id="detailMessage"></div>
+                        <div class="bg-gray-50 rounded-lg p-4 text-sm text-[var(--text-color)] max-h-40 overflow-y-auto"
+                             id="detailMessage"></div>
                     </div>
                 </div>
                 <div class="flex items-center justify-end px-6 py-4 border-t border-[var(--border-color)] bg-gray-50 rounded-b-lg">
-                    <button type="button" onclick="closeDetailModal()"
+                    <button type="button"
+                            onclick="closeDetailModal()"
                             class="px-4 py-2 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
                         Close
                     </button>
