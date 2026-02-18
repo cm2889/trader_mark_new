@@ -277,6 +277,27 @@ class SMSLog(models.Model):
     def __str__(self):
         return str(self.mobile_number)
     
+
+class MailLog(models.Model):
+    STATUS_CHOICES = (
+        ('SENT', 'Sent'),
+        ('FAILED', 'Failed'),
+    )
+    from_mail = models.EmailField(blank=True, null=True) 
+    to_mail = models.EmailField(db_index=True)
+    subject = models.CharField(max_length=255, blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SENT')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.from_mail} -> {self.to_mail} - {self.subject} ({self.status})"
+    
+    class Meta:
+        db_table = "mail_log"
+        ordering = ['-created_at'] 
+    
 class Company(models.Model):
     name = models.CharField(max_length=200, unique=True, db_index=True)
     code = models.CharField(max_length=20, unique=True)
@@ -446,9 +467,6 @@ class Employee(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     deleted = models.BooleanField(default=False) 
-
-    # auto generate full number  
-    
 
     def save(self, *args, **kwargs):
         # Only auto-generate HR File No if not provided

@@ -8,7 +8,7 @@ from .models import (
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
     Visitor, TrafficViolationPenalty, InsuranceClaim, Uniform, UniformStock,
     UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase, UniformStockTransactionLog,
-    Lead, FollowUp, FollowUpReminder, 
+    Lead, FollowUp, FollowUpReminder, MailLog, 
 )
 
 @admin.register(WebImages)
@@ -41,6 +41,12 @@ class FollowUpAdmin(admin.ModelAdmin):
 @admin.register(FollowUpReminder)
 class FollowUpReminderAdmin(admin.ModelAdmin):
     list_display = ('follow_up', 'reminder_time', 'is_done')
+
+@admin.register(MailLog)
+class MailLogAdmin(admin.ModelAdmin):
+    list_display = ('from_mail', 'to_mail', 'subject', 'status', 'created_at')
+    search_fields = ('to_mail', 'subject')
+    list_filter = ('status',)
 
 @admin.register(BackendMenu)
 class BackendMenuAdmin(admin.ModelAdmin):

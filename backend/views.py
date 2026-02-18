@@ -1614,6 +1614,23 @@ def employee_create(request):
         messages.error(request, "You do not have permission to add employees.")
         return render(request, "403.html", status=403)
 
+    visitor = None
+    lead = None
+    visitor_id = request.GET.get('visitor_id') or request.POST.get('visitor_id')
+    lead_id = request.GET.get('lead_id') or request.POST.get('lead_id')
+    
+    # Load visitor and lead if IDs are present
+    if visitor_id:
+        try:
+            visitor = Visitor.objects.get(pk=visitor_id, is_active=True, deleted=False)
+            if lead_id:
+                try:
+                    lead = Lead.objects.get(pk=lead_id, is_active=True, deleted=False)
+                except Lead.DoesNotExist:
+                    pass
+        except Visitor.DoesNotExist:
+            messages.warning(request, "Visitor not found.")
+
     if request.method == 'POST':
         employee_form = EmployeeForm(request.POST, request.FILES, prefix='employee')
         passport_form = PassportForm(request.POST, prefix='passport')
@@ -1628,6 +1645,16 @@ def employee_create(request):
             employee.created_by = request.user
             employee.updated_by = request.user
             employee.save()
+            
+            # Handle lead conversion if coming from lead
+            if lead and not lead.is_converted:
+                lead.is_converted = True
+                lead.stage = 'closed_won'
+                lead.updated_by = request.user
+                lead.save()
+                messages.success(request, f"Lead successfully converted! Employee {employee.full_name} has been created.")
+            else:
+                messages.success(request, f"Employee {employee.full_name} has been created successfully.")
 
             # Save Multiple Employment forms
             employment_index = 0
@@ -1800,7 +1827,18 @@ def employee_create(request):
 
             return redirect('employee:list')
     else:
-        employee_form = EmployeeForm(prefix='employee')
+        # Pre-fill employee form with visitor data if available
+        initial_data = {}
+        
+        if visitor:
+            initial_data = {
+                'first_name': visitor.first_name,
+                'last_name': visitor.last_name,
+                'phone_number': visitor.phone_number,
+                'email': visitor.email,
+            }
+        
+        employee_form = EmployeeForm(prefix='employee', initial=initial_data)
         passport_form = PassportForm(prefix='passport')
         driving_license_form = DrivingLicenseForm(prefix='driving_license')
         health_insurance_form = HealthInsuranceForm(prefix='health_insurance')
@@ -1815,6 +1853,9 @@ def employee_create(request):
         'contact_form': contact_form,
         'address_form': address_form,
         'nationalities': Nationality.objects.filter(is_active=True),
+        'visitor': visitor,
+        'lead': lead,
+        'from_lead_conversion': visitor is not None,
     }
 
     return render(request, "employee/create.html", context)

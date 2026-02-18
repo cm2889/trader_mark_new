@@ -33,8 +33,39 @@
                     Fill in the employee information below. Only basic info is required.
                 </p>
             </div>
+            {% if from_lead_conversion %}
+                <div class="mb-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-emerald-600"
+                                 fill="currentColor"
+                                 viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-emerald-800">Converting Lead to Employee</h3>
+                            <p class="text-sm text-emerald-700 mt-1">
+                                Basic information has been pre-filled from visitor data for
+                                <strong>{{ visitor.first_name }} {{ visitor.last_name }}</strong>.
+                                Please review and complete the remaining required fields.
+                            </p>
+                            {% if lead %}
+                                <a href="{% url 'lead:detail' lead.pk %}"
+                                   class="text-xs text-emerald-600 hover:text-emerald-800 underline mt-2 inline-block">
+                                    View Original Lead
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             <form method="post" enctype="multipart/form-data" class="space-y-4">
                 {% csrf_token %}
+                {% if from_lead_conversion %}
+                    <input type="hidden" name="visitor_id" value="{{ visitor.id }}">
+                    {% if lead %}<input type="hidden" name="lead_id" value="{{ lead.id }}">{% endif %}
+                {% endif %}
                 <!-- Basic Information Section -->
                 <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
                     <button type="button"

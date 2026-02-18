@@ -160,22 +160,22 @@
                                                 </a>
                                                 <div class="border-t border-[var(--border-color)]"></div>
                                                 {% if not visitor.lead %}
-                                                <button onclick="convertToLead({{ visitor.pk }}, '{{ visitor.first_name }} {{ visitor.last_name }}'); this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');"
-                                                   class="w-full block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-blue-600 hover:bg-blue-50"
-                                                   role="menuitem">
-                                                    <i class="fas fa-user-plus w-4"></i>
-                                                    Convert to Lead
-                                                </button>
-                                                <div class="border-t border-[var(--border-color)]"></div>
+                                                    <button onclick="convertToLead({{ visitor.pk }}, '{{ visitor.first_name }} {{ visitor.last_name }}'); this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');"
+                                                            class="w-full block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-blue-600 hover:bg-blue-50"
+                                                            role="menuitem">
+                                                        <i class="fas fa-user-plus w-4"></i>
+                                                        Convert to Lead
+                                                    </button>
+                                                    <div class="border-t border-[var(--border-color)]"></div>
                                                 {% else %}
-                                                <a href="{% url 'lead:detail' visitor.lead.pk %}"
-                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-green-600 hover:bg-green-50"
-                                                   role="menuitem"
-                                                   onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                                    <i class="fas fa-eye w-4"></i>
-                                                    View Lead
-                                                </a>
-                                                <div class="border-t border-[var(--border-color)]"></div>
+                                                    <a href="{% url 'lead:detail' visitor.lead.pk %}"
+                                                       class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-green-600 hover:bg-green-50"
+                                                       role="menuitem"
+                                                       onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                        <i class="fas fa-eye w-4"></i>
+                                                        View Lead
+                                                    </a>
+                                                    <div class="border-t border-[var(--border-color)]"></div>
                                                 {% endif %}
                                                 <a href="{% url 'visitor:delete' visitor.pk %}"
                                                    class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600 hover:bg-red-50"

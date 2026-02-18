@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block page_title %}Follow-ups - {{ site_setting.site_title|default:'' }}{% endblock %}
-{% block meta_description %}
-    Track all lead communication and activities
-{% endblock %}
+{% block meta_description %}Track all lead communication and activities{% endblock %}
 {% block title %}Follow-ups{% endblock %}
 {% block subtitle %}
     <p class="text-sm text-[var(--text-light-color)] mt-1">Track all lead communication and activities</p>
@@ -39,7 +37,6 @@
     </a>
 {% endblock %}
 {% block content %}
-
     <!-- Filter Modal -->
     <div id="filterModal"
          class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
@@ -56,7 +53,6 @@
                     </svg>
                 </button>
             </div>
-
             <!-- Modal Body -->
             <form method="get" id="filterForm">
                 <div class="p-6">
@@ -68,13 +64,13 @@
                                     class="w-full select2-items px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                                 <option value="">All Leads</option>
                                 {% for lead in leads %}
-                                    <option value="{{ lead.id }}" {% if request.GET.lead == lead.id|stringformat:"s" %}selected{% endif %}>
+                                    <option value="{{ lead.id }}"
+                                            {% if request.GET.lead == lead.id|stringformat:"s" %}selected{% endif %}>
                                         {{ lead.visitor.first_name }} {{ lead.visitor.last_name }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
-
                         <!-- Type Filter -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Type</label>
@@ -82,29 +78,29 @@
                                     class="w-full select2-items px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                                 <option value="">All Types</option>
                                 {% for value, label in followup_types %}
-                                    <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
+                                    <option value="{{ value }}"
+                                            {% if request.GET.type == value %}selected{% endif %}>{{ label }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-
                         <!-- Date From Filter -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Date From</label>
-                            <input type="date" name="date_from" value="{{ request.GET.date_from }}"
+                            <input type="date"
+                                   name="date_from"
+                                   value="{{ request.GET.date_from }}"
                                    class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                         </div>
-
                         <!-- Date To Filter -->
                         <div>
                             <label class="block text-sm font-medium text-[var(--text-color)] mb-2">Date To</label>
-                            <input type="date" name="date_to" value="{{ request.GET.date_to }}"
+                            <input type="date"
+                                   name="date_to"
+                                   value="{{ request.GET.date_to }}"
                                    class="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                         </div>
                     </div>
                 </div>
-
                 <!-- Modal Footer -->
                 <div class="flex items-center justify-end gap-3 p-4 border-t border-[var(--border-color)] bg-gray-50">
                     <a href="{% url 'followup:list' %}"
@@ -119,7 +115,6 @@
             </form>
         </div>
     </div>
-
     <!-- Results Count -->
     {% if followups %}
         <div class="mb-4">
@@ -129,7 +124,6 @@
             </p>
         </div>
     {% endif %}
-
     <!-- Table Section -->
     <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
         <div class="overflow-x-auto">
@@ -139,9 +133,13 @@
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Lead</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Follow-up Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                            Follow-up Date
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Discussion</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Next Follow-up</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                            Next Follow-up
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Created By</th>
                         <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
                     </tr>
@@ -149,9 +147,7 @@
                 <tbody class="divide-y divide-[var(--border-color)]">
                     {% for followup in followups %}
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">
-                                {{ forloop.counter }}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <a href="{% url 'lead:detail' followup.lead.pk %}"
                                    class="flex items-center gap-3 text-sm text-[var(--text-color)] hover:text-[var(--primary-color)]">
@@ -252,7 +248,6 @@
             </table>
         </div>
     </div>
-
     <!-- Pagination Section -->
     {% if paginator.num_pages > 1 %}
         <div class="mt-6 flex justify-center">
@@ -267,7 +262,6 @@
                         <i class="fas fa-angle-left"></i>
                     </a>
                 {% endif %}
-
                 {% for num in paginator_list %}
                     {% if num == followups.number %}
                         <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ num }}</span>
@@ -278,7 +272,6 @@
                         </a>
                     {% endif %}
                 {% endfor %}
-
                 {% if followups.has_next %}
                     <a href="?page={{ followups.next_page_number }}{% if get_params %}&{{ get_params }}{% endif %}"
                        class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
@@ -292,7 +285,6 @@
             </nav>
         </div>
     {% endif %}
-
     <script>
         $(document).ready(function () {
             $('.select2-items').select2();
