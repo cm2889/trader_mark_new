@@ -41,7 +41,7 @@ from backend.models import (
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
     ViolationType, VehicleMaintananceType, 
-    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase, Lead, FollowUp,FollowUpReminder 
+    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase, Lead, FollowUp,FollowUpReminder, MailLog 
 )
 
 from backend.forms import (
@@ -54,7 +54,7 @@ from backend.forms import (
     VehiclePurchaseForm, InstallmentPaymentForm, LeadForm, FollowUpForm, FollowUpReminderForm, QuickLeadConversionForm
 ) 
 
-from backend.common_func import checkUserPermission
+from backend.common_func import checkUserPermission, send_email
 
 def paginate_data(request, page_num, data_list):
     items_per_page, max_pages = 10, 10 
@@ -1890,22 +1890,6 @@ def employee_update(request, pk):
                 employee.user.first_name = employee.first_name
                 employee.user.last_name = employee.last_name
                 employee.user.save()
-            else:
-                # Create User if doesn't exist
-                username = f"{employee.first_name.lower()}.{employee.last_name.lower()}".replace(' ', '')
-                base_username = username
-                counter = 1
-                while User.objects.filter(username=username).exists():
-                    username = f"{base_username}{counter}"
-                    counter += 1
-                
-                user = User.objects.create_user(
-                    username=username,
-                    first_name=employee.first_name,
-                    last_name=employee.last_name,
-                    password='admin'
-                )
-                employee.user = user
             
             employee.updated_by = request.user
             employee.save()
@@ -5343,5 +5327,627 @@ def vehicle_installment_delete(request, pk):
     installment.delete()
     messages.success(request, "Vehicle installment deleted successfully.")
     return redirect('vehicle_installment:list')
+
+
+# ========================================
+# EXPIRY TRACKING & MAIL NOTIFICATION VIEWS
+# ========================================
+
+def _get_expiry_data(filter_type='all', search_query='', days_filter='all'):
+    """Helper: Collect all expiry data for passports, licenses, work permits, vehicle insurance, istemara."""
+    from datetime import date, timedelta
+
+    today = date.today()
+    records = []
+
+    # Date range filters
+    date_from = None
+    date_to = None
+    if days_filter == 'expired':
+        date_to = today - timedelta(days=1)
+    elif days_filter == '7':
+        date_from = today
+        date_to = today + timedelta(days=7)
+    elif days_filter == '30':
+        date_from = today
+        date_to = today + timedelta(days=30)
+    elif days_filter == '60':
+        date_from = today
+        date_to = today + timedelta(days=60)
+    elif days_filter == '90':
+        date_from = today
+        date_to = today + timedelta(days=90)
+
+    def get_status(expiry_date):
+        if expiry_date < today:
+            return 'EXPIRED'
+        elif expiry_date <= today + timedelta(days=30):
+            return 'EXPIRING_SOON'
+        else:
+            return 'VALID'
+
+    def get_days_remaining(expiry_date):
+        delta = (expiry_date - today).days
+        return delta
+
+    def matches_date_filter(expiry_date):
+        if days_filter == 'all':
+            return True
+        if days_filter == 'expired':
+            return expiry_date < today
+        if date_from and date_to:
+            return date_from <= expiry_date <= date_to
+        return True
+
+    # 1. Passport expiry
+    if filter_type in ['all', 'passport']:
+        passport_qs = Passport.objects.filter(
+            is_active=True, deleted=False,
+            employee__is_active=True, employee__deleted=False
+        ).select_related('employee', 'employee__nationality')
+        if search_query:
+            passport_qs = passport_qs.filter(
+                Q(employee__first_name__icontains=search_query) |
+                Q(employee__last_name__icontains=search_query) |
+                Q(employee__hr_file_no__icontains=search_query) |
+                Q(passport_no__icontains=search_query)
+            )
+        for p in passport_qs:
+            if matches_date_filter(p.passport_expiry_date):
+                records.append({
+                    'id': p.id,
+                    'employee': p.employee,
+                    'employee_name': p.employee.full_name,
+                    'employee_email': p.employee.email or '',
+                    'hr_file_no': p.employee.hr_file_no,
+                    'doc_type': 'Passport',
+                    'doc_type_key': 'passport',
+                    'doc_number': p.passport_no,
+                    'expiry_date': p.passport_expiry_date,
+                    'status': get_status(p.passport_expiry_date),
+                    'days_remaining': get_days_remaining(p.passport_expiry_date),
+                    'renewed': p.passport_renewed,
+                })
+
+    # 2. Driving License expiry
+    if filter_type in ['all', 'license']:
+        license_qs = DrivingLicense.objects.filter(
+            is_active=True, deleted=False,
+            employee__is_active=True, employee__deleted=False
+        ).select_related('employee', 'employee__nationality')
+        if search_query:
+            license_qs = license_qs.filter(
+                Q(employee__first_name__icontains=search_query) |
+                Q(employee__last_name__icontains=search_query) |
+                Q(employee__hr_file_no__icontains=search_query) |
+                Q(license_no__icontains=search_query)
+            )
+        for lic in license_qs:
+            if matches_date_filter(lic.license_expiry_date):
+                records.append({
+                    'id': lic.id,
+                    'employee': lic.employee,
+                    'employee_name': lic.employee.full_name,
+                    'employee_email': lic.employee.email or '',
+                    'hr_file_no': lic.employee.hr_file_no,
+                    'doc_type': 'Driving License',
+                    'doc_type_key': 'license',
+                    'doc_number': lic.license_no,
+                    'expiry_date': lic.license_expiry_date,
+                    'status': get_status(lic.license_expiry_date),
+                    'days_remaining': get_days_remaining(lic.license_expiry_date),
+                    'renewed': lic.license_renewed,
+                })
+
+    # 3. Work Permit / RP expiry (Employment model)
+    if filter_type in ['all', 'work_permit']:
+        employment_qs = Employment.objects.filter(
+            is_active=True, deleted=False,
+            employee__is_active=True, employee__deleted=False
+        ).select_related('employee', 'employee__nationality')
+        if search_query:
+            employment_qs = employment_qs.filter(
+                Q(employee__first_name__icontains=search_query) |
+                Q(employee__last_name__icontains=search_query) |
+                Q(employee__hr_file_no__icontains=search_query) |
+                Q(work_permit_no__icontains=search_query)
+            )
+        for emp in employment_qs:
+            if matches_date_filter(emp.rp_expiry_date):
+                records.append({
+                    'id': emp.id,
+                    'employee': emp.employee,
+                    'employee_name': emp.employee.full_name,
+                    'employee_email': emp.employee.email or '',
+                    'hr_file_no': emp.employee.hr_file_no,
+                    'doc_type': 'Work Permit / RP',
+                    'doc_type_key': 'work_permit',
+                    'doc_number': emp.work_permit_no,
+                    'expiry_date': emp.rp_expiry_date,
+                    'status': get_status(emp.rp_expiry_date),
+                    'days_remaining': get_days_remaining(emp.rp_expiry_date),
+                    'renewed': emp.qid_renew_status == 'RENEWED',
+                })
+
+    # 4. Vehicle Insurance expiry
+    if filter_type in ['all', 'vehicle_insurance']:
+        vehicle_qs = Vehicle.objects.filter(
+            is_active=True, deleted=False
+        )
+        if search_query:
+            vehicle_qs = vehicle_qs.filter(
+                Q(plate_no__icontains=search_query) |
+                Q(insurance_name__icontains=search_query)
+            )
+        for v in vehicle_qs:
+            if matches_date_filter(v.insurance_expiry_date):
+                records.append({
+                    'id': v.id,
+                    'employee': None,
+                    'employee_name': v.plate_no,
+                    'employee_email': '',
+                    'hr_file_no': v.plate_no,
+                    'doc_type': 'Vehicle Insurance',
+                    'doc_type_key': 'vehicle_insurance',
+                    'doc_number': v.insurance_name,
+                    'expiry_date': v.insurance_expiry_date,
+                    'status': get_status(v.insurance_expiry_date),
+                    'days_remaining': get_days_remaining(v.insurance_expiry_date),
+                    'renewed': False,
+                })
+
+    # 5. Vehicle Istemara expiry
+    if filter_type in ['all', 'istemara']:
+        vehicle_qs = Vehicle.objects.filter(
+            is_active=True, deleted=False
+        )
+        if search_query:
+            vehicle_qs = vehicle_qs.filter(
+                Q(plate_no__icontains=search_query)
+            )
+        for v in vehicle_qs:
+            if matches_date_filter(v.istemara_expiry_date):
+                records.append({
+                    'id': v.id,
+                    'employee': None,
+                    'employee_name': v.plate_no,
+                    'employee_email': '',
+                    'hr_file_no': v.plate_no,
+                    'doc_type': 'Istemara',
+                    'doc_type_key': 'istemara',
+                    'doc_number': v.plate_no,
+                    'expiry_date': v.istemara_expiry_date,
+                    'status': get_status(v.istemara_expiry_date),
+                    'days_remaining': get_days_remaining(v.istemara_expiry_date),
+                    'renewed': False,
+                })
+
+    # Sort by expiry date (nearest first)
+    records.sort(key=lambda x: x['expiry_date'])
+
+    # Compute summary counts
+    summary = {
+        'total': len(records),
+        'expired': sum(1 for r in records if r['status'] == 'EXPIRED'),
+        'expiring_soon': sum(1 for r in records if r['status'] == 'EXPIRING_SOON'),
+        'valid': sum(1 for r in records if r['status'] == 'VALID'),
+        'passport': sum(1 for r in records if r['doc_type_key'] == 'passport'),
+        'license': sum(1 for r in records if r['doc_type_key'] == 'license'),
+        'work_permit': sum(1 for r in records if r['doc_type_key'] == 'work_permit'),
+        'vehicle_insurance': sum(1 for r in records if r['doc_type_key'] == 'vehicle_insurance'),
+        'istemara': sum(1 for r in records if r['doc_type_key'] == 'istemara'),
+    }
+
+    return records, summary
+
+
+@login_required
+def expire_report(request):
+    if not checkUserPermission(request, "can_view", "/backend/expire-list-log/"):
+        messages.error(request, "You do not have permission to view expired list logs.")
+        return render(request, "403.html", status=403)
+
+    filter_type = request.GET.get('type', 'all')
+    search_query = request.GET.get('search', '').strip()
+    days_filter = request.GET.get('days', 'all')
+
+    records, summary = _get_expiry_data(filter_type, search_query, days_filter)
+
+    page_num = request.GET.get('page', 1)
+    paginator_list, page_obj, last_page_number = paginate_data(request, page_num, records)
+    paginator = page_obj.paginator
+
+    get_param = request.GET.copy()
+    if 'page' in get_param:
+        del get_param['page']
+
+    context = {
+        'records': page_obj,
+        'page_obj': page_obj,
+        'paginator_list': paginator_list,
+        'page_num': page_obj.number,
+        'paginator': paginator,
+        'last_page_number': last_page_number,
+        'get_param': get_param.urlencode(),
+        'summary': summary,
+        'filter_type': filter_type,
+        'search_query': search_query,
+        'days_filter': days_filter,
+    }
+
+    return render(request, 'mail_log/expire_list.html', context)
+
+
+@login_required
+def expire_mail_logs(request):
+    if not checkUserPermission(request, "can_view", "/backend/mail-log/"):
+        messages.error(request, "You do not have permission to view mail logs.")
+        return render(request, "403.html", status=403)
+
+    search_query = request.GET.get('search', '').strip()
+    status_filter = request.GET.get('status', '')
+
+    mail_logs_qs = MailLog.objects.all().order_by('-created_at')
+
+    if search_query:
+        mail_logs_qs = mail_logs_qs.filter(
+            Q(to_mail__icontains=search_query) |
+            Q(subject__icontains=search_query) |
+            Q(from_mail__icontains=search_query)
+        )
+    if status_filter:
+        mail_logs_qs = mail_logs_qs.filter(status=status_filter)
+
+    page_num = request.GET.get('page', 1)
+    paginator_list, page_obj, last_page_number = paginate_data(request, page_num, mail_logs_qs)
+    paginator = page_obj.paginator
+
+    get_param = request.GET.copy()
+    if 'page' in get_param:
+        del get_param['page']
+
+    context = {
+        'mail_logs': page_obj,
+        'page_obj': page_obj,
+        'paginator_list': paginator_list,
+        'page_num': page_obj.number,
+        'paginator': paginator,
+        'last_page_number': last_page_number,
+        'get_param': get_param.urlencode(),
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'total_sent': MailLog.objects.filter(status='SENT').count(),
+        'total_failed': MailLog.objects.filter(status='FAILED').count(),
+        'total_logs': MailLog.objects.count(),
+    }
+    return render(request, 'mail_log/expire.html', context)
+
+
+@login_required
+def send_single_expiry_mail(request):
+    """Send a single expiry notification email for a specific document."""
+    if not checkUserPermission(request, "can_update", "/backend/expire-list-log/"):
+        messages.error(request, "You do not have permission to send expiry notifications.")
+        return render(request, "403.html", status=403)
+
+    if request.method == 'POST':
+        doc_type = request.POST.get('doc_type', '')
+        doc_id = request.POST.get('doc_id', '')
+        recipient_email = request.POST.get('recipient_email', '').strip()
+
+        if not recipient_email:
+            messages.error(request, "Recipient email is required.")
+            return redirect('mail_log:expire_report')
+
+        from datetime import date
+
+        today = date.today()
+        subject = ''
+        template = ''
+        context = {}
+        employee_name = ''
+        doc_number = ''
+        expiry_date = None
+
+        try:
+            if doc_type == 'passport':
+                passport = get_object_or_404(Passport, pk=doc_id)
+                employee_name = passport.employee.full_name
+                doc_number = passport.passport_no
+                expiry_date = passport.passport_expiry_date
+                subject = f"Passport Expiry Notification - {employee_name}"
+                template = 'mail_log/email/passport_expiry.html'
+                context = {
+                    'employee_name': employee_name,
+                    'passport_no': doc_number,
+                    'expiry_date': expiry_date,
+                    'days_remaining': (expiry_date - today).days,
+                    'is_expired': expiry_date < today,
+                }
+
+            elif doc_type == 'license':
+                license_obj = get_object_or_404(DrivingLicense, pk=doc_id)
+                employee_name = license_obj.employee.full_name
+                doc_number = license_obj.license_no
+                expiry_date = license_obj.license_expiry_date
+                subject = f"Driving License Expiry Notification - {employee_name}"
+                template = 'mail_log/email/license_expiry.html'
+                context = {
+                    'employee_name': employee_name,
+                    'license_no': doc_number,
+                    'expiry_date': expiry_date,
+                    'days_remaining': (expiry_date - today).days,
+                    'is_expired': expiry_date < today,
+                }
+
+            elif doc_type == 'work_permit':
+                employment = get_object_or_404(Employment, pk=doc_id)
+                employee_name = employment.employee.full_name
+                doc_number = employment.work_permit_no
+                expiry_date = employment.rp_expiry_date
+                subject = f"Work Permit / RP Expiry Notification - {employee_name}"
+                template = 'mail_log/email/work_permit_expiry.html'
+                context = {
+                    'employee_name': employee_name,
+                    'work_permit_no': doc_number,
+                    'work_id': employment.work_id,
+                    'expiry_date': expiry_date,
+                    'days_remaining': (expiry_date - today).days,
+                    'is_expired': expiry_date < today,
+                }
+
+            elif doc_type == 'vehicle_insurance':
+                vehicle = get_object_or_404(Vehicle, pk=doc_id)
+                employee_name = vehicle.plate_no
+                doc_number = vehicle.insurance_name
+                expiry_date = vehicle.insurance_expiry_date
+                subject = f"Vehicle Insurance Expiry Notification - {vehicle.plate_no}"
+                template = 'mail_log/email/vehicle_insurance_expiry.html'
+                context = {
+                    'plate_no': vehicle.plate_no,
+                    'insurance_name': doc_number,
+                    'expiry_date': expiry_date,
+                    'days_remaining': (expiry_date - today).days,
+                    'is_expired': expiry_date < today,
+                    'vehicle_type': vehicle.get_vehicle_type_display(),
+                }
+
+            elif doc_type == 'istemara':
+                vehicle = get_object_or_404(Vehicle, pk=doc_id)
+                employee_name = vehicle.plate_no
+                doc_number = vehicle.plate_no
+                expiry_date = vehicle.istemara_expiry_date
+                subject = f"Istemara Expiry Notification - {vehicle.plate_no}"
+                template = 'mail_log/email/istemara_expiry.html'
+                context = {
+                    'plate_no': vehicle.plate_no,
+                    'expiry_date': expiry_date,
+                    'days_remaining': (expiry_date - today).days,
+                    'is_expired': expiry_date < today,
+                    'vehicle_type': vehicle.get_vehicle_type_display(),
+                }
+            else:
+                messages.error(request, "Invalid document type.")
+                return redirect('mail_log:expire_report')
+
+            # Get site settings for email branding
+            try:
+                site_setting = SiteSettings.objects.filter(is_active=True).first()
+                context['site_title'] = site_setting.site_title if site_setting else 'HR Management'
+            except Exception:
+                context['site_title'] = 'HR Management'
+
+            # Send the email
+            send_email(
+                mail_to=[recipient_email],
+                cc_list=[],
+                bcc_list=[],
+                subject=subject,
+                template=template,
+                context=context,
+            )
+
+            # Log the mail
+            from_email = getattr(settings, 'EMAIL_HOST_USER', '') or 'system@noreply.com'
+
+            MailLog.objects.create(
+                from_mail=from_email,
+                to_mail=recipient_email,
+                subject=subject,
+                message=f"Expiry notification for {doc_type.replace('_', ' ').title()}: {doc_number} - {employee_name}",
+                status='SENT',
+            )
+
+            messages.success(request, f"Expiry notification email sent to {recipient_email} successfully.")
+
+        except Exception as e:
+            # Log failed mail
+            MailLog.objects.create(
+                from_mail='system@noreply.com',
+                to_mail=recipient_email,
+                subject=subject or f"Expiry Notification - {doc_type}",
+                message=f"Failed to send: {str(e)}",
+                status='FAILED',
+            )
+            messages.error(request, f"Failed to send email: {str(e)}")
+
+    return redirect('mail_log:expire_report')
+
+
+@login_required
+def send_bulk_expiry_mail(request):
+    """Send bulk expiry notification emails for selected documents."""
+    if not checkUserPermission(request, "can_update", "/backend/expire-list-log/"):
+        messages.error(request, "You do not have permission to send expiry notifications.")
+        return render(request, "403.html", status=403)
+
+    if request.method == 'POST':
+        selected_items = request.POST.getlist('selected_items', [])
+
+        if not selected_items:
+            messages.warning(request, "No items selected for bulk email.")
+            return redirect('mail_log:expire_report')
+
+        from datetime import date
+        today = date.today()
+        success_count = 0
+        fail_count = 0
+        skip_count = 0
+
+        try:
+            site_setting = SiteSettings.objects.filter(is_active=True).first()
+            site_title = site_setting.site_title if site_setting else 'HR Management'
+        except Exception:
+            site_title = 'HR Management'
+
+        from_email = getattr(settings, 'EMAIL_HOST_USER', '') or 'system@noreply.com'
+
+        for item in selected_items:
+            try:
+                # Format: doc_type:doc_id:email
+                parts = item.split(':')
+                if len(parts) < 3:
+                    skip_count += 1
+                    continue
+
+                doc_type = parts[0]
+                doc_id = parts[1]
+                recipient_email = ':'.join(parts[2:])  # Email might contain colons
+
+                if not recipient_email:
+                    skip_count += 1
+                    continue
+
+                subject = ''
+                template = ''
+                context = {'site_title': site_title}
+                employee_name = ''
+                doc_number = ''
+
+                if doc_type == 'passport':
+                    obj = Passport.objects.get(pk=doc_id)
+                    employee_name = obj.employee.full_name
+                    doc_number = obj.passport_no
+                    expiry_date = obj.passport_expiry_date
+                    subject = f"Passport Expiry Notification - {employee_name}"
+                    template = 'mail_log/email/passport_expiry.html'
+                    context.update({
+                        'employee_name': employee_name,
+                        'passport_no': doc_number,
+                        'expiry_date': expiry_date,
+                        'days_remaining': (expiry_date - today).days,
+                        'is_expired': expiry_date < today,
+                    })
+
+                elif doc_type == 'license':
+                    obj = DrivingLicense.objects.get(pk=doc_id)
+                    employee_name = obj.employee.full_name
+                    doc_number = obj.license_no
+                    expiry_date = obj.license_expiry_date
+                    subject = f"Driving License Expiry Notification - {employee_name}"
+                    template = 'mail_log/email/license_expiry.html'
+                    context.update({
+                        'employee_name': employee_name,
+                        'license_no': doc_number,
+                        'expiry_date': expiry_date,
+                        'days_remaining': (expiry_date - today).days,
+                        'is_expired': expiry_date < today,
+                    })
+
+                elif doc_type == 'work_permit':
+                    obj = Employment.objects.get(pk=doc_id)
+                    employee_name = obj.employee.full_name
+                    doc_number = obj.work_permit_no
+                    expiry_date = obj.rp_expiry_date
+                    subject = f"Work Permit / RP Expiry Notification - {employee_name}"
+                    template = 'mail_log/email/work_permit_expiry.html'
+                    context.update({
+                        'employee_name': employee_name,
+                        'work_permit_no': doc_number,
+                        'work_id': obj.work_id,
+                        'expiry_date': expiry_date,
+                        'days_remaining': (expiry_date - today).days,
+                        'is_expired': expiry_date < today,
+                    })
+
+                elif doc_type == 'vehicle_insurance':
+                    obj = Vehicle.objects.get(pk=doc_id)
+                    employee_name = obj.plate_no
+                    doc_number = obj.insurance_name
+                    expiry_date = obj.insurance_expiry_date
+                    subject = f"Vehicle Insurance Expiry Notification - {obj.plate_no}"
+                    template = 'mail_log/email/vehicle_insurance_expiry.html'
+                    context.update({
+                        'plate_no': obj.plate_no,
+                        'insurance_name': doc_number,
+                        'expiry_date': expiry_date,
+                        'days_remaining': (expiry_date - today).days,
+                        'is_expired': expiry_date < today,
+                        'vehicle_type': obj.get_vehicle_type_display(),
+                    })
+
+                elif doc_type == 'istemara':
+                    obj = Vehicle.objects.get(pk=doc_id)
+                    employee_name = obj.plate_no
+                    doc_number = obj.plate_no
+                    expiry_date = obj.istemara_expiry_date
+                    subject = f"Istemara Expiry Notification - {obj.plate_no}"
+                    template = 'mail_log/email/istemara_expiry.html'
+                    context.update({
+                        'plate_no': obj.plate_no,
+                        'expiry_date': expiry_date,
+                        'days_remaining': (expiry_date - today).days,
+                        'is_expired': expiry_date < today,
+                        'vehicle_type': obj.get_vehicle_type_display(),
+                    })
+                else:
+                    skip_count += 1
+                    continue
+
+                # Send email
+                send_email(
+                    mail_to=[recipient_email],
+                    cc_list=[],
+                    bcc_list=[],
+                    subject=subject,
+                    template=template,
+                    context=context,
+                )
+
+                # Log success
+                MailLog.objects.create(
+                    from_mail=from_email,
+                    to_mail=recipient_email,
+                    subject=subject,
+                    message=f"Bulk expiry notification for {doc_type.replace('_', ' ').title()}: {doc_number} - {employee_name}",
+                    status='SENT',
+                )
+                success_count += 1
+
+            except Exception as e:
+                fail_count += 1
+                MailLog.objects.create(
+                    from_mail=from_email,
+                    to_mail=recipient_email if recipient_email else 'unknown',
+                    subject=f"Expiry Notification - {doc_type if doc_type else 'Unknown'}",
+                    message=f"Bulk send failed: {str(e)}",
+                    status='FAILED',
+                )
+
+        result_msg = f"Bulk email completed: {success_count} sent"
+        if fail_count:
+            result_msg += f", {fail_count} failed"
+        if skip_count:
+            result_msg += f", {skip_count} skipped (no email)"
+
+        if fail_count == 0 and skip_count == 0:
+            messages.success(request, result_msg)
+        elif success_count > 0:
+            messages.warning(request, result_msg)
+        else:
+            messages.error(request, result_msg)
+
+    return redirect('mail_log:expire_report')
+
 
 

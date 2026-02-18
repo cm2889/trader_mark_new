@@ -208,6 +208,14 @@ uniform_clearance_patterns = ([
 ], 'uniform_clearance')
 
 
+# Mail Log / Expiry Tracker URL patterns
+mail_log_patterns = ([
+    path('expire-report/', views.expire_report, name='expire_report'),
+    path('mail-logs/', views.expire_mail_logs, name='mail_logs'),
+    path('send-single-mail/', views.send_single_expiry_mail, name='send_single_mail'),
+    path('send-bulk-mail/', views.send_bulk_expiry_mail, name='send_bulk_mail'),
+], 'mail_log')
+
 backend_patterns = ([
     path("api/menu-search/", views.search_backend_menus, name="search_backend_menus"),
     path("api/get-visitor/", views.get_visitor_by_contact, name="get_visitor_by_contact"),
@@ -255,6 +263,7 @@ urlpatterns = [
     path('uniform-stock/', include(uniform_stock_patterns)),
     path('uniform-issuance/', include(uniform_issuance_patterns)),
     path('uniform-clearance/', include(uniform_clearance_patterns)),
+    path('', include(mail_log_patterns)),
     # excel data
     path('excel/', include(export_import_patterns)), 
 ]

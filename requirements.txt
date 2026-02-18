@@ -8,3 +8,5 @@ reportlab==4.4.3
 requests==2.32.4
 django-auditlog==3.2.1
 django-filter==25.2
+python-decouple==3.8
+djlint==1.36.4

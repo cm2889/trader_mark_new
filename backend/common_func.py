@@ -1,9 +1,9 @@
 from threading import Thread
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives, get_connection
-from django.core.exceptions import ObjectDoesNotExist
 
-from backend.models import UserMenuPermission, EmailConfiguration
+from backend.models import UserMenuPermission
 
 
 def checkUserPermission(request, access_type, menu_url):
@@ -43,27 +43,32 @@ def send_email(mail_to, cc_list, bcc_list, subject, template, context):
         # Render HTML content
         html_body = render_to_string(template, context)
 
-        # Get active email config
-        try:
-            config = EmailConfiguration.objects.get(is_active=True)
-        except ObjectDoesNotExist:
-            print("No active email configuration found. Email not sent.")
+        # Read email config from Django settings (.env)
+        email_host = getattr(settings, 'EMAIL_HOST', '')
+        email_port = getattr(settings, 'EMAIL_PORT', 587)
+        email_host_user = getattr(settings, 'EMAIL_HOST_USER', '')
+        email_host_password = getattr(settings, 'EMAIL_HOST_PASSWORD', '')
+        email_use_tls = getattr(settings, 'EMAIL_USE_TLS', True)
+        email_use_ssl = getattr(settings, 'EMAIL_USE_SSL', False)
+
+        if not email_host_user:
+            print("EMAIL_HOST_USER not configured in .env. Email not sent.")
             return
 
-        # Prepare email backend connection from DB settings
+        # Prepare email backend connection from Django settings
         connection = get_connection(
-            host=config.email_host,
-            port=config.email_port,
-            username=config.email_host_user,
-            password=config.email_host_password,
-            use_tls=config.use_tls,
-            use_ssl=config.use_ssl,
+            host=email_host,
+            port=email_port,
+            username=email_host_user,
+            password=email_host_password,
+            use_tls=email_use_tls,
+            use_ssl=email_use_ssl,
         )
 
         # Build the email
         email = EmailMultiAlternatives(
             subject=subject,
-            from_email=f"{config.email_from_name} <{config.email_host_user}>",
+            from_email=email_host_user,
             to=mail_to,
             cc=cc_list,
             bcc=bcc_list or [],

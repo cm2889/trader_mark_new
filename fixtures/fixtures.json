@@ -208,6 +208,38 @@
       "is_sub_child_menu": true,
       "is_active": true
     }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 156,
+    "fields": {
+      "module_name": "Lead Management",
+      "menu_name": "Expire Report",
+      "menu_url": "/backend/expire-report/",
+      "menu_icon": "fa-solid fa-calendar-exclamation",
+      "menu_description": "View report of leads with upcoming expiry dates.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 157,
+    "fields": {
+      "module_name": "Mail Log",
+      "menu_name": "Mail Logs",
+      "menu_url": "/backend/mail-logs/",
+      "menu_icon": "fa-solid fa-envelope",
+      "menu_description": "View mail logs for leads.",
+      "parent": 7,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
   },
 
   {
