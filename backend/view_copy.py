@@ -29,6 +29,7 @@ from datetime import datetime
 from django.db.models import Sum, Count, Q, F
 from backend.models import UniformStockTransactionLog
 import pandas as pd
+import re
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
@@ -128,6 +129,52 @@ def import_excel(request):
             error_count = 0
             errors = []
 
+            # --- Helper functions (defined once, used throughout) ---
+            def safe_str(val):
+                """Safely convert value to string, handling NaN and float values.
+                Converts float integers like 70037744.0 to '70037744'."""
+                if pd.isna(val):
+                    return ''
+                if isinstance(val, float) and val == int(val):
+                    return str(int(val)).strip()
+                return str(val).strip()
+
+            def parse_date(date_val):
+                """Parse date from Excel with multiple format support."""
+                if pd.isna(date_val):
+                    return None
+                if isinstance(date_val, datetime):
+                    return date_val.date()
+                try:
+                    return pd.to_datetime(date_val).date()
+                except:
+                    return None
+
+            def parse_expiry_date(date_val):
+                """Parse expiry date, fixing Excel 2-digit year misinterpretation.
+                Excel maps 2-digit years 30-99 to 1930-1999 instead of 2030-2099.
+                Expiry dates before 2000 are clearly wrong, so we add 100 years."""
+                d = parse_date(date_val)
+                if d and d.year < 2000:
+                    d = d.replace(year=d.year + 100)
+                return d
+
+            def clean_phone(val):
+                """Clean phone number:
+                - Strips '.0' float suffix from Excel numeric values
+                - Removes all special characters except leading '+'
+                - Truncates to 20 chars max
+                Returns None if empty."""
+                s = safe_str(val)
+                if not s:
+                    return None
+                # Preserve leading +, strip all non-digit chars from the rest
+                if s.startswith('+'):
+                    s = '+' + re.sub(r'[^\d]', '', s[1:])
+                else:
+                    s = re.sub(r'[^\d]', '', s)
+                return s[:20] if s and s != '+' else None
+
             for index, row in df.iterrows():
                 try:
                     # Skip empty rows
@@ -135,12 +182,6 @@ def import_excel(request):
                         continue
 
                     # Get QID No (unique identifier)
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
                     qid_no = safe_str(row.get('Qid No', ''))
 
                     # Validate QID No
@@ -154,13 +195,6 @@ def import_excel(request):
                     if existing_employee:
                         # Update existing employee
                         employee = existing_employee
-                        
-                        # Helper function for safe string conversion
-                        def safe_str(val):
-                            """Safely convert value to string, handling NaN"""
-                            if pd.isna(val):
-                                return ''
-                            return str(val).strip()
                         
                         # Parse name into first_name and last_name
                         full_name = safe_str(row.get('Name', ''))
@@ -181,18 +215,6 @@ def import_excel(request):
                         gender_val = safe_str(row.get('Gender', '')).upper()
                         gender = 'M' if gender_val == 'MALE' else 'F' if gender_val == 'FEMALE' else 'M'
 
-                        # Parse dates
-                        def parse_date(date_val):
-                            """Parse date from Excel with multiple format support"""
-                            if pd.isna(date_val):
-                                return None
-                            if isinstance(date_val, datetime):
-                                return date_val.date()
-                            try:
-                                return pd.to_datetime(date_val).date()
-                            except:
-                                return None
-
                         joining_date = parse_date(row.get('Joing Date'))
 
                         # Update employee fields
@@ -209,13 +231,6 @@ def import_excel(request):
                         
                     else:
                         # Create new employee (HR File No will be auto-generated)
-                        
-                        # Helper function for safe string conversion
-                        def safe_str(val):
-                            """Safely convert value to string, handling NaN"""
-                            if pd.isna(val):
-                                return ''
-                            return str(val).strip()
                         
                         # Parse name into first_name and last_name
                         full_name = safe_str(row.get('Name', ''))
@@ -236,18 +251,6 @@ def import_excel(request):
                         gender_val = str(row.get('Gender', '')).strip().upper()
                         gender = 'M' if gender_val == 'MALE' else 'F' if gender_val == 'FEMALE' else 'M'
 
-                        # Parse dates
-                        def parse_date(date_val):
-                            """Parse date from Excel with multiple format support"""
-                            if pd.isna(date_val):
-                                return None
-                            if isinstance(date_val, datetime):
-                                return date_val.date()
-                            try:
-                                return pd.to_datetime(date_val).date()
-                            except:
-                                return None
-
                         joining_date = parse_date(row.get('Joing Date'))
 
                         # Create new employee (don't set hr_file_no, let it auto-generate)
@@ -263,30 +266,13 @@ def import_excel(request):
                             created_by=request.user,
                         )
 
-                    # Now process related data for this employee
-                    def parse_date(date_val):
-                        """Parse date from Excel with multiple format support"""
-                        if pd.isna(date_val):
-                            return None
-                        if isinstance(date_val, datetime):
-                            return date_val.date()
-                        try:
-                            return pd.to_datetime(date_val).date()
-                        except:
-                            return None
-
-                    rp_exp_date = parse_date(row.get('RP Exp date'))
-                    passport_expiry = parse_date(row.get('Passport Exipry'))
-                    license_expiry = parse_date(row.get('Driving license Expiry'))
-                    istemara_expiry = parse_date(row.get('Istemara Expiry'))
+                    # Now process related data for this employee (use parse_expiry_date for expiry fields)
+                    rp_exp_date = parse_expiry_date(row.get('RP Exp date'))
+                    passport_expiry = parse_expiry_date(row.get('Passport Exipry'))
+                    license_expiry = parse_expiry_date(row.get('Driving license Expiry'))
+                    istemara_expiry = parse_expiry_date(row.get('Istemara Expiry'))
 
                     # Create or update Employment
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
                     work_permit_no = safe_str(row.get('Work Permit NO', ''))
                     work_id = safe_str(row.get('Work ID', ''))
                     
@@ -322,12 +308,6 @@ def import_excel(request):
                         )
 
                     # Create or update Passport
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
                     passport_no = safe_str(row.get('Passport No', ''))
                     if passport_no and passport_expiry:
                         passport_renew = safe_str(row.get('Passport Renew', '')).upper()
@@ -343,12 +323,6 @@ def import_excel(request):
                         )
 
                     # Create or update Driving License
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
                     license_no = safe_str(row.get('Driving License', ''))
                     if license_no and license_expiry:
                         license_renew = safe_str(row.get('Driving License Renew', '')).upper()
@@ -365,12 +339,6 @@ def import_excel(request):
                         )
 
                     # Create or update Health Insurance
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
                     hamad_health = safe_str(row.get('Hamad Health Card', '')).upper()
                     wm_insurance = safe_str(row.get('WM Insurance', '')).upper()
                     fhc = safe_str(row.get('FHC', '')).upper()
@@ -387,31 +355,18 @@ def import_excel(request):
                             }
                         )
 
-                    # Create or update Contact
-                    # Helper function to safely convert values, handling NaN
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN and empty values"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
-                    phone_no = safe_str(row.get('Phone No', ''))
+                    # Create or update Contact (clean_phone strips '.0', special chars, keeps leading '+')
+                    phone_no = clean_phone(row.get('Phone No', ''))
                     if phone_no:
-                        # Truncate phone numbers to fit database constraints (max 20 chars)
-                        def safe_phone(field_name):
-                            """Get phone number from row, return None if empty or NaN"""
-                            val = safe_str(row.get(field_name, ''))
-                            return val[:20] if val else None
-                        
                         Contact.objects.update_or_create(
                             employee=employee,
                             defaults={
-                                'phone_no': phone_no[:20] if phone_no else None,
-                                'phone_no_alt': safe_phone('Phone No 01'),
-                                'roommate_phone': safe_phone('Friends/ Room Mate Phone no'),
-                                'relative_qatar_phone': safe_phone('Relative Qatar Phone No'),
-                                'home_phone': safe_phone('Home Phone No'),
-                                'home_phone_alt': safe_phone('Home Phone No 01'),
+                                'phone_no': phone_no,
+                                'phone_no_alt': clean_phone(row.get('Phone No 01', '')),
+                                'roommate_phone': clean_phone(row.get('Friends/ Room Mate Phone no', '')),
+                                'relative_qatar_phone': clean_phone(row.get('Relative Qatar Phone No', '')),
+                                'home_phone': clean_phone(row.get('Home Phone No', '')),
+                                'home_phone_alt': clean_phone(row.get('Home Phone No 01', '')),
                                 'home_email': safe_str(row.get('Home Email', '')) or None,
                                 'created_by': request.user,
                                 'updated_by': request.user,
@@ -419,12 +374,6 @@ def import_excel(request):
                         )
 
                     # Create or update Address
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
                     national_address = safe_str(row.get('N. Address', '')).upper()
                     room_address = safe_str(row.get('Room Address', ''))
 
@@ -440,12 +389,6 @@ def import_excel(request):
                         )
 
                     # Create or update Vehicle (if applicable)
-                    def safe_str(val):
-                        """Safely convert value to string, handling NaN"""
-                        if pd.isna(val):
-                            return ''
-                        return str(val).strip()
-                    
                     plate_no = safe_str(row.get('Bike / Car No', ''))
                     if plate_no and plate_no != '*' and istemara_expiry:
                         vehicle_type = 'BIKE'  # Default, can be enhanced

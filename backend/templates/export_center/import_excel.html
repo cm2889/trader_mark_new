@@ -96,28 +96,42 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block extra_js %}
     <script>
-$(document).ready(function () {
-    $('.select2-items').select2({
-        dropdownParent: $('#filterModal')
-    });
-});
+(function () {
+    function init() {
+        if (window.$ && $.fn && $.fn.select2) {
+            $('.select2-items').select2({ dropdownParent: $('#filterModal') });
+        }
 
-const fileInput = document.getElementById('fileInput');
-const fileLabel = document.getElementById('fileLabel');
-const importBtn = document.getElementById('importBtn');
-const exportCompany = document.getElementById('export_company');
-const exportBtn = document.getElementById('exportBtn');
+        const fileInput = document.getElementById('fileInput');
+        const fileLabel = document.getElementById('fileLabel');
+        const importBtn = document.getElementById('importBtn');
+        const exportCompany = document.getElementById('export_company');
+        const exportBtn = document.getElementById('exportBtn');
 
-fileInput.addEventListener('change', () => {
-  if(fileInput.files.length){
-    fileLabel.textContent = fileInput.files[0].name;
-    importBtn.disabled = false;
-  }
-});
+        if (fileInput && fileLabel && importBtn) {
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length) {
+                    fileLabel.textContent = fileInput.files[0].name;
+                    importBtn.disabled = false;
+                }
+            });
+        }
 
-exportCompany.addEventListener('change', () => {
-  exportBtn.disabled = !exportCompany.value;
-});
+        if (exportCompany && exportBtn) {
+            exportCompany.addEventListener('change', () => {
+                exportBtn.disabled = !exportCompany.value;
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
     </script>
 {% endblock %}
