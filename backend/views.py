@@ -306,7 +306,7 @@ def backend_login(request):
                             }
                         )
 
-                next_url = request.GET.get('next', reverse('backend:backend_dashboard'))
+                next_url = request.GET.get('next', reverse('backend:dash_board'))
                 return redirect(next_url)
 
         LoginLog.objects.create(username=username, login_ip=user_ip, login_status=False)
