@@ -7,7 +7,7 @@ export_import_patterns = ([
     path('export/', view_copy.export_excel, name='export_excel'), 
 ], 'import_export')
 
-# Company URL patterns
+
 company_patterns = ([
     path('', views.CompanyListView.as_view(), name='list'),
     path('create/', views.CompanyCreateView.as_view(), name='create'),
@@ -15,13 +15,14 @@ company_patterns = ([
     path('delete/<int:pk>/', views.company_delete, name='delete'),
 ], 'company')
 
-# Nationality URL patterns
+
 nationality_patterns = ([
     path('', views.NationalityListView.as_view(), name='list'),
     path('create/', views.NationalityCreateView.as_view(), name='create'),
     path('update/<int:pk>/', views.NationalityUpdateView.as_view(), name='update'),
     path('delete/<int:pk>/', views.nationality_delete, name='delete'),
 ], 'nationality')
+
 
 visitor_patterns = ([
     path('', views.VisitorListView.as_view(), name='list'),
@@ -31,7 +32,7 @@ visitor_patterns = ([
     path('convert-to-lead/<int:visitor_id>/', views.visitor_convert_to_lead, name='convert_to_lead'),
 ], 'visitor')
 
-# Lead Management URL patterns
+
 lead_patterns = ([
     path('', views.LeadListView.as_view(), name='list'),
     path('create/', views.lead_create, name='create'),
@@ -41,7 +42,6 @@ lead_patterns = ([
     path('convert-to-employee/<int:pk>/', views.lead_convert_to_employee, name='convert_to_employee'),
 ], 'lead')
 
-# Lead Source URL patterns
 lead_source_patterns = ([
     path('', views.LeadSourceListView.as_view(), name='list'),
     path('create/', views.LeadSourceCreateView.as_view(), name='create'),
@@ -49,7 +49,7 @@ lead_source_patterns = ([
     path('delete/<int:pk>/', views.lead_source_delete, name='delete'),
 ], 'lead_source')
 
-# Lead Stage URL patterns
+
 lead_stage_patterns = ([
     path('', views.LeadStageListView.as_view(), name='list'),
     path('create/', views.LeadStageCreateView.as_view(), name='create'),
@@ -57,7 +57,7 @@ lead_stage_patterns = ([
     path('delete/<int:pk>/', views.lead_stage_delete, name='delete'),
 ], 'lead_stage')
 
-# Follow-Up URL patterns
+
 followup_patterns = ([
     path('', views.FollowUpListView.as_view(), name='list'),
     path('create/', views.followup_create, name='create'),
@@ -65,7 +65,7 @@ followup_patterns = ([
     path('delete/<int:pk>/', views.followup_delete, name='delete'),
 ], 'followup')
 
-# Reminder URL patterns
+
 reminder_patterns = ([
     path('create/', views.reminder_create, name='create'),
     path('update/<int:pk>/', views.reminder_update, name='update'),
@@ -73,7 +73,7 @@ reminder_patterns = ([
     path('delete/<int:pk>/', views.reminder_delete, name='delete'),
 ], 'reminder')
 
-# Employee URL patterns
+
 employee_patterns = ([
     path('', views.EmployeeListView.as_view(), name='list'),
     path('create/', views.employee_create, name='create'),
@@ -83,6 +83,7 @@ employee_patterns = ([
     path('info/<int:pk>/', views.employee_profile, name='profile'),
 ], 'employee')
 
+
 vehicle_assign_patterns = ([
     path('', views.VehicleAssignListView.as_view(), name='list'),
     path('create/', views.VehicleAssignCreateView.as_view(), name='create'),
@@ -90,7 +91,7 @@ vehicle_assign_patterns = ([
     path('delete/<int:pk>/', views.vehicle_assign_delete, name='delete'),
 ], 'vehicle_assign')
 
-# Vehicle Info URL patterns
+
 vehicle_patterns = ([
     path('', views.VehicleListView.as_view(), name='list'),
     path('create/', views.VehicleCreateView.as_view(), name='create'),
@@ -101,7 +102,7 @@ vehicle_patterns = ([
     path('unassign/<int:pk>/', views.vehicle_unassign, name='unassign'),
 ], 'vehicle_info')
 
-# Vehicle Handover URL patterns
+
 vehicle_handover_patterns = ([
     path('', views.VehicleHandoverListView.as_view(), name='list'),
     path('create/', views.vehicle_handover_create, name='create'),
@@ -110,7 +111,7 @@ vehicle_handover_patterns = ([
     path('delete/<int:pk>/', views.vehicle_handover_delete, name='delete'),
 ], 'vehicle_handover')
 
-# Traffic violation Type URL patterns
+
 violation_type_patterns = ([
     path('', views.ViolationTypeListView.as_view(), name='list'),
     path('create/', views.ViolationTypeCreateView.as_view(), name='create'),
@@ -118,7 +119,7 @@ violation_type_patterns = ([
     path('delete/<int:pk>/', views.violation_type_delete, name='delete'),
 ], 'violation_type') 
 
-# Traffic Violation URL patterns
+
 traffic_violation_patterns = ([
     path('', views.TrafficViolationListView.as_view(), name='list'),
     path('create/', views.traffic_violation_create, name='create'),
@@ -127,7 +128,7 @@ traffic_violation_patterns = ([
     path('delete/<int:pk>/', views.traffic_violation_delete, name='delete'),
 ], 'traffic_violation')
 
-# Vehicle Maintenance URL patterns
+
 vehicle_maintenance_patterns = ([
     path('', views.VehicleMaintenanceListView.as_view(), name='list'),
     path('create/', views.vehicle_maintenance_create, name='create'),
@@ -136,7 +137,7 @@ vehicle_maintenance_patterns = ([
     path('delete/<int:pk>/', views.vehicle_maintenance_delete, name='delete'),
 ], 'vehicle_maintenance')
 
-# Vehicle Accident URL patterns
+
 vehicle_accident_patterns = ([
     path('', views.VehicleAccidentListView.as_view(), name='list'),
     path('create/', views.vehicle_accident_create, name='create'),
@@ -145,7 +146,7 @@ vehicle_accident_patterns = ([
     path('delete/<int:pk>/', views.vehicle_accident_delete, name='delete'),
 ], 'vehicle_accident')
 
-# Vehicle Installment URL patterns
+
 vehicle_installment_patterns = ([
     path('', views.VehicleInstallmentListView.as_view(), name='list'),
     path('create/', views.vehicle_installment_create, name='create'),
@@ -154,7 +155,7 @@ vehicle_installment_patterns = ([
     path('pay/<int:pk>/', views.installment_pay, name='pay'),
 ], 'vehicle_installment')
 
-# Vehicle Purchase URL patterns
+
 vehicle_purchase_patterns = ([
     path('', views.vehicle_purchase_list, name='list'),
     path('create/', views.vehicle_purchase_create, name='create'),
@@ -163,7 +164,7 @@ vehicle_purchase_patterns = ([
     path('<int:pk>/installments/', views.purchase_installments_list, name='installments'),
 ], 'vehicle_purchase')
 
-# Traffic Violation Penalty URL patterns
+
 traffic_violation_penalty_patterns = ([
     path('', views.TrafficViolationPenaltyListView.as_view(), name='list'),
     path('create/', views.TrafficViolationPenaltyCreateView.as_view(), name='create'),
@@ -181,7 +182,7 @@ insurance_claim_patterns = ([
     path('delete/<int:pk>/', views.insurance_claim_delete, name='delete'),
 ], 'insurance_claim')
 
-# Vehicle Maintenance Type URL patterns
+
 vehicle_maintanance_type_patterns = ([
     path('', views.VehicleMaintananceTypeListView.as_view(), name='list'),
     path('create/', views.VehicleMaintananceTypeCreateView.as_view(), name='create'),
@@ -189,7 +190,7 @@ vehicle_maintanance_type_patterns = ([
     path('delete/<int:pk>/', views.vehicle_maintanance_type_delete, name='delete'),
 ], 'vehicle_maintanance_type')
 
-# Uniform URL patterns
+
 uniform_patterns = ([
     path('', views.UniformListView.as_view(), name='list'),
     path('create/', views.UniformCreateView.as_view(), name='create'),
@@ -199,7 +200,7 @@ uniform_patterns = ([
     path('log/', views.uniform_log, name='log'),
 ], 'uniform')
 
-# Uniform Stock URL patterns
+
 uniform_stock_patterns = ([
     path('', views.UniformStockListView.as_view(), name='list'),
     path('create/', views.UniformStockCreateView.as_view(), name='create'),
@@ -207,7 +208,7 @@ uniform_stock_patterns = ([
     path('delete/<int:pk>/', views.uniform_stock_delete, name='delete'),
 ], 'uniform_stock')
 
-# Uniform Issuance URL patterns
+
 uniform_issuance_patterns = ([
     path('', views.UniformIssuanceListView.as_view(), name='list'),
     path('create/', views.UniformIssuanceCreateView.as_view(), name='create'),
@@ -217,20 +218,20 @@ uniform_issuance_patterns = ([
     path('delete/<int:pk>/', views.uniform_issuance_delete, name='delete'),
 ], 'uniform_issuance')
 
-# Uniform Clearance URL patterns
+
 uniform_clearance_patterns = ([
     path('', views.UniformClearanceListView.as_view(), name='list'),
     path('delete/<int:pk>/', views.uniform_clearance_delete, name='delete'),
 ], 'uniform_clearance')
 
 
-# Mail Log / Expiry Tracker URL patterns
 mail_log_patterns = ([
     path('expire-report/', views.expire_report, name='expire_report'),
     path('mail-logs/', views.expire_mail_logs, name='mail_logs'),
     path('send-single-mail/', views.send_single_expiry_mail, name='send_single_mail'),
     path('send-bulk-mail/', views.send_bulk_expiry_mail, name='send_bulk_mail'),
 ], 'mail_log')
+
 
 backend_patterns = ([
     path("api/menu-search/", views.search_backend_menus, name="search_backend_menus"),

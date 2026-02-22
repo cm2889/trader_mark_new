@@ -361,7 +361,7 @@ class UserListView(ListView):
 
     def dispatch(self, request, *args, **kwargs):
         # Check permission before anything else
-        if not checkUserPermission(request, "can_add", "/backend/user/"):
+        if not checkUserPermission(request, "can_add", "/user/"):
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
 
@@ -392,7 +392,7 @@ class UserListView(ListView):
 
 # @login_required
 # def user_add(request):
-#     if not checkUserPermission(request, "can_add", "/backend/user/"):
+#     if not checkUserPermission(request, "can_add", "/user/"):
 #         return render(request, "403.html", status=403)
 
 #     if request.method == 'POST':
@@ -413,7 +413,7 @@ class UserListView(ListView):
 
 @login_required
 def user_update(request, data_id):
-    if not checkUserPermission(request, "can_update", "/backend/user/"):
+    if not checkUserPermission(request, "can_update", "/user/"):
         return render(request, "403.html", status=403)
 
     user_obj = get_object_or_404(User, id=data_id)
@@ -427,7 +427,7 @@ def user_update(request, data_id):
 
 @login_required
 def reset_password(request, data_id):
-    if not checkUserPermission(request, "can_update", "/backend/user/"):
+    if not checkUserPermission(request, "can_update", "/user/"):
         return render(request, "403.html", status=403)
 
     user = get_object_or_404(User, id=data_id)
@@ -447,7 +447,7 @@ def reset_password(request, data_id):
 
 @login_required
 def user_permission(request, user_id):
-    if not checkUserPermission(request, "can_update", "/backend/user-permission/"):
+    if not checkUserPermission(request, "can_update", "/user-permission/"):
         return render(request, "403.html")
 
     if request.method == "POST":
@@ -541,7 +541,7 @@ def user_permission(request, user_id):
 
 @login_required
 def dash_board(request):
-    if not checkUserPermission(request, "can_view", "/backend/dashboard/"):
+    if not checkUserPermission(request, "can_view", "/dashboard/"):
         messages.error(request, "You do not have permission to view the dashboard.") 
         return render(request, "403.html", status=403)
 
@@ -806,7 +806,7 @@ class CompanyListView(ListView):
     paginate_by = None 
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/company/"):
+        if not checkUserPermission(request, "can_view", "/company/"):
             messages.error(request, "You do not have permission to view companies.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs) 
@@ -856,7 +856,7 @@ class CompanyCreateView(CreateView):
     success_url = reverse_lazy('company:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_create", "/backend/company/"):
+        if not checkUserPermission(request, "can_create", "/company/"):
             messages.error(request, "You do not have permission to create companies.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -875,7 +875,7 @@ class CompanyUpdateView(UpdateView):
     success_url = reverse_lazy('company:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/company/"):
+        if not checkUserPermission(request, "can_update", "/company/"):
             messages.error(request, "You do not have permission to update companies.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -889,7 +889,7 @@ class CompanyUpdateView(UpdateView):
 @login_required
 def company_delete(request, pk):
     company = get_object_or_404(Company, pk=pk)
-    if not checkUserPermission(request, "can_delete", "/backend/company/"):
+    if not checkUserPermission(request, "can_delete", "/company/"):
         messages.error(request, "You do not have permission to delete companies.")
         return render(request, "403.html", status=403)
     
@@ -907,7 +907,7 @@ class NationalityListView(ListView):
     paginate_by = None 
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/nationality/"):
+        if not checkUserPermission(request, "can_view", "/nationality/"):
             messages.error(request, "You do not have permission to view nationalities.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -946,7 +946,7 @@ class NationalityCreateView(CreateView):
     success_url = reverse_lazy('nationality:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/nationality/"):
+        if not checkUserPermission(request, "can_add", "/nationality/"):
             messages.error(request, "You do not have permission to add nationalities.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -963,7 +963,7 @@ class NationalityUpdateView(UpdateView):
     success_url = reverse_lazy('nationality:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/nationality/"):
+        if not checkUserPermission(request, "can_update", "/nationality/"):
             messages.error(request, "You do not have permission to update nationalities.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -975,7 +975,7 @@ class NationalityUpdateView(UpdateView):
 @login_required
 def nationality_delete(request, pk):
 
-    if not checkUserPermission(request, "can_delete", "/backend/nationality/"):
+    if not checkUserPermission(request, "can_delete", "/nationality/"):
         messages.error(request, "You do not have permission to delete nationalities.")
         return render(request, "403.html", status=403)
     
@@ -992,7 +992,7 @@ class VisitorListView(ListView):
     paginate_by = None 
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/visitor/"):
+        if not checkUserPermission(request, "can_view", "/visitor/"):
             messages.error(request, "You do not have permission to view visitors.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs) 
@@ -1035,7 +1035,7 @@ class VisitorCreateView(CreateView):
     success_url = reverse_lazy('visitor:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/visitor/"):
+        if not checkUserPermission(request, "can_add", "/visitor/"):
             messages.error(request, "You do not have permission to add visitors.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1054,7 +1054,7 @@ class VisitorUpdateView(UpdateView):
     success_url = reverse_lazy('visitor:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/visitor/"):
+        if not checkUserPermission(request, "can_update", "/visitor/"):
             messages.error(request, "You do not have permission to update visitors.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1066,7 +1066,7 @@ class VisitorUpdateView(UpdateView):
 
 @login_required
 def visitor_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/visitor/"):
+    if not checkUserPermission(request, "can_delete", "/visitor/"):
         messages.error(request, "You do not have permission to delete visitors.")
         return render(request, "403.html", status=403)
     
@@ -1105,7 +1105,7 @@ class LeadSourceListView(ListView):
     paginate_by = None 
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/lead-source/"):
+        if not checkUserPermission(request, "can_view", "/lead-source/"):
             messages.error(request, "You do not have permission to view lead sources.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1142,7 +1142,7 @@ class LeadSourceCreateView(CreateView):
     success_url = reverse_lazy('lead_source:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/lead-source/"):
+        if not checkUserPermission(request, "can_add", "/lead-source/"):
             messages.error(request, "You do not have permission to add lead sources.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1159,7 +1159,7 @@ class LeadSourceUpdateView(UpdateView):
     success_url = reverse_lazy('lead_source:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/lead-source/"):
+        if not checkUserPermission(request, "can_update", "/lead-source/"):
             messages.error(request, "You do not have permission to update lead sources.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1171,7 +1171,7 @@ class LeadSourceUpdateView(UpdateView):
 
 @login_required
 def lead_source_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/lead-source/"):
+    if not checkUserPermission(request, "can_delete", "/lead-source/"):
         messages.error(request, "You do not have permission to delete lead sources.")
         return render(request, "403.html", status=403)
     
@@ -1187,7 +1187,7 @@ class LeadStageListView(ListView):
     paginate_by = None 
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/lead-stage/"):
+        if not checkUserPermission(request, "can_view", "/lead-stage/"):
             messages.error(request, "You do not have permission to view lead stages.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1224,7 +1224,7 @@ class LeadStageCreateView(CreateView):
     success_url = reverse_lazy('lead_stage:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/lead-stage/"):
+        if not checkUserPermission(request, "can_add", "/lead-stage/"):
             messages.error(request, "You do not have permission to add lead stages.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1241,7 +1241,7 @@ class LeadStageUpdateView(UpdateView):
     success_url = reverse_lazy('lead_stage:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/lead-stage/"):
+        if not checkUserPermission(request, "can_update", "/lead-stage/"):
             messages.error(request, "You do not have permission to update lead stages.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1252,7 +1252,7 @@ class LeadStageUpdateView(UpdateView):
 
 @login_required
 def lead_stage_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/lead-stage/"):
+    if not checkUserPermission(request, "can_delete", "/lead-stage/"):
         messages.error(request, "You do not have permission to delete lead stages.")
         return render(request, "403.html", status=403)
     
@@ -1270,7 +1270,7 @@ class LeadListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/lead/"):
+        if not checkUserPermission(request, "can_view", "/lead/"):
             messages.error(request, "You do not have permission to view leads.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1336,7 +1336,7 @@ class LeadListView(ListView):
 @login_required
 def lead_create(request):
     """Create new lead"""
-    if not checkUserPermission(request, "can_add", "/backend/lead/"):
+    if not checkUserPermission(request, "can_add", "/lead/"):
         messages.error(request, "You do not have permission to create leads.")
         return render(request, "403.html", status=403)
 
@@ -1362,7 +1362,7 @@ def lead_create(request):
 @login_required
 def lead_update(request, pk):
     """Update existing lead"""
-    if not checkUserPermission(request, "can_update", "/backend/lead/"):
+    if not checkUserPermission(request, "can_update", "/lead/"):
         messages.error(request, "You do not have permission to update leads.")
         return render(request, "403.html", status=403)
 
@@ -1389,7 +1389,7 @@ def lead_update(request, pk):
 @login_required
 def lead_detail(request, pk):
     """Detailed view of lead with follow-ups and reminders"""
-    if not checkUserPermission(request, "can_view", "/backend/lead/"):
+    if not checkUserPermission(request, "can_view", "/lead/"):
         messages.error(request, "You do not have permission to view lead details.")
         return render(request, "403.html", status=403)
 
@@ -1419,7 +1419,7 @@ def lead_detail(request, pk):
 @login_required
 def lead_delete(request, pk):
     """Soft delete lead"""
-    if not checkUserPermission(request, "can_delete", "/backend/lead/"):
+    if not checkUserPermission(request, "can_delete", "/lead/"):
         messages.error(request, "You do not have permission to delete leads.")
         return render(request, "403.html", status=403)
 
@@ -1437,7 +1437,7 @@ def lead_delete(request, pk):
 @login_required
 def lead_convert_to_employee(request, pk):
     """Convert lead to employee (redirect to employee create with pre-filled data)"""
-    if not checkUserPermission(request, "can_add", "/backend/employee/"):
+    if not checkUserPermission(request, "can_add", "/employee/"):
         messages.error(request, "You do not have permission to convert leads to employees.")
         return render(request, "403.html", status=403)
 
@@ -1468,7 +1468,7 @@ def lead_convert_to_employee(request, pk):
 @login_required
 def visitor_convert_to_lead(request, visitor_id):
     """Quick conversion of visitor to lead (AJAX)"""
-    if not checkUserPermission(request, "can_add", "/backend/lead/"):
+    if not checkUserPermission(request, "can_add", "/lead/"):
         return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
 
     visitor = get_object_or_404(Visitor, pk=visitor_id, is_active=True, deleted=False)
@@ -1541,7 +1541,7 @@ class FollowUpListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/followup/"):
+        if not checkUserPermission(request, "can_view", "/followup/"):
             messages.error(request, "You do not have permission to view follow-ups.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -1592,7 +1592,7 @@ class FollowUpListView(ListView):
 @login_required
 def followup_create(request):
     """Create new follow-up"""
-    if not checkUserPermission(request, "can_add", "/backend/followup/"):
+    if not checkUserPermission(request, "can_add", "/followup/"):
         messages.error(request, "You do not have permission to create follow-ups.")
         return render(request, "403.html", status=403)
 
@@ -1624,7 +1624,7 @@ def followup_create(request):
 @login_required
 def followup_update(request, pk):
     """Update existing follow-up"""
-    if not checkUserPermission(request, "can_update", "/backend/followup/"):
+    if not checkUserPermission(request, "can_update", "/followup/"):
         messages.error(request, "You do not have permission to update follow-ups.")
         return render(request, "403.html", status=403)
 
@@ -1651,7 +1651,7 @@ def followup_update(request, pk):
 @login_required
 def followup_delete(request, pk):
     """Delete follow-up"""
-    if not checkUserPermission(request, "can_delete", "/backend/followup/"):
+    if not checkUserPermission(request, "can_delete", "/followup/"):
         messages.error(request, "You do not have permission to delete follow-ups.")
         return render(request, "403.html", status=403)
 
@@ -1670,7 +1670,7 @@ def followup_delete(request, pk):
 @login_required
 def reminder_create(request):
     """Create new reminder"""
-    if not checkUserPermission(request, "can_add", "/backend/followup/"):
+    if not checkUserPermission(request, "can_add", "/followup/"):
         messages.error(request, "You do not have permission to create reminders.")
         return render(request, "403.html", status=403)
 
@@ -1702,7 +1702,7 @@ def reminder_create(request):
 @login_required
 def reminder_update(request, pk):
     """Update existing reminder"""
-    if not checkUserPermission(request, "can_update", "/backend/followup/"):
+    if not checkUserPermission(request, "can_update", "/followup/"):
         messages.error(request, "You do not have permission to update reminders.")
         return render(request, "403.html", status=403)
 
@@ -1729,7 +1729,7 @@ def reminder_update(request, pk):
 @login_required
 def reminder_mark_done(request, pk):
     """Mark reminder as done (AJAX)"""
-    if not checkUserPermission(request, "can_update", "/backend/followup/"):
+    if not checkUserPermission(request, "can_update", "/followup/"):
         return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
 
     reminder = get_object_or_404(FollowUpReminder, pk=pk)
@@ -1747,7 +1747,7 @@ def reminder_mark_done(request, pk):
 @login_required
 def reminder_delete(request, pk):
     """Delete reminder"""
-    if not checkUserPermission(request, "can_delete", "/backend/followup/"):
+    if not checkUserPermission(request, "can_delete", "/followup/"):
         messages.error(request, "You do not have permission to delete reminders.")
         return render(request, "403.html", status=403)
 
@@ -1799,7 +1799,7 @@ def get_visitor_by_contact(request):
 @login_required
 def employee_create(request):
 
-    if not checkUserPermission(request, "can_add", "/backend/employee/"):
+    if not checkUserPermission(request, "can_add", "/employee/"):
         messages.error(request, "You do not have permission to add employees.")
         return render(request, "403.html", status=403)
 
@@ -2053,7 +2053,7 @@ def employee_create(request):
 @login_required
 def employee_update(request, pk):
 
-    if not checkUserPermission(request, "can_update", "/backend/employee/"):
+    if not checkUserPermission(request, "can_update", "/employee/"):
         messages.error(request, "You do not have permission to update employees.")
         return render(request, "403.html", status=403)
     
@@ -2310,7 +2310,7 @@ class EmployeeListView(ListView):
     paginate_by = 10 
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/employee/"):
+        if not checkUserPermission(request, "can_view", "/employee/"):
             messages.error(request, "You do not have permission to view employees.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -2386,7 +2386,7 @@ def employee_profile(request, pk):
     """
     Comprehensive employee profile view showing all details and history
     """
-    if not checkUserPermission(request, "can_view", "/backend/employee/"):
+    if not checkUserPermission(request, "can_view", "/employee/"):
         messages.error(request, "You do not have permission to view employee profile.")
         return render(request, "403.html", status=403)
 
@@ -2598,7 +2598,7 @@ def employee_profile(request, pk):
 @login_required
 def employee_delete(request, pk):
 
-    if not checkUserPermission(request, "can_delete", "/backend/employee/"):
+    if not checkUserPermission(request, "can_delete", "/employee/"):
         messages.error(request, "You do not have permission to delete employees.")
         return render(request, "403.html", status=403)
 
@@ -2615,7 +2615,7 @@ class EmployeeDetailView(DetailView):
     context_object_name = 'employee'
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/employee/"):
+        if not checkUserPermission(request, "can_view", "/employee/"):
             messages.error(request, "You do not have permission to view employee details.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -2655,7 +2655,7 @@ class EmployeeDetailView(DetailView):
 # =============================================
 @login_required
 def uniform_report(request):
-    if not checkUserPermission(request, "can_view", "/backend/uniform/report/"):
+    if not checkUserPermission(request, "can_view", "/uniform/report/"):
         messages.error(request, "You do not have permission to view uniform reports.")
         return render(request, "403.html", status=403) 
     # Filter parameters
@@ -2898,7 +2898,7 @@ def uniform_report(request):
 
 @login_required
 def uniform_log(request):
-    if not checkUserPermission(request, "can_view", "/backend/uniform/log/"):
+    if not checkUserPermission(request, "can_view", "/uniform/log/"):
         messages.error(request, "You do not have permission to view uniform logs.")
         return render(request, "403.html", status=403) 
     
@@ -2973,7 +2973,7 @@ class UniformListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/uniform/"):
+        if not checkUserPermission(request, "can_view", "/uniform/"):
             messages.error(request, "You do not have permission to view uniforms.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3019,7 +3019,7 @@ class UniformCreateView(CreateView):
     success_url = reverse_lazy('uniform:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/uniform/"):
+        if not checkUserPermission(request, "can_add", "/uniform/"):
             messages.error(request, "You do not have permission to add uniforms.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3039,7 +3039,7 @@ class UniformUpdateView(UpdateView):
     success_url = reverse_lazy('uniform:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/uniform/"):
+        if not checkUserPermission(request, "can_update", "/uniform/"):
             messages.error(request, "You do not have permission to edit uniforms.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3053,7 +3053,7 @@ class UniformUpdateView(UpdateView):
 # ============================================
 @login_required
 def uniform_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/uniform/"):
+    if not checkUserPermission(request, "can_delete", "/uniform/"):
         messages.error(request, "You do not have permission to delete uniforms.")
         return render(request, "403.html", status=403) 
     uniform = Uniform.objects.get(pk=pk)
@@ -3071,7 +3071,7 @@ class UniformStockListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/uniform-stock/"):
+        if not checkUserPermission(request, "can_view", "/uniform-stock/"):
             messages.error(request, "You do not have permission to view uniform stocks.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3123,7 +3123,7 @@ class UniformStockCreateView(CreateView):
     success_url = reverse_lazy('uniform_stock:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/uniform-stock/"):
+        if not checkUserPermission(request, "can_add", "/uniform-stock/"):
             messages.error(request, "You do not have permission to add uniform stocks.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3142,7 +3142,7 @@ class UniformStockUpdateView(UpdateView):
     success_url = reverse_lazy('uniform_stock:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/uniform-stock/"):
+        if not checkUserPermission(request, "can_update", "/uniform-stock/"):
             messages.error(request, "You do not have permission to edit uniform stocks.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3156,7 +3156,7 @@ class UniformStockUpdateView(UpdateView):
 # ============================================
 @login_required
 def uniform_stock_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/uniform-stock/"):
+    if not checkUserPermission(request, "can_delete", "/uniform-stock/"):
         messages.error(request, "You do not have permission to delete uniform stocks.")
         return render(request, "403.html", status=403) 
     uniform_stock = UniformStock.objects.get(pk=pk)
@@ -3174,7 +3174,7 @@ class UniformIssuanceListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/uniform-issuance/"):
+        if not checkUserPermission(request, "can_view", "/uniform-issuance/"):
             messages.error(request, "You do not have permission to view uniform issuances.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3236,7 +3236,7 @@ class UniformIssuanceDetailView(DetailView):
     context_object_name = 'uniform_issuance'
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/uniform-issuance/"):
+        if not checkUserPermission(request, "can_view", "/uniform-issuance/"):
             messages.error(request, "You do not have permission to view uniform issuance details.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3341,7 +3341,7 @@ class UniformIssuanceDetailView(DetailView):
 @login_required
 @require_POST
 def uniform_issuance_return(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/uniform-issuance/"):
+    if not checkUserPermission(request, "can_update", "/uniform-issuance/"):
         messages.error(request, "You do not have permission to return uniforms.")
         return render(request, "403.html", status=403)
 
@@ -3415,7 +3415,7 @@ class UniformIssuanceCreateView(CreateView):
     success_url = reverse_lazy('uniform_issuance:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/uniform-issuance/"):
+        if not checkUserPermission(request, "can_add", "/uniform-issuance/"):
             messages.error(request, "You do not have permission to add uniform issuances.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3456,7 +3456,7 @@ class UniformIssuanceUpdateView(UpdateView):
     success_url = reverse_lazy('uniform_issuance:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/uniform-issuance/"):
+        if not checkUserPermission(request, "can_update", "/uniform-issuance/"):
             messages.error(request, "You do not have permission to edit uniform issuances.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3471,7 +3471,7 @@ class UniformIssuanceUpdateView(UpdateView):
 # ============================================
 @login_required
 def uniform_issuance_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/uniform-issuance/"):
+    if not checkUserPermission(request, "can_delete", "/uniform-issuance/"):
         messages.error(request, "You do not have permission to delete uniform issuances.")
         return render(request, "403.html", status=403) 
     uniform_issuance = UniformIssuance.objects.get(pk=pk)
@@ -3489,7 +3489,7 @@ class UniformClearanceListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/uniform-clearance/"):
+        if not checkUserPermission(request, "can_view", "/uniform-clearance/"):
             messages.error(request, "You do not have permission to view uniform clearances.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3532,7 +3532,7 @@ class UniformClearanceCreateView(CreateView):
     success_url = reverse_lazy('uniform_clearance:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/uniform-clearance/"):
+        if not checkUserPermission(request, "can_add", "/uniform-clearance/"):
             messages.error(request, "You do not have permission to add uniform clearances.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3556,7 +3556,7 @@ class UniformClearanceUpdateView(UpdateView):
     success_url = reverse_lazy('uniform_clearance:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/uniform-clearance/"):
+        if not checkUserPermission(request, "can_update", "/uniform-clearance/"):
             messages.error(request, "You do not have permission to edit uniform clearances.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3571,7 +3571,7 @@ class UniformClearanceUpdateView(UpdateView):
 # ============================================
 @login_required
 def uniform_clearance_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/uniform-clearance/"):
+    if not checkUserPermission(request, "can_delete", "/uniform-clearance/"):
         messages.error(request, "You do not have permission to delete uniform clearances.")
         return render(request, "403.html", status=403) 
     
@@ -3589,7 +3589,7 @@ class VehicleListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle_info/"):
+        if not checkUserPermission(request, "can_view", "/vehicle_info/"):
             messages.error(request, "You do not have permission to view vehicle infos.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3668,7 +3668,7 @@ class VehicleDetailView(DetailView):
     template_name = "vehicle_info/detail.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle_info/"):
+        if not checkUserPermission(request, "can_view", "/vehicle_info/"):
             messages.error(request, "You do not have permission to view vehicle infos.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3937,7 +3937,7 @@ class VehicleCreateView(CreateView):
     success_url = reverse_lazy('vehicle_info:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/vehicle_info/"):
+        if not checkUserPermission(request, "can_add", "/vehicle_info/"):
             messages.error(request, "You do not have permission to add vehicle infos.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3955,7 +3955,7 @@ class VehicleUpdateView(UpdateView):
     success_url = reverse_lazy('vehicle_info:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/vehicle_info/"):
+        if not checkUserPermission(request, "can_update", "/vehicle_info/"):
             messages.error(request, "You do not have permission to edit vehicle infos.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -3968,7 +3968,7 @@ class VehicleUpdateView(UpdateView):
 
 @login_required
 def vehicle_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle_info/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle_info/"):
         messages.error(request, "You do not have permission to delete vehicle infos.")
         return render(request, "403.html", status=403) 
     vehicle_info = Vehicle.objects.get(pk=pk)
@@ -3981,7 +3981,7 @@ def vehicle_delete(request, pk):
 @login_required
 def vehicle_assign_quick(request, pk):
     """Quick assign vehicle to employee from vehicle detail page"""
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-assign/"):
+    if not checkUserPermission(request, "can_add", "/vehicle-assign/"):
         messages.error(request, "You do not have permission to assign vehicles.")
         return redirect('vehicle_info:detail', pk=pk)
     
@@ -4041,7 +4041,7 @@ def vehicle_assign_quick(request, pk):
 @login_required
 def vehicle_unassign(request, pk):
     """Unassign vehicle from current employee"""
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-assign/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-assign/"):
         messages.error(request, "You do not have permission to unassign vehicles.")
         return redirect('vehicle_info:detail', pk=pk)
     
@@ -4078,7 +4078,7 @@ class VehicleAssignListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-assign/"):
+        if not checkUserPermission(request, "can_view", "/vehicle-assign/"):
             messages.error(request, "You do not have permission to view vehicle assignments.")
             return render(request, "403.html") 
         return super().dispatch(request, *args, **kwargs)
@@ -4124,7 +4124,7 @@ class VehicleAssignCreateView(CreateView):
     success_url = reverse_lazy('vehicle_assign:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/vehicle-assign/"):
+        if not checkUserPermission(request, "can_add", "/vehicle-assign/"):
             messages.error(request, "You do not have permission to add vehicle assignments.")
             return render(request, "403.html") 
         return super().dispatch(request, *args, **kwargs)
@@ -4163,7 +4163,7 @@ class VehicleAssignUpdateView(UpdateView):
     success_url = reverse_lazy('vehicle_assign:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/vehicle-assign/"):
+        if not checkUserPermission(request, "can_update", "/vehicle-assign/"):
             messages.error(request, "You do not have permission to edit vehicle assignments.")
             return render(request, "403.html") 
         return super().dispatch(request, *args, **kwargs)
@@ -4175,7 +4175,7 @@ class VehicleAssignUpdateView(UpdateView):
 
 @login_required
 def vehicle_assign_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-assign/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-assign/"):
         messages.error(request, "You do not have permission to delete vehicle assignments.")
         return render(request, "403.html") 
     vehicle_assign = VehicleAssign.objects.get(pk=pk)
@@ -4186,7 +4186,7 @@ def vehicle_assign_delete(request, pk):
 
 @login_required
 def vehicle_management(request):
-    if not checkUserPermission(request, "can_view", "/backend/vehicle-management/"):
+    if not checkUserPermission(request, "can_view", "/vehicle-management/"):
         messages.error(request, "You do not have permission to view vehicle management.")
         return render(request, "403.html") 
 
@@ -4225,7 +4225,7 @@ class VehicleHandoverListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-handover/"):
+        if not checkUserPermission(request, "can_view", "/vehicle-handover/"):
             messages.error(request, "You do not have permission to view vehicle handovers.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -4267,7 +4267,7 @@ class VehicleHandoverListView(ListView):
 
 @login_required
 def vehicle_handover_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-handover/"):
+    if not checkUserPermission(request, "can_add", "/vehicle-handover/"):
         messages.error(request, "You do not have permission to add vehicle handovers.")
         return render(request, "403.html", status=403)
 
@@ -4349,7 +4349,7 @@ def vehicle_handover_create(request):
 
 @login_required
 def vehicle_handover_update(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/vehicle-handover/"):
+    if not checkUserPermission(request, "can_update", "/vehicle-handover/"):
         messages.error(request, "You do not have permission to update vehicle handovers.")
         return render(request, "403.html", status=403)
 
@@ -4377,7 +4377,7 @@ def vehicle_handover_update(request, pk):
 
 @login_required
 def vehicle_handover_detail(request, pk):
-    if not checkUserPermission(request, "can_view", "/backend/vehicle-handover/"):
+    if not checkUserPermission(request, "can_view", "/vehicle-handover/"):
         messages.error(request, "You do not have permission to view vehicle handover details.")
         return render(request, "403.html", status=403)
 
@@ -4388,7 +4388,7 @@ def vehicle_handover_detail(request, pk):
 
 @login_required
 def vehicle_handover_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-handover/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-handover/"):
         messages.error(request, "You do not have permission to delete vehicle handovers.")
         return render(request, "403.html", status=403)
 
@@ -4407,7 +4407,7 @@ class ViolationTypeListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/violation-type/"):
+        if not checkUserPermission(request, "can_view", "/violation-type/"):
             messages.error(request, "You do not have permission to view violation types.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -4450,7 +4450,7 @@ class ViolationTypeCreateView(CreateView):
     success_url = reverse_lazy('violation_type:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/violation-type/"):
+        if not checkUserPermission(request, "can_add", "/violation-type/"):
             messages.error(request, "You do not have permission to add violation types.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -4467,7 +4467,7 @@ class ViolationTypeUpdateView(UpdateView):
     success_url = reverse_lazy('violation_type:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/violation-type/"):
+        if not checkUserPermission(request, "can_update", "/violation-type/"):
             messages.error(request, "You do not have permission to edit violation types.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -4478,7 +4478,7 @@ class ViolationTypeUpdateView(UpdateView):
 
 @login_required
 def violation_type_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/violation-type/"):
+    if not checkUserPermission(request, "can_delete", "/violation-type/"):
         messages.error(request, "You do not have permission to delete violation types.")
         return render(request, "403.html", status=403)
     violation_type = ViolationType.objects.get(pk=pk)
@@ -4498,7 +4498,7 @@ class TrafficViolationListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/traffic-violation/"):
+        if not checkUserPermission(request, "can_view", "/traffic-violation/"):
             messages.error(request, "You do not have permission to view traffic violations.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -4549,7 +4549,7 @@ class TrafficViolationListView(ListView):
 
 # @login_required
 # def traffic_violation_create(request):
-#     if not checkUserPermission(request, "can_add", "/backend/traffic-violation/"):
+#     if not checkUserPermission(request, "can_add", "/traffic-violation/"):
 #         messages.error(request, "You do not have permission to add traffic violations.")
 #         return render(request, "403.html", status=403)
 
@@ -4574,7 +4574,7 @@ class TrafficViolationListView(ListView):
 
 @login_required
 def traffic_violation_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/traffic-violation/"):
+    if not checkUserPermission(request, "can_add", "/traffic-violation/"):
         messages.error(request, "You do not have permission to add traffic violations.")
         return render(request, "403.html", status=403)
 
@@ -4614,7 +4614,7 @@ def traffic_violation_create(request):
 
 @login_required
 def traffic_violation_update(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/traffic-violation/"):
+    if not checkUserPermission(request, "can_update", "/traffic-violation/"):
         messages.error(request, "You do not have permission to update traffic violations.")
         return render(request, "403.html", status=403)
 
@@ -4642,7 +4642,7 @@ def traffic_violation_update(request, pk):
 
 @login_required
 def traffic_violation_detail(request, pk):
-    if not checkUserPermission(request, "can_view", "/backend/traffic-violation/"):
+    if not checkUserPermission(request, "can_view", "/traffic-violation/"):
         messages.error(request, "You do not have permission to view traffic violation details.")
         return render(request, "403.html", status=403)
 
@@ -4653,7 +4653,7 @@ def traffic_violation_detail(request, pk):
 
 @login_required
 def traffic_violation_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/traffic-violation/"):
+    if not checkUserPermission(request, "can_delete", "/traffic-violation/"):
         messages.error(request, "You do not have permission to delete traffic violations.")
         return render(request, "403.html", status=403)
 
@@ -4670,7 +4670,7 @@ class TrafficViolationPenaltyListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/traffic-violation-penalty/"):
+        if not checkUserPermission(request, "can_view", "/traffic-violation-penalty/"):
             messages.error(request, "You do not have permission to view traffic violation penalties.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -4714,7 +4714,7 @@ class TrafficViolationPenaltyCreateView(CreateView):
     success_url = reverse_lazy('traffic_violation_penalty:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/traffic-violation-penalty/"):
+        if not checkUserPermission(request, "can_add", "/traffic-violation-penalty/"):
             messages.error(request, "You do not have permission to add traffic violation penalties.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -4732,7 +4732,7 @@ class TrafficViolationPenaltyUpdateView(UpdateView):
     success_url = reverse_lazy('traffic_violation_penalty:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/traffic-violation-penalty/"):
+        if not checkUserPermission(request, "can_update", "/traffic-violation-penalty/"):
             messages.error(request, "You do not have permission to edit traffic violation penalties.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs) 
@@ -4744,7 +4744,7 @@ class TrafficViolationPenaltyUpdateView(UpdateView):
 
 @login_required
 def traffic_violation_penalty_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/traffic-violation-penalty/"):
+    if not checkUserPermission(request, "can_delete", "/traffic-violation-penalty/"):
         messages.error(request, "You do not have permission to delete traffic violation penalties.")
         return render(request, "403.html", status=403)
 
@@ -4761,7 +4761,7 @@ class TrafficViolationPenaltyDetailView(DetailView):
     context_object_name = 'penalty'
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/traffic-violation-penalty/"):
+        if not checkUserPermission(request, "can_view", "/traffic-violation-penalty/"):
             messages.error(request, "You do not have permission to view traffic violation penalty details.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4774,7 +4774,7 @@ class InsuranceClaimListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/insurance-claim/"):
+        if not checkUserPermission(request, "can_view", "/insurance-claim/"):
             messages.error(request, "You do not have permission to view insurance claims.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4817,7 +4817,7 @@ class InsuranceClaimDetailView(DetailView):
     context_object_name = 'claim'
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/insurance-claim/"):
+        if not checkUserPermission(request, "can_view", "/insurance-claim/"):
             messages.error(request, "You do not have permission to view insurance claim details.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4831,7 +4831,7 @@ class InsuranceClaimCreateView(CreateView):
     success_url = reverse_lazy('insurance_claim:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/insurance-claim/"):
+        if not checkUserPermission(request, "can_add", "/insurance-claim/"):
             messages.error(request, "You do not have permission to add insurance claims.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4849,7 +4849,7 @@ class InsuranceClaimUpdateView(UpdateView):
     success_url = reverse_lazy('insurance_claim:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/insurance-claim/"):
+        if not checkUserPermission(request, "can_update", "/insurance-claim/"):
             messages.error(request, "You do not have permission to edit insurance claims.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4861,7 +4861,7 @@ class InsuranceClaimUpdateView(UpdateView):
 
 @login_required
 def insurance_claim_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/insurance-claim/"):
+    if not checkUserPermission(request, "can_delete", "/insurance-claim/"):
         messages.error(request, "You do not have permission to delete insurance claims.")
         return render(request, "403.html", status=403) 
     
@@ -4878,7 +4878,7 @@ class VehicleMaintananceTypeListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-maintenance-type/"):
+        if not checkUserPermission(request, "can_view", "/vehicle-maintenance-type/"):
             messages.error(request, "You do not have permission to view vehicle maintenance types.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4918,7 +4918,7 @@ class VehicleMaintananceTypeCreateView(CreateView):
     success_url = reverse_lazy('vehicle_maintanance_type:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_add", "/backend/vehicle-maintenance-type/"):
+        if not checkUserPermission(request, "can_add", "/vehicle-maintenance-type/"):
             messages.error(request, "You do not have permission to add vehicle maintenance types.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4936,7 +4936,7 @@ class VehicleMaintananceTypeUpdateView(UpdateView):
     success_url = reverse_lazy('vehicle_maintanance_type:list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_update", "/backend/vehicle-maintenance-type/"):
+        if not checkUserPermission(request, "can_update", "/vehicle-maintenance-type/"):
             messages.error(request, "You do not have permission to edit vehicle maintenance types.")
             return render(request, "403.html", status=403) 
         return super().dispatch(request, *args, **kwargs)
@@ -4948,7 +4948,7 @@ class VehicleMaintananceTypeUpdateView(UpdateView):
 
 @login_required
 def vehicle_maintanance_type_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-maintenance-type/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-maintenance-type/"):
         messages.error(request, "You do not have permission to delete vehicle maintenance types.")
         return render(request, "403.html", status=403) 
     maintenance_type = VehicleMaintananceType.objects.get(pk=pk)
@@ -4969,7 +4969,7 @@ class VehicleMaintenanceListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-maintenance/"):
+        if not checkUserPermission(request, "can_view", "/vehicle-maintenance/"):
             messages.error(request, "You do not have permission to view vehicle maintenance.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -5006,7 +5006,7 @@ class VehicleMaintenanceListView(ListView):
 
 @login_required
 def vehicle_maintenance_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-maintenance/"):
+    if not checkUserPermission(request, "can_add", "/vehicle-maintenance/"):
         messages.error(request, "You do not have permission to add vehicle maintenance.")
         return render(request, "403.html", status=403)
 
@@ -5050,7 +5050,7 @@ def vehicle_maintenance_create(request):
 
 @login_required
 def vehicle_maintenance_update(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/vehicle-maintenance/"):
+    if not checkUserPermission(request, "can_update", "/vehicle-maintenance/"):
         messages.error(request, "You do not have permission to update vehicle maintenance.")
         return render(request, "403.html", status=403)
 
@@ -5077,7 +5077,7 @@ def vehicle_maintenance_update(request, pk):
 
 @login_required
 def vehicle_maintenance_detail(request, pk):
-    if not checkUserPermission(request, "can_view", "/backend/vehicle-maintenance/"):
+    if not checkUserPermission(request, "can_view", "/vehicle-maintenance/"):
         messages.error(request, "You do not have permission to view vehicle maintenance details.")
         return render(request, "403.html", status=403)
 
@@ -5089,7 +5089,7 @@ def vehicle_maintenance_detail(request, pk):
 @login_required
 def vehicle_maintenance_delete(request, pk):
 
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-maintenance/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-maintenance/"):
         messages.error(request, "You do not have permission to delete vehicle maintenance.")
         return render(request, "403.html", status=403)
 
@@ -5109,7 +5109,7 @@ class VehicleAccidentListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-accident/"):
+        if not checkUserPermission(request, "can_view", "/vehicle-accident/"):
             messages.error(request, "You do not have permission to view vehicle accidents.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -5158,7 +5158,7 @@ class VehicleAccidentListView(ListView):
 
 @login_required
 def vehicle_accident_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-accident/"):
+    if not checkUserPermission(request, "can_add", "/vehicle-accident/"):
         messages.error(request, "You do not have permission.")
         return render(request, "403.html", status=403)
 
@@ -5198,7 +5198,7 @@ def vehicle_accident_create(request):
 
 @login_required
 def vehicle_accident_update(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/vehicle-accident/"):
+    if not checkUserPermission(request, "can_update", "/vehicle-accident/"):
         messages.error(request, "You do not have permission to update vehicle accidents.")
         return render(request, "403.html", status=403)
 
@@ -5226,7 +5226,7 @@ def vehicle_accident_update(request, pk):
 
 @login_required
 def vehicle_accident_detail(request, pk):
-    if not checkUserPermission(request, "can_view", "/backend/vehicle-accident/"):
+    if not checkUserPermission(request, "can_view", "/vehicle-accident/"):
         messages.error(request, "You do not have permission to view vehicle accident details.")
         return render(request, "403.html", status=403)
 
@@ -5237,7 +5237,7 @@ def vehicle_accident_detail(request, pk):
 
 @login_required
 def vehicle_accident_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-accident/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-accident/"):
         messages.error(request, "You do not have permission to delete vehicle accidents.")
         return render(request, "403.html", status=403)
 
@@ -5251,7 +5251,7 @@ def vehicle_accident_delete(request, pk):
 # ============================================= 
 @login_required
 def vehicle_purchase_list(request):
-    if not checkUserPermission(request, "can_view", "/backend/vehicle-purchase/"):
+    if not checkUserPermission(request, "can_view", "/vehicle-purchase/"):
         messages.error(request, "You do not have permission to view vehicle purchases.")
         return render(request, "403.html", status=403)
 
@@ -5292,7 +5292,7 @@ def vehicle_purchase_list(request):
 
 @login_required
 def vehicle_purchase_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-purchase/"):
+    if not checkUserPermission(request, "can_add", "/vehicle-purchase/"):
         messages.error(request, "You do not have permission to add vehicle purchases.")
         return render(request, "403.html", status=403)
 
@@ -5363,7 +5363,7 @@ def vehicle_purchase_create(request):
 
 @login_required
 def vehicle_purchase_detail(request, pk):
-    if not checkUserPermission(request, "can_view", "/backend/vehicle-purchase/"):
+    if not checkUserPermission(request, "can_view", "/vehicle-purchase/"):
         messages.error(request, "You do not have permission to view vehicle purchase details.")
         return render(request, "403.html", status=403)
 
@@ -5389,7 +5389,7 @@ def vehicle_purchase_detail(request, pk):
 
 @login_required
 def vehicle_purchase_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-purchase/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-purchase/"):
         messages.error(request, "You do not have permission to delete vehicle purchases.")
         return render(request, "403.html", status=403)
 
@@ -5411,7 +5411,7 @@ class VehicleInstallmentListView(ListView):
     paginate_by = None
 
     def dispatch(self, request, *args, **kwargs):
-        if not checkUserPermission(request, "can_view", "/backend/vehicle-installment/"):
+        if not checkUserPermission(request, "can_view", "/vehicle-installment/"):
             messages.error(request, "You do not have permission to view vehicle installments.")
             return render(request, "403.html", status=403)
         return super().dispatch(request, *args, **kwargs)
@@ -5454,7 +5454,7 @@ class VehicleInstallmentListView(ListView):
 @login_required
 def installment_pay(request, pk):
     """View to pay an installment - user only needs to select payment method"""
-    if not checkUserPermission(request, "can_update", "/backend/vehicle-installment/"):
+    if not checkUserPermission(request, "can_update", "/vehicle-installment/"):
         messages.error(request, "You do not have permission to pay vehicle installments.")
         return render(request, "403.html", status=403)
 
@@ -5488,7 +5488,7 @@ def installment_pay(request, pk):
 @login_required
 def purchase_installments_list(request, pk):
     """View to show all installments for a specific purchase"""
-    if not checkUserPermission(request, "can_view", "/backend/vehicle-purchase/"):
+    if not checkUserPermission(request, "can_view", "/vehicle-purchase/"):
         messages.error(request, "You do not have permission to view vehicle purchase installments.")
         return render(request, "403.html", status=403)
 
@@ -5522,7 +5522,7 @@ def purchase_installments_list(request, pk):
 
 @login_required
 def vehicle_installment_create(request):
-    if not checkUserPermission(request, "can_add", "/backend/vehicle-installment/"):
+    if not checkUserPermission(request, "can_add", "/vehicle-installment/"):
         messages.error(request, "You do not have permission to add vehicle installments.")
         return render(request, "403.html", status=403)
 
@@ -5546,7 +5546,7 @@ def vehicle_installment_create(request):
 
 @login_required
 def vehicle_installment_update(request, pk):
-    if not checkUserPermission(request, "can_update", "/backend/vehicle-installment/"):
+    if not checkUserPermission(request, "can_update", "/vehicle-installment/"):
         messages.error(request, "You do not have permission to update vehicle installments.")
         return render(request, "403.html", status=403)
 
@@ -5573,7 +5573,7 @@ def vehicle_installment_update(request, pk):
 
 @login_required
 def vehicle_installment_delete(request, pk):
-    if not checkUserPermission(request, "can_delete", "/backend/vehicle-installment/"):
+    if not checkUserPermission(request, "can_delete", "/vehicle-installment/"):
         messages.error(request, "You do not have permission to delete vehicle installments.")
         return render(request, "403.html", status=403)
 
@@ -6080,7 +6080,7 @@ def _get_grouped_expiry_data(filter_type='all', search_query='', days_filter='al
 
 @login_required
 def expire_report(request):
-    if not checkUserPermission(request, "can_view", "/backend/expire-list-log/"):
+    if not checkUserPermission(request, "can_view", "/expire-list-log/"):
         messages.error(request, "You do not have permission to view expired list logs.")
         return render(request, "403.html", status=403)
 
@@ -6117,7 +6117,7 @@ def expire_report(request):
 
 @login_required
 def expire_mail_logs(request):
-    if not checkUserPermission(request, "can_view", "/backend/mail-log/"):
+    if not checkUserPermission(request, "can_view", "/mail-log/"):
         messages.error(request, "You do not have permission to view mail logs.")
         return render(request, "403.html", status=403)
 
@@ -6163,7 +6163,7 @@ def expire_mail_logs(request):
 @login_required
 def send_single_expiry_mail(request):
     """Send a single expiry notification email for a specific document."""
-    if not checkUserPermission(request, "can_update", "/backend/expire-list-log/"):
+    if not checkUserPermission(request, "can_update", "/expire-list-log/"):
         messages.error(request, "You do not have permission to send expiry notifications.")
         return render(request, "403.html", status=403)
 
@@ -6314,7 +6314,7 @@ def send_single_expiry_mail(request):
 @login_required
 def send_bulk_expiry_mail(request):
     """Send bulk expiry notification emails for selected employees/documents."""
-    if not checkUserPermission(request, "can_update", "/backend/expire-list-log/"):
+    if not checkUserPermission(request, "can_update", "/expire-list-log/"):
         messages.error(request, "You do not have permission to send expiry notifications.")
         return render(request, "403.html", status=403)
 

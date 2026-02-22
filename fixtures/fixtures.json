@@ -86,7 +86,7 @@
     "fields": {
       "module_name": "User Management",
       "menu_name": "User List",
-      "menu_url": "/backend/user/",
+      "menu_url": "/user/",
       "menu_icon": "fa-solid fa-users",
       "menu_description": "View users.",
       "parent": 4,
@@ -102,7 +102,7 @@
     "fields": {
       "module_name": "User Dashboard",
       "menu_name": "Dashboard",
-      "menu_url": "/backend/dashboard/",
+      "menu_url": "/dashboard/",
       "menu_icon": "fa-solid fa-chart-line",
       "menu_description": "View dashboard.",
       "parent": 4,
@@ -135,7 +135,7 @@
     "fields": {
       "module_name": "Nationality Management",
       "menu_name": "Nationality",
-      "menu_url": "/backend/nationality/",
+      "menu_url": "/nationality/",
       "menu_icon": "fa-solid fa-id-card",
       "menu_description": "Nationality records.",
       "parent": 7,
@@ -151,7 +151,7 @@
     "fields": {
       "module_name": "Visitors",
       "menu_name": "Visitor",
-      "menu_url": "/backend/visitor/",
+      "menu_url": "/visitor/",
       "menu_icon": "fa-solid fa-id-card",
       "menu_description": "Visitor records.",
       "parent": 7,
@@ -167,7 +167,7 @@
     "fields": {
       "module_name": "Company Management",
       "menu_name": "Company",
-      "menu_url": "/backend/company/",
+      "menu_url": "/company/",
       "menu_icon": "fa-solid fa-building",
       "menu_description": "Manage company records.",
       "parent": 7,
@@ -183,7 +183,7 @@
     "fields": {
       "module_name": "Lead Management",
       "menu_name": "Lead Source",
-      "menu_url": "/backend/lead-source/",
+      "menu_url": "/lead-source/",
       "menu_icon": "fa-solid fa-bullseye",
       "menu_description": "Manage lead sources (e.g., Facebook, Referral, Walk-in).",
       "parent": 7,
@@ -199,7 +199,7 @@
     "fields": {
       "module_name": "Lead Management",
       "menu_name": "Lead Stage",
-      "menu_url": "/backend/lead-stage/",
+      "menu_url": "/lead-stage/",
       "menu_icon": "fa-solid fa-layer-group",
       "menu_description": "View and manage lead stages.",
       "parent": 7,
@@ -215,7 +215,7 @@
     "fields": {
       "module_name": "Lead Management",
       "menu_name": "Lead List",
-      "menu_url": "/backend/lead/",
+      "menu_url": "/lead/",
       "menu_icon": "fa-solid fa-user-tie",
       "menu_description": "View and manage leads.",
       "parent": 7,
@@ -231,7 +231,7 @@
     "fields": {
       "module_name": "Lead Management",
       "menu_name": "Follow-ups",
-      "menu_url": "/backend/followup/",
+      "menu_url": "/followup/",
       "menu_icon": "fa-solid fa-tasks",
       "menu_description": "Track lead follow-ups and communications.",
       "parent": 7,
@@ -247,7 +247,7 @@
     "fields": {
       "module_name": "Lead Management",
       "menu_name": "Expire Report",
-      "menu_url": "/backend/expire-report/",
+      "menu_url": "/expire-report/",
       "menu_icon": "fa-solid fa-calendar-exclamation",
       "menu_description": "View report of leads with upcoming expiry dates.",
       "parent": 7,
@@ -263,7 +263,7 @@
     "fields": {
       "module_name": "Mail Log",
       "menu_name": "Mail Logs",
-      "menu_url": "/backend/mail-logs/",
+      "menu_url": "/mail-logs/",
       "menu_icon": "fa-solid fa-envelope",
       "menu_description": "View mail logs for leads.",
       "parent": 7,
@@ -280,7 +280,7 @@
     "fields": {
       "module_name": "Employee Management",
       "menu_name": "Employee",
-      "menu_url": "employee",
+      "menu_url": "/employee/",
       "menu_icon": "fa-solid fa-user-plus",
       "menu_description": "new employee.",
       "parent": 2,
@@ -296,7 +296,7 @@
     "fields": {
       "module_name": "Employee Management",
       "menu_name": "Employee List",
-      "menu_url": "/backend/employee/",
+      "menu_url": "/employee/",
       "menu_icon": "fa-solid fa-list",
       "menu_description": "Employee records.",
       "parent": 10,
@@ -329,7 +329,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Info",
-      "menu_url": "/backend/vehicle-info/",
+      "menu_url": "/vehicle-info/",
       "menu_icon": "fa-solid fa-car",
       "menu_description": "Manage vehicle information.",
       "parent": 12,
@@ -345,7 +345,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Assignments",
-      "menu_url": "/backend/vehicle-assign/",
+      "menu_url": "/vehicle-assign/",
       "menu_icon": "fa-solid fa-user-tag",
       "menu_description": "Manage vehicle-to-employee assignments.",
       "parent": 12,
@@ -361,7 +361,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Violation Types",
-      "menu_url": "/backend/violation-type/",
+      "menu_url": "/violation-type/",
       "menu_icon": "fa-solid fa-list",
       "menu_description": "Manage traffic violation types.",
       "parent": 12,
@@ -377,7 +377,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Traffic Violations",
-      "menu_url": "/backend/traffic-violation/",
+      "menu_url": "/traffic-violation/",
       "menu_icon": "fa-solid fa-triangle-exclamation",
       "menu_description": "Manage traffic violations.",
       "parent": 12,
@@ -393,7 +393,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Maintenance Type",
-      "menu_url": "/backend/vehicle-maintenance-type/",
+      "menu_url": "/vehicle-maintenance-type/",
       "menu_icon": "fa-solid fa-file",
       "menu_description": "Manage vehicle maintenance types.",
       "parent": 12,
@@ -426,7 +426,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Maintenance",
-      "menu_url": "/backend/vehicle-maintenance/",
+      "menu_url": "/vehicle-maintenance/",
       "menu_icon": "fa-solid fa-wrench",
       "menu_description": "Manage vehicle maintenance.",
       "parent": 17,
@@ -442,7 +442,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Accidents",
-      "menu_url": "/backend/vehicle-accident/",
+      "menu_url": "/vehicle-accident/",
       "menu_icon": "fa-solid fa-car-burst",
       "menu_description": "Manage vehicle accidents.",
       "parent": 17,
@@ -458,7 +458,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Insurance Claims",
-      "menu_url": "/backend/insurance-claim/",
+      "menu_url": "/insurance-claim/",
       "menu_icon": "fa-solid fa-file-invoice",
       "menu_description": "Manage insurance claims.",
       "parent": 17,
@@ -474,7 +474,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Installments",
-      "menu_url": "/backend/vehicle-installment/",
+      "menu_url": "/vehicle-installment/",
       "menu_icon": "fa-solid fa-receipt",
       "menu_description": "Manage vehicle installments.",
       "parent": 17,
@@ -490,7 +490,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Purchase",
-      "menu_url": "/backend/vehicle-purchase/",
+      "menu_url": "/vehicle-purchase/",
       "menu_icon": "fa-solid fa-shopping-cart",
       "menu_description": "Manage vehicle purchases and installment plans.",
       "parent": 17,
@@ -506,7 +506,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Handover",
-      "menu_url": "/backend/vehicle-handover/",
+      "menu_url": "/vehicle-handover/",
       "menu_icon": "fa-solid fa-handshake",
       "menu_description": "Manage vehicle handovers.",
       "parent": 17,
@@ -522,7 +522,7 @@
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Traffic Violation Penalties",
-      "menu_url": "/backend/traffic-violation-penalty/",
+      "menu_url": "/traffic-violation-penalty/",
       "menu_icon": "fa-solid fa-money-bill-wave",
       "menu_description": "Manage traffic violation penalties.",
       "parent": 17,
@@ -554,7 +554,7 @@
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform List",
-      "menu_url": "/backend/uniform/",
+      "menu_url": "/uniform/",
       "menu_icon": "fa-solid fa-tshirt",
       "menu_description": "Manage uniforms.",
       "parent": 18,
@@ -570,7 +570,7 @@
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Stock",
-      "menu_url": "/backend/uniform-stock/",
+      "menu_url": "/uniform-stock/",
       "menu_icon": "fa-solid fa-boxes",
       "menu_description": "Manage uniform stock inventory.",
       "parent": 18,
@@ -586,7 +586,7 @@
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Issuance",
-      "menu_url": "/backend/uniform-issuance/",
+      "menu_url": "/uniform-issuance/",
       "menu_icon": "fa-solid fa-hand-holding",
       "menu_description": "Manage uniform issuances to employees.",
       "parent": 18,
@@ -602,7 +602,7 @@
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Clearance",
-      "menu_url": "/backend/uniform-clearance/",
+      "menu_url": "/uniform-clearance/",
       "menu_icon": "fa-solid fa-clipboard-check",
       "menu_description": "Manage uniform clearances from employees.",
       "parent": 18,
@@ -618,7 +618,7 @@
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Report",
-      "menu_url": "/backend/uniform/report/",
+      "menu_url": "/uniform/report/",
       "menu_icon": "fa-solid fa-chart-bar",
       "menu_description": "View uniform issuance and clearance reports.",
       "parent": 18,
@@ -634,7 +634,7 @@
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Transaction Log",
-      "menu_url": "/backend/uniform/log/",
+      "menu_url": "/uniform/log/",
       "menu_icon": "fa-solid fa-file-alt",
       "menu_description": "View uniform transaction logs.",
       "parent": 18,
