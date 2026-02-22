@@ -7,10 +7,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-oqe4@r7k0wys5tlm7i#j0ra0n%9k5=0_80zdod5+1s2$ncxz5!"
 
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool) 
 
 ALLOWED_HOSTS = ['*']
 
+# CSRF trusted origins for IP address access
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://194.238.18.13',
+    'https://194.238.18.13',
+]
 
 # Application definition
 
@@ -103,6 +110,11 @@ USE_TZ = True
 LOGIN_URL = '/backend/login'
 LOGOUT_REDIRECT_URL = 'login'
 
+# Session and CSRF cookie settings
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False  # Set to True if using HTTPS
+CSRF_COOKIE_SECURE = False  # Set to True if using HTTPS
 
 
 STATIC_URL = '/static/'
