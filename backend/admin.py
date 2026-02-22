@@ -8,7 +8,7 @@ from .models import (
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
     Visitor, TrafficViolationPenalty, InsuranceClaim, Uniform, UniformStock,
     UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase, UniformStockTransactionLog,
-    Lead, FollowUp, FollowUpReminder, MailLog, 
+    LeadSource, LeadStage, Lead, FollowUp, FollowUpReminder, MailLog, 
 )
 
 @admin.register(WebImages)
@@ -29,7 +29,18 @@ class LoginLogAdmin(admin.ModelAdmin):
     search_fields = ('username', 'login_ip')
     list_filter = ('login_status',)
 
+@admin.register(LeadSource)
+class LeadSourceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active', )
+    search_fields = ('name',)
+    list_filter = ('is_active',)
 
+@admin.register(LeadStage)
+class LeadStageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active', )
+    search_fields = ('name',)
+    list_filter = ('is_active',) 
+    
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
     list_display = ('visitor', 'source', 'stage',)

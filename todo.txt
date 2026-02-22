@@ -1,0 +1,6 @@
+
+Proparly Testing 
+
+- [ ] Test 1  properly Testing the whole project  
+- [ ] Test 2  Employee Can do registration if rgistation is confirmed by supervisor leave and necessary items will be deactivated 
+- [ ] Test 3  Supervisor Can approve the registration 

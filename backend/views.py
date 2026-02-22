@@ -41,7 +41,7 @@ from backend.models import (
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
     ViolationType, VehicleMaintananceType, 
-    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase, Lead, FollowUp,FollowUpReminder, MailLog 
+    Uniform, UniformStock, UniformIssuance, UniformClearance, VehiclePurchase,LeadSource, LeadStage, Lead, FollowUp,FollowUpReminder, MailLog 
 )
 
 from backend.forms import (
@@ -51,7 +51,7 @@ from backend.forms import (
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
     VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm, 
     UniformForm, UniformStockForm, UniformIssuanceForm, UniformClearanceForm,
-    VehiclePurchaseForm, InstallmentPaymentForm, LeadForm, FollowUpForm, FollowUpReminderForm, QuickLeadConversionForm
+    VehiclePurchaseForm, InstallmentPaymentForm,LeadSourceForm, LeadStageForm,  LeadForm, FollowUpForm, FollowUpReminderForm, QuickLeadConversionForm
 ) 
 
 from backend.common_func import checkUserPermission, send_email
@@ -1099,6 +1099,170 @@ def list_management(request):
 # =========================================================
 
 @method_decorator(login_required, name='dispatch')
+class LeadSourceListView(ListView):
+    model = LeadSource
+    template_name = "lead_source/list.html"
+    paginate_by = None 
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/lead-source/"):
+            messages.error(request, "You do not have permission to view lead sources.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = LeadSource.objects.filter(is_active=True)
+
+        name_id = self.request.GET.get('name', '')
+
+        if name_id:
+            queryset = queryset.filter(id=name_id)
+        
+        return queryset
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lead_sources'] = self.get_queryset()
+        context['all_lead_sources'] = LeadSource.objects.filter(is_active=True).order_by('name')
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['lead_sources'])
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+        return context 
+
+@method_decorator(login_required, name='dispatch')
+class LeadSourceCreateView(CreateView):
+    model = LeadSource
+    template_name = "lead_source/create.html"
+    form_class = LeadSourceForm
+    success_url = reverse_lazy('lead_source:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/lead-source/"):
+            messages.error(request, "You do not have permission to add lead sources.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+@method_decorator(login_required, name='dispatch')
+class LeadSourceUpdateView(UpdateView):
+    model = LeadSource
+    template_name = "lead_source/update.html"
+    form_class = LeadSourceForm
+    success_url = reverse_lazy('lead_source:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/lead-source/"):
+            messages.error(request, "You do not have permission to update lead sources.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form)
+
+
+@login_required
+def lead_source_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/lead-source/"):
+        messages.error(request, "You do not have permission to delete lead sources.")
+        return render(request, "403.html", status=403)
+    
+    lead_source = LeadSource.objects.get(pk=pk)
+    lead_source.is_active = False
+    lead_source.save()
+    return redirect('lead_source:list')
+
+@method_decorator(login_required, name='dispatch')
+class LeadStageListView(ListView):
+    model = LeadStage
+    template_name = "lead_stage/list.html"
+    paginate_by = None 
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/backend/lead-stage/"):
+            messages.error(request, "You do not have permission to view lead stages.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = LeadStage.objects.filter(is_active=True)
+
+        name_id = self.request.GET.get('name', '')
+
+        if name_id:
+            queryset = queryset.filter(id=name_id)
+        
+        return queryset
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lead_stages'] = self.get_queryset()
+        context['all_lead_stages'] = LeadStage.objects.filter(is_active=True).order_by('name')
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['lead_stages'])
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+        return context
+
+@method_decorator(login_required, name='dispatch')
+class LeadStageCreateView(CreateView):
+    model = LeadStage
+    template_name = "lead_stage/create.html"
+    form_class = LeadStageForm
+    success_url = reverse_lazy('lead_stage:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/backend/lead-stage/"):
+            messages.error(request, "You do not have permission to add lead stages.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+@method_decorator(login_required, name='dispatch')
+class LeadStageUpdateView(UpdateView):
+    model = LeadStage
+    template_name = "lead_stage/update.html"
+    form_class = LeadStageForm
+    success_url = reverse_lazy('lead_stage:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/backend/lead-stage/"):
+            messages.error(request, "You do not have permission to update lead stages.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form)
+
+@login_required
+def lead_stage_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/backend/lead-stage/"):
+        messages.error(request, "You do not have permission to delete lead stages.")
+        return render(request, "403.html", status=403)
+    
+    lead_stage = LeadStage.objects.get(pk=pk)
+    lead_stage.is_active = False
+    lead_stage.save()
+    return redirect('lead_stage:list') 
+
+
+@method_decorator(login_required, name='dispatch')
 class LeadListView(ListView):
     """List view for all leads with filters"""
     model = Lead
@@ -1112,7 +1276,7 @@ class LeadListView(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = Lead.objects.filter(is_active=True, deleted=False).select_related('visitor', 'created_by')
+        queryset = Lead.objects.filter(is_active=True, deleted=False).select_related('visitor', 'created_by', 'source', 'stage')
 
         # Filters
         stage = self.request.GET.get('stage', '')
@@ -1121,9 +1285,9 @@ class LeadListView(ListView):
         search = self.request.GET.get('search', '')
 
         if stage:
-            queryset = queryset.filter(stage=stage)
+            queryset = queryset.filter(stage_id=stage)
         if source:
-            queryset = queryset.filter(source=source)
+            queryset = queryset.filter(source_id=source)
         if is_converted:
             queryset = queryset.filter(is_converted=(is_converted == 'true'))
         if search:
@@ -1155,16 +1319,16 @@ class LeadListView(ListView):
         # Statistics
         all_leads = Lead.objects.filter(is_active=True, deleted=False)
         context['total_leads'] = all_leads.count()
-        context['prospect_leads'] = all_leads.filter(stage='prospect').count()
-        context['qualified_leads'] = all_leads.filter(stage='qualified').count()
-        context['negotiation_leads'] = all_leads.filter(stage='negotiation').count()
-        context['closed_won'] = all_leads.filter(stage='closed_won').count()
-        context['closed_lost'] = all_leads.filter(stage='closed_lost').count()
+        context['prospect_leads'] = all_leads.filter(stage__name__iexact='prospect').count()
+        context['qualified_leads'] = all_leads.filter(stage__name__iexact='qualified').count()
+        context['negotiation_leads'] = all_leads.filter(stage__name__iexact='negotiation').count()
+        context['closed_won'] = all_leads.filter(stage__name__iexact='closed_won').count()
+        context['closed_lost'] = all_leads.filter(stage__name__iexact='closed_lost').count()
         context['converted_leads'] = all_leads.filter(is_converted=True).count()
         
-        # Choices for filters
-        context['stage_choices'] = Lead.LEAD_STAGE_CHOICES
-        context['source_choices'] = Lead.LEAD_SOURCE
+        # Choices for filters (using model querysets)
+        context['stage_choices'] = LeadStage.objects.filter(is_active=True, deleted=False)
+        context['source_choices'] = LeadSource.objects.filter(is_active=True, deleted=False)
         
         return context
 
@@ -1283,9 +1447,15 @@ def lead_convert_to_employee(request, pk):
         messages.warning(request, "This lead has already been converted.")
         return redirect('lead:detail', pk=pk)
     
-    # Mark as converted
+    # Mark as converted - get or create a 'Closed Won' stage
+    closed_won_stage = LeadStage.objects.filter(
+        Q(name__iexact='closed_won') | Q(name__iexact='closed won') | Q(name__icontains='won'),
+        is_active=True, deleted=False
+    ).first()
+    
     lead.is_converted = True
-    lead.stage = 'closed_won'
+    if closed_won_stage:
+        lead.stage = closed_won_stage
     lead.updated_by = request.user
     lead.save()
     
@@ -1316,14 +1486,33 @@ def visitor_convert_to_lead(request, visitor_id):
         try:
             # Parse JSON body
             data = json.loads(request.body)
-            source = data.get('source', 'walkin')
-            stage = data.get('stage', 'prospect')
+            source_id = data.get('source', None)
+            stage_id = data.get('stage', None)
+            
+            # Get source and stage instances
+            source_obj = None
+            stage_obj = None
+            
+            if source_id:
+                source_obj = LeadSource.objects.filter(id=source_id, is_active=True, deleted=False).first()
+            if not source_obj:
+                # Get default source (first active one)
+                source_obj = LeadSource.objects.filter(is_active=True, deleted=False).first()
+            
+            if stage_id:
+                stage_obj = LeadStage.objects.filter(id=stage_id, is_active=True, deleted=False).first()
+            if not stage_obj:
+                # Get default stage (first active one, preferably 'prospect')
+                stage_obj = LeadStage.objects.filter(
+                    Q(name__iexact='prospect') | Q(name__icontains='prospect'),
+                    is_active=True, deleted=False
+                ).first() or LeadStage.objects.filter(is_active=True, deleted=False).first()
             
             # Create lead
             lead = Lead.objects.create(
                 visitor=visitor,
-                source=source,
-                stage=stage,
+                source=source_obj,
+                stage=stage_obj,
                 created_by=request.user,
                 updated_by=request.user
             )
@@ -2608,7 +2797,7 @@ def uniform_report(request):
         'created_by'
     ).order_by('-created_at')[:50]
 
-    # Uniform type distribution
+    # Uniform type distribution for issued uniforms
     uniform_type_distribution = UniformIssuance.objects.filter(
         is_active=True, status='ISSUED'
     ).values(
@@ -2616,6 +2805,66 @@ def uniform_report(request):
     ).annotate(
         count=Sum('quantity')
     ).order_by('-count')
+
+    # Stock by uniform type for pie chart
+    stock_by_type = UniformStock.objects.filter(
+        is_active=True
+    ).values(
+        'uniform__uniform_type'
+    ).annotate(
+        total_qty=Sum('quantity')
+    ).order_by('-total_qty')
+
+    # Convert to chart-friendly format with display names
+    uniform_type_display = dict(Uniform.UNIFORM_TYPE_CHOICES)
+    stock_by_type_chart = [
+        {
+            'type': uniform_type_display.get(item['uniform__uniform_type'], item['uniform__uniform_type']),
+            'quantity': item['total_qty'] or 0
+        }
+        for item in stock_by_type
+    ]
+
+    # Distribution by uniform type (currently issued)
+    distribution_by_type_chart = [
+        {
+            'type': uniform_type_display.get(item['uniform_stock__uniform__uniform_type'], item['uniform_stock__uniform__uniform_type']),
+            'quantity': item['count'] or 0
+        }
+        for item in uniform_type_distribution
+    ]
+
+    # Status distribution for pie chart
+    status_distribution = [
+        {'status': 'Active (Issued)', 'count': total_uniforms_active, 'color': '#10B981'},
+        {'status': 'Returned', 'count': total_uniforms_returned, 'color': '#3B82F6'},
+        {'status': 'Lost', 'count': total_uniforms_lost, 'color': '#EF4444'},
+        {'status': 'Damaged', 'count': total_uniforms_damaged, 'color': '#F59E0B'},
+    ]
+    # Filter out zero values
+    status_distribution = [s for s in status_distribution if s['count'] > 0]
+
+    # Calculate total distributed (all issuances ever made)
+    total_distributed = total_uniforms_issued
+
+    # Calculate available stock (current stock in inventory)
+    current_available_stock = total_stock_quantity
+
+    # Stock vs Distribution overview
+    stock_overview = {
+        'total_stock': current_available_stock,
+        'total_distributed': total_distributed,
+        'currently_with_employees': total_uniforms_active,
+        'returned_to_stock': total_uniforms_returned,
+        'lost': total_uniforms_lost,
+        'damaged': total_uniforms_damaged,
+    }
+
+    # Calculate utilization percentage
+    if current_available_stock + total_distributed > 0:
+        utilization_percentage = round((total_distributed / (current_available_stock + total_distributed)) * 100, 1)
+    else:
+        utilization_percentage = 0
 
     context = {
         'employees_data': list(employees_data.values()),
@@ -2629,6 +2878,11 @@ def uniform_report(request):
         'total_stock_quantity': total_stock_quantity,
         'recent_transactions': recent_transactions,
         'uniform_type_distribution': uniform_type_distribution,
+        'stock_by_type_chart': stock_by_type_chart,
+        'distribution_by_type_chart': distribution_by_type_chart,
+        'status_distribution': status_distribution,
+        'stock_overview': stock_overview,
+        'utilization_percentage': utilization_percentage,
         'all_employees': Employee.objects.filter(is_active=True).order_by('first_name', 'last_name'),
         'all_uniforms': Uniform.objects.filter(is_active=True).order_by('name'),
         'filters': {

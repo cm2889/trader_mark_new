@@ -329,8 +329,6 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
-    
-
 class Nationality(models.Model):
     code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=100)
@@ -349,7 +347,6 @@ class Nationality(models.Model):
         verbose_name_plural = "Nationalities"
         ordering = ['name']
 
-
 class Visitor(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100) 
@@ -366,29 +363,47 @@ class Visitor(models.Model):
     class Meta:
         ordering = ['-created_at'] 
 
+class LeadSource(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lead_source_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lead_source_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name']
+
+
+class LeadStage(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lead_stage_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lead_stage_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name'] 
+
 
 class Lead(models.Model):
 
-    LEAD_STAGE_CHOICES = (
-        ('prospect', 'Prospect'),
-        ('qualified', 'Qualified'),
-        ('negotiation', 'Negotiation'),
-        ('closed_won', 'Closed Won'),
-        ('closed_lost', 'Closed Lost'),
-    ) 
-
-    LEAD_SOURCE = (
-        ('walkin', 'Walk-in'),
-        ('website', 'Website'),
-        ('facebook', 'Facebook'),
-        ('referral', 'Referral'),
-        ('call', 'Phone Call'),
-        ('other', 'Other'),
-    )
-
     visitor = models.OneToOneField(Visitor, on_delete=models.CASCADE, related_name='lead') 
-    source = models.CharField(max_length=20, choices=LEAD_SOURCE, default='walkin') 
-    stage = models.CharField(max_length=20, choices=LEAD_STAGE_CHOICES, default='prospect') 
+    source = models.ForeignKey(LeadSource, on_delete=models.SET_NULL, related_name='leads', null=True, blank=True)
+    stage = models.ForeignKey(LeadStage, on_delete=models.SET_NULL, related_name='leads', null=True, blank=True)
     is_converted = models.BooleanField(default=False) 
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lead_created_by')
@@ -399,7 +414,7 @@ class Lead(models.Model):
     deleted = models.BooleanField(default=False) 
 
     def __str__(self):
-        return f"Lead: {self.visitor.first_name} {self.visitor.last_name} - Stage: {self.get_stage_display()}" 
+        return f"Lead: {self.visitor.first_name} {self.visitor.last_name} - Stage: {self.stage.name if self.stage else 'None'}" 
 
 
 class FollowUp(models.Model):
@@ -583,7 +598,9 @@ class UniformStock(models.Model):
         return f"{self.uniform.name} - Size: {self.size} - Qty: {self.quantity} ({self.code})"
     
     class Meta:
-        ordering = ['uniform__name', 'size'] 
+        ordering = ['uniform__name', 'size']
+        unique_together = [['uniform', 'size']] 
+
 
 # ========================================================
 # Uniform Issuance Management

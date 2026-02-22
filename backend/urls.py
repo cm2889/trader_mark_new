@@ -41,6 +41,22 @@ lead_patterns = ([
     path('convert-to-employee/<int:pk>/', views.lead_convert_to_employee, name='convert_to_employee'),
 ], 'lead')
 
+# Lead Source URL patterns
+lead_source_patterns = ([
+    path('', views.LeadSourceListView.as_view(), name='list'),
+    path('create/', views.LeadSourceCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.LeadSourceUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.lead_source_delete, name='delete'),
+], 'lead_source')
+
+# Lead Stage URL patterns
+lead_stage_patterns = ([
+    path('', views.LeadStageListView.as_view(), name='list'),
+    path('create/', views.LeadStageCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.LeadStageUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.lead_stage_delete, name='delete'),
+], 'lead_stage')
+
 # Follow-Up URL patterns
 followup_patterns = ([
     path('', views.FollowUpListView.as_view(), name='list'),
@@ -244,6 +260,8 @@ urlpatterns = [
     path('nationality/', include(nationality_patterns)), 
     path('visitor/', include(visitor_patterns)), 
     path('lead/', include(lead_patterns)),
+    path('lead-source/', include(lead_source_patterns)),
+    path('lead-stage/', include(lead_stage_patterns)),
     path('followup/', include(followup_patterns)),
     path('reminder/', include(reminder_patterns)),
     path('employee/', include(employee_patterns)),

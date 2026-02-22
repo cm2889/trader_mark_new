@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}
+    Create Lead Source
+{% endblock title %}
+{% block breadcrumb %}
+    <span class="mx-1">›</span>
+    <a href="{% url 'lead_source:list' %}" class="hover:underline">Lead Source</a>
+    <span class="mx-1">›</span>
+    <span>Create</span>
+{% endblock breadcrumb %}
+{% block header_actions %}
+    <a href="{% url 'lead_source:list' %}"
+       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-[var(--text-color)] bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+        <svg width="16"
+             height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        <span>Back to List</span>
+    </a>
+{% endblock %}
+{% block content %}
+    <div class="container px-4 py-8 ">
+        <!-- Form Section -->
+        <div class="bg-white rounded-lg shadow-sm p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <!-- Name Field -->
+                <div>
+                    <label for="{{ form.name.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700 mb-2">
+                        Name <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.name.errors %}
+                                <p>
+                                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <p class="mt-1 text-sm text-gray-500">Enter a unique name for the lead source (e.g., Facebook, Google Ads, Referral)</p>
+                </div>
+                <!-- Description Field -->
+                <div>
+                    <label for="{{ form.description.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.description.errors %}
+                                <p>
+                                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <p class="mt-1 text-sm text-gray-500">Enter an optional description for this lead source</p>
+                </div>
+                <!-- Non-field Errors -->
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-red-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Form Errors</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
+                    <button type="submit"
+                            class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                        Create Lead Source
+                    </button>
+                    <a href="{% url 'lead_source:list' %}"
+                       class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

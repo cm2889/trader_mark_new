@@ -1,0 +1,8 @@
+mysqldump -u root -p --default-character-set=utf8 trader_mark > trader_mark.sql
+scp -v trader_mark.sql root@194.238.18.13:/var/www/trader_mark_new/
+scp trader_mark.sql root@194.238.18.13:/var/www/trader_mark_new/
+mysql -u root -p trader_mark < trader_mark.sql 
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py loaddata fixtures/fixtures.json 

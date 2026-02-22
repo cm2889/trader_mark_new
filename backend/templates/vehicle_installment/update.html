@@ -10,7 +10,7 @@
 {% endblock %}
 {% block header_actions %}
     <a href="{% url 'vehicle_installment:list' %}"
-       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+       class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium  bg-gray-100 rounded-lg hover:bg-gray-200 transition">
         <svg width="16"
              height="16"
              viewBox="0 0 24 24"
@@ -30,45 +30,45 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="{{ form.vehicle.id_for_label }}"
-                               class="block text-sm font-medium text-gray-700 mb-2">
-                            Vehicle <span class="text-red-500">*</span>
+                               class="block text-sm font-medium  mb-2">
+                            Vehicle <span class="">*</span>
                         </label>
                         {{ form.vehicle }}
                     </div>
                     <div>
                         <label for="{{ form.installment_no.id_for_label }}"
-                               class="block text-sm font-medium text-gray-700 mb-2">
-                            Installment No <span class="text-red-500">*</span>
+                               class="block text-sm font-medium  mb-2">
+                            Installment No <span class="">*</span>
                         </label>
                         {{ form.installment_no }}
                     </div>
                     <div>
                         <label for="{{ form.amount.id_for_label }}"
-                               class="block text-sm font-medium text-gray-700 mb-2">
-                            Amount <span class="text-red-500">*</span>
+                               class="block text-sm font-medium  mb-2">
+                            Amount <span class="">*</span>
                         </label>
                         {{ form.amount }}
                     </div>
                     <div>
                         <label for="{{ form.due_date.id_for_label }}"
-                               class="block text-sm font-medium text-gray-700 mb-2">
-                            Due Date <span class="text-red-500">*</span>
+                               class="block text-sm font-medium  mb-2">
+                            Due Date <span class="">*</span>
                         </label>
                         {{ form.due_date }}
                     </div>
                     <div>
                         <label for="{{ form.paid_date.id_for_label }}"
-                               class="block text-sm font-medium text-gray-700 mb-2">Paid Date</label>
+                               class="block text-sm font-medium  mb-2">Paid Date</label>
                         {{ form.paid_date }}
                     </div>
                     <div class="flex items-center gap-3">
                         {{ form.is_paid }}
                         <label for="{{ form.is_paid.id_for_label }}"
-                               class="text-sm font-medium text-gray-700">Is Paid</label>
+                               class="text-sm font-medium ">Is Paid</label>
                     </div>
                     <div class="md:col-span-2">
                         <label for="{{ form.remarks.id_for_label }}"
-                               class="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                               class="block text-sm font-medium  mb-2">Remarks</label>
                         {{ form.remarks }}
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                         Update Installment
                     </button>
                     <a href="{% url 'vehicle_installment:list' %}"
-                       class="w-full sm:w-auto px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
+                       class="w-full sm:w-auto px-6 py-2.5 bg-gray-100  text-sm font-medium rounded-lg hover:bg-gray-200 transition text-center">
                         Cancel
                     </a>
                 </div>

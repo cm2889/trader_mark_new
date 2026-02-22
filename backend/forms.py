@@ -8,7 +8,7 @@ from backend.models import (
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment, VehiclePurchase,
     VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType, 
     Uniform, UniformStock, UniformIssuance, UniformClearance, 
-    UniformStockTransactionLog, Lead, FollowUp, FollowUpReminder
+    UniformStockTransactionLog, LeadSource, LeadStage, Lead, FollowUp, FollowUpReminder
 )
 
 TAILWIND_TEXT = (
@@ -798,9 +798,25 @@ class InstallmentPaymentForm(forms.ModelForm):
 # Lead Management Forms
 # ========================================
 
-class LeadForm(forms.ModelForm):
-    """Form for creating/updating Lead"""
-    
+class LeadStageForm(forms.ModelForm):    
+    class Meta:
+        model = LeadStage
+        fields = ['name', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter stage name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter stage description'}),
+        }
+
+class LeadSourceForm(forms.ModelForm):    
+    class Meta:
+        model = LeadSource
+        fields = ['name', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter source name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter source description'}),
+        }
+
+class LeadForm(forms.ModelForm):    
     class Meta:
         model = Lead
         fields = ['visitor', 'source', 'stage', 'is_converted']
@@ -810,12 +826,10 @@ class LeadForm(forms.ModelForm):
                 'required': True
             }),
             'source': forms.Select(attrs={
-                'class': TAILWIND_SELECT,
-                'required': True
+                'class': TAILWIND_SELECT
             }),
             'stage': forms.Select(attrs={
-                'class': TAILWIND_SELECT,
-                'required': True
+                'class': TAILWIND_SELECT
             }),
             'is_converted': forms.CheckboxInput(attrs={
                 'class': 'w-4 h-4 text-[var(--primary-color)] rounded focus:ring-[var(--primary-color)] focus:ring-2'
@@ -832,6 +846,10 @@ class LeadForm(forms.ModelForm):
         ).filter(Q(lead__isnull=True) | Q(id=self.instance.visitor_id if self.instance.pk else None))
         
         self.fields['visitor'].label_from_instance = lambda obj: f"{obj.first_name} {obj.last_name} - {obj.phone_number or obj.email or 'No contact'}"
+        
+        # Filter active sources and stages
+        self.fields['source'].queryset = LeadSource.objects.filter(is_active=True, deleted=False)
+        self.fields['stage'].queryset = LeadStage.objects.filter(is_active=True, deleted=False)
 
 
 class FollowUpForm(forms.ModelForm):
@@ -868,7 +886,7 @@ class FollowUpForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['lead'].queryset = Lead.objects.filter(is_active=True, deleted=False, is_converted=False)
-        self.fields['lead'].label_from_instance = lambda obj: f"{obj.visitor.first_name} {obj.visitor.last_name} - {obj.get_stage_display()}"
+        self.fields['lead'].label_from_instance = lambda obj: f"{obj.visitor.first_name} {obj.visitor.last_name} - {obj.stage.name if obj.stage else 'No Stage'}"
 
 
 class FollowUpReminderForm(forms.ModelForm):
@@ -900,14 +918,16 @@ class FollowUpReminderForm(forms.ModelForm):
 
 class QuickLeadConversionForm(forms.Form):
     """Quick form to convert visitor to lead"""
-    source = forms.ChoiceField(
-        choices=Lead.LEAD_SOURCE,
+    source = forms.ModelChoiceField(
+        queryset=LeadSource.objects.filter(is_active=True, deleted=False),
         widget=forms.Select(attrs={'class': TAILWIND_SELECT}),
-        initial='walkin'
+        required=False,
+        empty_label="Select Lead Source"
     )
-    stage = forms.ChoiceField(
-        choices=Lead.LEAD_STAGE_CHOICES,
+    stage = forms.ModelChoiceField(
+        queryset=LeadStage.objects.filter(is_active=True, deleted=False),
         widget=forms.Select(attrs={'class': TAILWIND_SELECT}),
-        initial='prospect'
+        required=False,
+        empty_label="Select Lead Stage"
     )
 

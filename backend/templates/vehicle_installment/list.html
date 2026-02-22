@@ -198,12 +198,10 @@
                     {% endif %}
                     {% for page_num in paginator_list %}
                         {% if page_num == paginator.number %}
-                            <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ page_num
-                            }}</span>
+                            <span class="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium">{{ page_num }}</span>
                         {% else %}
                             <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}"
-                               class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{{ page_num
-                            }}</a>
+                               class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{{ page_num }}</a>
                         {% endif %}
                     {% endfor %}
                     {% if paginator.has_next %}
