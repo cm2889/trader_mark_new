@@ -5450,6 +5450,7 @@ class VehicleInstallmentListView(ListView):
         context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(
             self.request, context['page_num'], context['installments']
         )
+        context['installments'] = context['paginator']
         get_param = self.request.GET.copy()
         if 'page' in get_param:
             get_param.pop('page')
