@@ -8,9 +8,8 @@
     <span class="mx-1 ">›</span>Purchase Installments
     <span class="">Installments</span>
 {% endblock %}
-
 {% block header_actions %}
-    <a href="{% url 'vehicle_purchase:list'  %}"
+    <a href="{% url 'vehicle_purchase:list' %}"
        class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
         <svg width="16"
              height="16"
@@ -23,7 +22,6 @@
         Back to List
     </a>
 {% endblock %}
-
 {% block content %}
     <div class="container mx-auto px-4 py-8 bg-white ">
         <!-- Summary Cards -->
