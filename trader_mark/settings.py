@@ -107,7 +107,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-LOGIN_URL = '/backend/login'
+LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = 'login'
 
 # Session and CSRF cookie settings
