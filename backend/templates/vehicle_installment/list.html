@@ -20,10 +20,7 @@
                         class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
                     <i class="fas fa-filter mr-2"></i>Filter
                 </button>
-                <a href="{% url 'vehicle_installment:create' %}"
-                   class="bg-[var(--primary-color)] hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md">
-                    <i class="fas fa-plus"></i><span>Add Installment</span>
-                </a>
+                
             </div>
         </div>
         <!-- Filter Modal -->
@@ -224,8 +221,27 @@
             placeholder: function () {
                 return $(this).find('option:first').text();
             },
-            allowClear: true
+            allowClear: true,
+            dropdownParent: $('#filterModal')
         });
+    });
+
+    function openFilterModal() {
+        document.getElementById('filterModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFilterModal(event) {
+        if (!event || event.target.id === 'filterModal') {
+            document.getElementById('filterModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeFilterModal();
+        }
     });
     </script>
 {% endblock %}
