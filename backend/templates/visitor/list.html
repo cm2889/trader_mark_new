@@ -309,7 +309,7 @@
     // Convert visitor to lead
     function convertToLead(visitorId, visitorName) {
         if (confirm(`Convert "${visitorName}" to a lead?`)) {
-            fetch(`/backend/visitor/convert-to-lead/${visitorId}/`, {
+            fetch(`/visitor/convert-to-lead/${visitorId}/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
