@@ -1486,27 +1486,37 @@ def visitor_convert_to_lead(request, visitor_id):
         try:
             # Parse JSON body
             data = json.loads(request.body)
-            source_id = data.get('source', None)
-            stage_id = data.get('stage', None)
+            source_id = data.get('source')
+            stage_id = data.get('stage')
             
             # Get source and stage instances
             source_obj = None
             stage_obj = None
             
-            if source_id:
+            # Only try to fetch by ID if source_id is provided and is numeric
+            if source_id and isinstance(source_id, int):
                 source_obj = LeadSource.objects.filter(id=source_id, is_active=True, deleted=False).first()
+            
+            # Get default source if not found
             if not source_obj:
-                # Get default source (first active one)
                 source_obj = LeadSource.objects.filter(is_active=True, deleted=False).first()
             
-            if stage_id:
+            # Only try to fetch by ID if stage_id is provided and is numeric
+            if stage_id and isinstance(stage_id, int):
                 stage_obj = LeadStage.objects.filter(id=stage_id, is_active=True, deleted=False).first()
+            
+            # Get default stage if not found (preferably 'prospect')
             if not stage_obj:
-                # Get default stage (first active one, preferably 'prospect')
                 stage_obj = LeadStage.objects.filter(
                     Q(name__iexact='prospect') | Q(name__icontains='prospect'),
                     is_active=True, deleted=False
                 ).first() or LeadStage.objects.filter(is_active=True, deleted=False).first()
+            
+            # Validate that we have source and stage
+            if not source_obj:
+                return JsonResponse({'success': False, 'message': 'No active Lead Source found. Please create one first.'}, status=400)
+            if not stage_obj:
+                return JsonResponse({'success': False, 'message': 'No active Lead Stage found. Please create one first.'}, status=400)
             
             # Create lead
             lead = Lead.objects.create(
@@ -1516,15 +1526,16 @@ def visitor_convert_to_lead(request, visitor_id):
                 created_by=request.user,
                 updated_by=request.user
             )
-            messages.success(request, f"Visitor {visitor.first_name} {visitor.last_name} has been converted to a lead.")
+            messages.success(request, f"✓ Visitor {visitor.first_name} {visitor.last_name} has been converted to a lead successfully!")
             return JsonResponse({
                 'success': True,
-                'message': 'Lead created successfully',
+                'message': f'✓ Lead created successfully! Visitor {visitor.first_name} {visitor.last_name} is now in {stage_obj.name} stage.',
                 'lead_id': lead.id,
                 'redirect_url': reverse('lead:detail', args=[lead.id])
             })
         except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=400)
+            error_msg = str(e)
+            return JsonResponse({'success': False, 'message': f'Error: {error_msg}'}, status=400)
     
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=400)
 

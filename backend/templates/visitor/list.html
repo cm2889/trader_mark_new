@@ -279,6 +279,48 @@
         });
     });
 
+    // Error notification toast
+    function showErrorMessage(message) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-red-50 border border-red-200 text-red-700 px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse';
+        toast.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="fas fa-exclamation-circle text-lg"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-red-500 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
+
+    // Confirmation Modal
+    function showConfirmModal(message, visitorId, visitorName) {
+        const modal = document.createElement('div');
+        modal.id = 'confirmModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-lg shadow-xl max-w-sm mx-4">
+                <div class="p-6">
+                    <p class="text-gray-800 text-base">${message}</p>
+                </div>
+                <div class="flex gap-3 justify-end p-4 border-t border-gray-200 bg-gray-50">
+                    <button onclick="document.getElementById('confirmModal').remove()" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+                        Cancel
+                    </button>
+                    <button id="confirmBtn" onclick="performLeadConversion(${visitorId})" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
     // Delete confirmation function
     function deleteVisitor(url, name) {
         if (confirm(`Are you sure you want to delete "${name}"?\n\nThis action cannot be undone.`)) {
@@ -308,36 +350,75 @@
 
     // Convert visitor to lead
     function convertToLead(visitorId, visitorName) {
-        if (confirm(`Convert "${visitorName}" to a lead?`)) {
-            fetch(`/visitor/convert-to-lead/${visitorId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    source: 'walkin',
-                    stage: 'prospect'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Visitor converted to lead successfully!');
-                    if (data.redirect_url) {
-                        window.location.href = data.redirect_url;
-                    } else {
-                        location.reload();
-                    }
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while converting to lead');
-            });
+        showConfirmModal(`Convert "${visitorName}" to a lead?`, visitorId, visitorName);
+    }
+    
+    function performLeadConversion(visitorId) {
+        // Disable the confirm button
+        const btn = document.getElementById('confirmBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Converting...';
         }
+        
+        console.log('🚀 Starting conversion for visitor ID:', visitorId);
+        
+        const body = JSON.stringify({
+            source: null,
+            stage: null
+        });
+        
+        console.log('📤 Sending request to /visitor/convert-to-lead/' + visitorId + '/');
+        console.log('📝 Body:', body);
+        
+        fetch(`/visitor/convert-to-lead/${visitorId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: body
+        })
+        .then(response => {
+            console.log('✅ Response received, status:', response.status);
+            if (!response.ok) {
+                console.log('❌ Response not OK, parsing error...');
+                return response.json().then(data => {
+                    console.log('❌ Error data:', data);
+                    throw new Error(data.message || `Server error: ${response.status}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('✅ Data received:', data);
+            if (data.success) {
+                console.log('🎉 Conversion successful!');
+                if (data.redirect_url) {
+                    console.log('🔀 Redirecting to:', data.redirect_url);
+                    window.location.href = data.redirect_url;
+                } else {
+                    location.reload();
+                }
+            } else {
+                console.log('⚠️ Conversion failed:', data.message);
+                showErrorMessage(data.message);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Confirm';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('🔥 Catch error:', error);
+            showErrorMessage(error.message || 'An error occurred while converting to lead. Please try again.');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Confirm';
+            }
+            const modal = document.getElementById('confirmModal');
+            if (modal) modal.remove();
+        });
     }
     </script>
 {% endblock %}
