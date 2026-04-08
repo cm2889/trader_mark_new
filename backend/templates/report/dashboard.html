@@ -9,7 +9,6 @@
                 <div class="flex items-center justify-between flex-wrap gap-4">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
-                            <i class="fas fa-chart-line text-indigo-600 mr-3"></i>
                             Dashboard Overview
                         </h1>
                         <p class="mt-1 text-sm text-gray-600">Real-time business analytics and operational insights</p>
@@ -26,7 +25,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <!-- Total Employees Card -->
                 <a href="{% url 'employee:list' %}" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="bg-white rounded-xl shadow-sm  border border-gray-200 p-6 ">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Employees</p>
@@ -42,7 +41,7 @@
                 </a>
                 <!-- Total Vehicles Card -->
                 <a href="{% url 'vehicle_info:list' %}" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="bg-white rounded-xl shadow-sm  border border-gray-200 p-6">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Vehicles</p>
@@ -53,13 +52,12 @@
                                     <span class="text-gray-500">{{ inactive_vehicles }} Inactive</span>
                                 </div>
                             </div>
-                            <i class="fas fa-arrow-right text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all duration-200"></i>
                         </div>
                     </div>
                 </a>
                 <!-- Uniform Stock Card -->
                 <a href="{% url 'uniform_stock:list' %}" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="bg-white rounded-xl shadow-sm  border border-gray-200 p-6 ">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Uniform Stock</p>
@@ -75,7 +73,7 @@
                 </a>
                 <!-- Pending Penalties Card -->
                 <a href="{% url 'traffic_violation_penalty:list' %}" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-200 p-6 transform hover:-translate-y-1 transition-all duration-200">
+                    <div class="bg-white rounded-xl shadow-sm  border border-gray-200 p-6 ">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Pending Penalties</p>
@@ -94,14 +92,13 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 flex items-center">
-                                <i class="fas fa-chart-pie text-indigo-600 mr-3"></i>
                                 Business Analytics Overview
                             </h2>
                             <p class="text-sm text-gray-600 mt-2">Comprehensive data visualization across all departments</p>
                         </div>
                         <div class="text-right">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                <i class="fas fa-circle text-green-500 mr-2 text-xs animate-pulse"></i>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold  text-green-800">
+                                <i class="fas fa-circle text-green-500 mr-2 text-8px animate-pulse"></i>
                                 Live Data
                             </span>
                         </div>
@@ -109,15 +106,14 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
                     <!-- Employee Status Chart -->
-                    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-5 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5  ">
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold text-gray-900 flex items-center">
-                                    <i class="fas fa-users text-blue-600 mr-2"></i>
                                     Employee Status
                                 </h3>
                                 <a href="{% url 'employee:list' %}"
-                                   class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                   class="text-xs text-blue-600 font-medium">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                             </div>
@@ -128,11 +124,10 @@
                         </div>
                     </div>
                     <!-- Vehicle Type Distribution -->
-                    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-5 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 ">
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold text-gray-900 flex items-center">
-                                    <i class="fas fa-car text-green-600 mr-2"></i>
                                     Vehicle Fleet
                                 </h3>
                                 <a href="{% url 'vehicle_info:list' %}"
@@ -147,11 +142,10 @@
                         </div>
                     </div>
                     <!-- Employees by Nationality Chart -->
-                    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-5 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold text-gray-900 flex items-center">
-                                    <i class="fas fa-globe text-indigo-600 mr-2"></i>
                                     Nationality
                                 </h3>
                                 <a href="{% url 'employee:list' %}"
@@ -166,11 +160,10 @@
                         </div>
                     </div>
                     <!-- Uniform Distribution by Type -->
-                    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-5 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold text-gray-900 flex items-center">
-                                    <i class="fas fa-tshirt text-purple-600 mr-2"></i>
                                     Uniform Stock
                                 </h3>
                                 <a href="{% url 'uniform_stock:list' %}"
@@ -185,11 +178,10 @@
                         </div>
                     </div>
                     <!-- Uniform Status Distribution -->
-                    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-5 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold text-gray-900 flex items-center">
-                                    <i class="fas fa-tasks text-pink-600 mr-2"></i>
                                     Issuance Status
                                 </h3>
                                 <a href="{% url 'uniform_issuance:list' %}"
@@ -208,7 +200,7 @@
             <!-- Alerts & Warnings Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Document Expiry Alerts -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 ">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-bold flex items-center">Document Alerts</h3>
                         <a href="{% url 'employee:list' %}"
@@ -241,10 +233,9 @@
                     </div>
                 </div>
                 <!-- Vehicle Alerts -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-car-crash text-orange-600 mr-2"></i>
                             Vehicle Alerts
                         </h3>
                         <a href="{% url 'vehicle_info:list' %}"
@@ -280,9 +271,8 @@
             <!-- Statistics Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
                 <!-- Gender Distribution -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 ">
                     <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
-                        <i class="fas fa-users text-indigo-600 mr-2"></i>
                         Gender Distribution
                     </h3>
                     <div class="space-y-4">
@@ -307,9 +297,8 @@
                     </div>
                 </div>
                 <!-- License Stats -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 ">
                     <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
-                        <i class="fas fa-id-card text-green-600 mr-2"></i>
                         License Status
                     </h3>
                     <div class="space-y-4">
@@ -325,9 +314,8 @@
                 </div>
                 <!-- Violation Stats -->
                 <a href="{% url 'traffic_violation:list' %}" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 pb-16 ">
                         <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
-                            <i class="fas fa-exclamation-triangle  mr-2"></i>
                             Traffic Violations
                         </h3>
                         <div class="space-y-4">
@@ -344,9 +332,8 @@
                 </a>
                 <!-- Uniform Stats -->
                 <a href="{% url 'uniform:list' %}" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 pb-16 ">
                         <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center">
-                            <i class="fas fa-box text-purple-600 mr-2"></i>
                             Uniform Inventory
                         </h3>
                         <div class="space-y-4">
@@ -365,14 +352,13 @@
             <!-- Recent Activities Section -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Recent Employees -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 ">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-user-plus text-blue-600 mr-2"></i>
                             Recent Employees
                         </h3>
                         <a href="{% url 'employee:list' %}"
-                           class="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center group">
+                           class="text-xs text-black hover:text-blue-700 font-medium flex items-center group">
                             View All
                         </a>
                     </div>
@@ -401,16 +387,14 @@
                     </div>
                 </div>
                 <!-- Recent Violations -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 ">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-exclamation-circle  mr-2"></i>
                             Recent Violations
                         </h3>
                         <a href="{% url 'traffic_violation:list' %}"
-                           class="text-xs  hover:text-red-700 font-medium flex items-center group">
+                           class="text-xs  hover:text-blue-700 font-medium flex items-center group">
                             View All
-                            <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
                     <div class="space-y-3">
@@ -437,16 +421,14 @@
                     </div>
                 </div>
                 <!-- Recent Uniform Issuances -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 ">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-share-square text-purple-600 mr-2"></i>
                             Recent Issuances
                         </h3>
                         <a href="{% url 'uniform_issuance:list' %}"
-                           class="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center group">
+                           class="text-xs text-black hover:text-blue-700 font-medium flex items-center group">
                             View All
-                            <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
                     <div class="space-y-3">
@@ -619,8 +601,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         ] : ['#E5E7EB'],
                         borderWidth: 3,
                         borderColor: '#ffffff',
-                        hoverOffset: 8,
-                        hoverBorderWidth: 4
+                        hoverOffset: 0,
+                        hoverBorderWidth: 3
                     }]
                 },
                 options: {
@@ -672,8 +654,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         backgroundColor: hasData ? ['#3B82F6', '#10B981', '#EF4444'] : ['#E5E7EB'],
                         borderWidth: 3,
                         borderColor: '#ffffff',
-                        hoverOffset: 8,
-                        hoverBorderWidth: 4
+                        hoverOffset: 0,
+                        hoverBorderWidth: 3
                     }]
                 },
                 options: {
@@ -736,8 +718,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         backgroundColor: colors.primary,
                         borderWidth: 3,
                         borderColor: '#ffffff',
-                        hoverOffset: 8,
-                        hoverBorderWidth: 4
+                        hoverOffset: 0,
+                        hoverBorderWidth: 3
                     }]
                 },
                 options: {
@@ -893,8 +875,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'],
                         borderWidth: 3,
                         borderColor: '#ffffff',
-                        hoverOffset: 8,
-                        hoverBorderWidth: 4
+                        hoverOffset: 0,
+                        hoverBorderWidth: 3
                     }]
                 },
                 options: {

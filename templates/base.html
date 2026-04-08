@@ -532,14 +532,56 @@
         </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-        {% block extra_js %}
-        {% endblock %}
         <script>
-        $(document).ready(function () {
-            $('.select2-items').select2();
-        });
+            // Add a style fix to prevent Tailwind's hidden class from being overriden by direct styles if any
+            $(document).ready(function() {
+                $('head').append('<style>[data-menu].hidden { display: none !important; }</style>');
+            });
+
+            /**
+             * Global 3-dot menu handler
+             */
+            $(document).on('click', '[data-menu-btn]', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const $btn = $(this);
+                const $wrap = $btn.closest('[data-menu-wrap]');
+                const $menu = $wrap.find('[data-menu]');
+                
+                const isOpening = $menu.hasClass('hidden');
+
+                // Close ALL other menus
+                $('[data-menu]').not($menu).addClass('hidden');
+                $('[data-menu-btn]').not($btn).attr('aria-expanded', 'false');
+
+                // Toggle target
+                if (isOpening) {
+                    $menu.removeClass('hidden');
+                    $btn.attr('aria-expanded', 'true');
+                } else {
+                    $menu.addClass('hidden');
+                    $btn.attr('aria-expanded', 'false');
+                }
+            });
+
+            // Click outside to close
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('[data-menu-wrap]').length) {
+                    $('[data-menu]').addClass('hidden');
+                    $('[data-menu-btn]').attr('aria-expanded', 'false');
+                }
+            });
+
+            // Escape key to close
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    $('[data-menu]').addClass('hidden');
+                    $('[data-menu-btn]').attr('aria-expanded', 'false');
+                }
+            });
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
         <script src="{% static 'js/backend_menu_search.js' %}"></script>
     </body>
 </html>

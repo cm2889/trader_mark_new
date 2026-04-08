@@ -148,14 +148,25 @@
                         {% for data in user_list %}
                             <tr class="hover:bg-[var(--bg-color)]/50 transition-colors">
                                 <td class="px-4 py-3">
-                                    <div class="inline-flex items-center gap-2">
-                                        <img src="{{ data.get_profile_photo_url }}"
-                                             class="h-9 w-9 rounded-full ring-1 ring-[var(--border-color)]"
-                                             alt="">
-                                        <span class="font-medium">{{ data.first_name|default:"" }}</span>
+                                    <div class="flex items-center gap-3">
+                                        {% if data.get_profile_photo_url %}
+                                            <img src="{{ data.get_profile_photo_url }}"
+                                                 class="h-9 w-9 rounded-full ring-1 ring-[var(--border-color)] object-cover"
+                                                 alt="{{ data.username }}">
+                                        {% else %}
+                                            <div class="h-9 w-9 rounded-full ring-1 ring-[var(--border-color)] bg-[var(--primary-color)] flex items-center justify-center text-white font-bold text-sm uppercase">
+                                                {{ data.username|slice:":1" }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="flex flex-col">
+                                            <span class="font-medium text-[var(--text-color)]">{{ data.first_name|default:data.username }}</span>
+                                            {% if data.last_name %}
+                                                <span class="text-xs text-[var(--text-light-color)]">{{ data.last_name }}</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 whitespace-nowrap font-medium">{{ data.username|default:"" }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap font-medium text-[var(--text-color)]">{{ data.username|default:"" }}</td>
                                 <td class="px-4 py-3">
                                     <span class="block truncate">{{ data.email|default:"" }}</span>
                                 </td>
