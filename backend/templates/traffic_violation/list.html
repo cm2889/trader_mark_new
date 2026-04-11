@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 {% block page_title %}Traffic Violations - {{ site_setting.site_title|default:'' }}{% endblock %}
 {% block meta_description %}Manage traffic violation records and penalties{% endblock %}
@@ -147,9 +147,9 @@
         </p>
     </div>
     <!-- Table Section -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full">
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+            <table class="w-full min-w-[800px]">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
@@ -167,19 +167,18 @@
                             <td class="px-6 py-4 text-sm text-gray-900">{{ violation.violation_type }}</td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ violation.violation_date|date:"M d, Y" }}</td>
                             <td class="px-6 py-4 text-center">
-                                <div class="flex justify-center gap-2">
-                                    <div class="inline-block" data-menu-wrap>
-                                        <button type="button"
-                                                class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                                data-menu-btn
-                                                aria-haspopup="true"
-                                                aria-expanded="false"
-                                                onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                                            ⋯
-                                        </button>
-                                        <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
-                                             data-menu
-                                             role="menu">
+                                <div class="inline-block relative" data-menu-wrap>
+                                    <button type="button"
+                                            class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
+                                            data-menu-btn
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                            >
+                                        ⋯
+                                    </button>
+                                    <div class="hidden absolute right-4 mt-1 w-[150px] rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                         data-menu
+                                         role="menu">
                                             <a href="{% url 'traffic_violation:update' violation.pk %}"
                                                class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
                                                role="menuitem"

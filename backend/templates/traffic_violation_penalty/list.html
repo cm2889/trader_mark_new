@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 {% block title %}Traffic Violation Penalties{% endblock %}
 {% block breadcrumb %}
@@ -11,14 +11,14 @@
 {% block content %}
     <div class="container mx-auto px-4 py-8">
         <!-- Header Section -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
             <div>
-                <h1 class="text-3xl font-bold text-[var(--text-color)]">Traffic Violation Penalties</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-[var(--text-color)]">Traffic Violation Penalties</h1>
                 <p class="text-[var(--text-light-color)] mt-1">Manage penalty records for traffic violations</p>
             </div>
-            <div class="flex gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
                 <button onclick="openFilterModal()"
-                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
                     <i class="fas fa-filter mr-2"></i>Filter
                 </button>
                 <a href="{% url 'traffic_violation_penalty:create' %}"
@@ -92,9 +92,9 @@
             </p>
         </div>
         <!-- Table Section -->
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full">
+        <div class="bg-white rounded-lg shadow-sm">
+            <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <table class="w-full min-w-[800px]">
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
@@ -126,28 +126,27 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ penalty.paid_date|date:"M d, Y"|default:"-" }}</td>
                                 <td class="px-6 py-4 text-center">
-                                    <div class="flex justify-center gap-2">
-                                        <div class="inline-block" data-menu-wrap>
-                                            <button type="button"
-                                                    class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                                    data-menu-btn
-                                                    aria-haspopup="true"
-                                                    aria-expanded="false"
-                                                    onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                                                ⋯
-                                            </button>
-                                            <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
-                                                 data-menu
-                                                 role="menu">
-                                                <a href="{% url 'traffic_violation_penalty:update' penalty.pk %}"
-                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                                   role="menuitem"
-                                                   onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                         class="w-4 h-4"
-                                                         viewBox="0 0 16 16"
-                                                         fill="none">
-                                                        <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05" stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round" />
+                                    <div class="inline-block relative" data-menu-wrap>
+                                        <button type="button"
+                                                class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
+                                                data-menu-btn
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                                >
+                                            ⋯
+                                        </button>
+                                        <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                             data-menu
+                                             role="menu">
+                                            <a href="{% url 'traffic_violation_penalty:update' penalty.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                               role="menuitem"
+                                               onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     class="w-4 h-4"
+                                                     viewBox="0 0 16 16"
+                                                     fill="none">
+                                                    <path d="M10.95 3.07L11.61 2.41C12.16 1.86 13.05 1.86 13.59 2.41C14.14 2.96 14.14 3.84 13.59 4.39L12.93 5.05M10.95 3.07L6.51 7.51C6.17 7.85 5.93 8.27 5.81 8.73L5.33 10.66L7.26 10.18C7.73 10.06 8.15 9.83 8.49 9.49L12.93 5.05M10.95 3.07L12.93 5.05" stroke="#4A5565" stroke-width="1.2" stroke-linejoin="round" />
                                                         <path d="M12.66 9C12.66 11.19 12.66 12.29 12.06 13.02C11.95 13.16 11.83 13.28 11.69 13.39C10.95 14 9.86 14 7.66 14H7.33C4.82 14 3.56 14 2.78 13.21C2 12.44 2 11.18 2 8.66V8.33C2 6.14 2 5.04 2.60 4.30C2.71 4.17 2.84 4.05 2.97 3.94C3.71 3.33 4.80 3.33 7 3.33" stroke="#4A5565" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
                                                     </svg>
                                                     Edit
@@ -174,10 +173,9 @@
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% empty %}
+                                    </td>
+                                </tr>
+                            {% empty %}
                             <tr>
                                 <td colspan="7" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center text-gray-500">

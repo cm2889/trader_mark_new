@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 {% block title %}Lead Management{% endblock %}
 {% block breadcrumb %}
@@ -55,7 +55,7 @@
             </div>
             <div class="mt-4 sm:mt-0 flex gap-3">
                 <button onclick="openFilterModal()"
-                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
                     <i class="fas fa-filter mr-2"></i>Filter
                 </button>
                 <a href="{% url 'lead:create' %}"
@@ -154,9 +154,9 @@
             </div>
         </div>
         <!-- Leads Table -->
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-[var(--border-color)]">
+        <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+            <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <table class="min-w-[800px] w-full divide-y divide-[var(--border-color)]">
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col"
@@ -225,7 +225,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {% if lead.source %}
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-blue-800">
                                             {{ lead.source.name }}
                                         </span>
                                     {% else %}
@@ -236,27 +236,27 @@
                                     {% if lead.stage %}
                                         {% with stage_name=lead.stage.name|lower %}
                                             {% if 'prospect' in stage_name %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-yellow-800">
                                                     <i class="fas fa-star mr-1"></i>{{ lead.stage.name }}
                                                 </span>
                                             {% elif 'qualified' in stage_name %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-green-800">
                                                     <i class="fas fa-check-circle mr-1"></i>{{ lead.stage.name }}
                                                 </span>
                                             {% elif 'negotiation' in stage_name %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-orange-800">
                                                     <i class="fas fa-handshake mr-1"></i>{{ lead.stage.name }}
                                                 </span>
                                             {% elif 'won' in stage_name or 'closed_won' in stage_name %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-purple-800">
                                                     <i class="fas fa-trophy mr-1"></i>{{ lead.stage.name }}
                                                 </span>
                                             {% elif 'lost' in stage_name or 'closed_lost' in stage_name %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-red-800">
                                                     <i class="fas fa-times-circle mr-1"></i>{{ lead.stage.name }}
                                                 </span>
                                             {% else %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-gray-800">
                                                     <i class="fas fa-circle mr-1"></i>{{ lead.stage.name }}
                                                 </span>
                                             {% endif %}
@@ -267,56 +267,57 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {% if lead.is_converted %}
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-purple-800">
                                             <i class="fas fa-user-check mr-1"></i>Converted
                                         </span>
                                     {% else %}
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-green-800">
                                             <i class="fas fa-circle mr-1 text-xs"></i>Active
                                         </span>
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ lead.created_at|date:"M d, Y" }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex justify-center gap-2">
-                                        <div class="inline-block" data-menu-wrap>
-                                            <button type="button"
-                                                    class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
-                                                    data-menu-btn
-                                                    aria-haspopup="true"
-                                                    aria-expanded="false"
-                                                    onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
-                                                ⋯
-                                            </button>
-                                            <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
-                                                 data-menu
-                                                 role="menu">
-                                                <a href="{% url 'lead:detail' lead.pk %}"
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium relative">
+                                    <div class="inline-block" data-menu-wrap class="relative" style="position: relative; z-index: auto;">
+                                        <button type="button"
+                                                class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
+                                                data-menu-btn
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                                >
+                                            ⋯
+                                        </button>
+                                        <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                             data-menu
+                                             role="menu">
+                                            <a href="{% url 'lead:detail' lead.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                               role="menuitem"
+                                               onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                <i class="fas fa-eye text-gray-400"></i>Lead Details
+                                            </a>
+                                            <a href="{% url 'lead:update' lead.pk %}"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
+                                               role="menuitem"
+                                               onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
+                                                <i class="fas fa-edit text-gray-400"></i>Edit Lead
+                                            </a>
+                                            <div class="border-t border-[var(--border-color)]"></div>
+                                            {% if not lead.is_converted %}
+                                                <a href="{% url 'followup:create' %}?lead_id={{ lead.id }}"
                                                    class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
                                                    role="menuitem"
                                                    onclick="this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');">
-                                                    <i class="fas fa-eye text-gray-400"></i>Lead Details
+                                                    <i class="fas fa-plus-circle text-gray-400"></i>Add Follow-up
                                                 </a>
-                                                <a href="{% url 'lead:update' lead.pk %}"
-                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                                   title="Edit">
-                                                    <i class="fas fa-edit text-gray-400"></i>Edit Lead
-                                                </a>
-                                                <div class="border-t border-[var(--border-color)]"></div>
-                                                {% if not lead.is_converted %}
-                                                    <a href="{% url 'followup:create' %}?lead_id={{ lead.id }}"
-                                                       class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start"
-                                                       title="Add Follow-up">
-                                                        <i class="fas fa-plus-circle text-gray-400"></i>Add Follow-up
-                                                    </a>
-                                                {% endif %}
-                                                <a href="{% url 'lead:delete' lead.pk %}"
-                                                   onclick="return confirm('Are you sure you want to delete this lead?')"
-                                                   class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
-                                                   title="Delete">
-                                                    <i class="fas fa-trash text-red-400"></i>Delete Lead
-                                                </a>
-                                            </div>
+                                            {% endif %}
+                                            <div class="border-t border-[var(--border-color)]"></div>
+                                            <a href="{% url 'lead:delete' lead.pk %}"
+                                               onclick="if(!confirm('Are you sure you want to delete this lead?')) return false; this.closest('[data-menu]').classList.add('hidden'); this.closest('[data-menu-wrap]').querySelector('[data-menu-btn]').setAttribute('aria-expanded','false');"
+                                               class="block px-3 py-2 text-sm text-left flex items-center gap-2 justify-start text-red-600"
+                                               role="menuitem">
+                                                <i class="fas fa-trash text-red-400"></i>Delete Lead
+                                            </a>
                                         </div>
                                     </div>
                                 </td>

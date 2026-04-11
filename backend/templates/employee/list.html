@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 {% block page_title %}Employees - {{ site_setting.site_title|default:'' }}{% endblock %}
 {% block meta_description %}
@@ -12,7 +12,7 @@
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
     </svg>
-    <span class="font-medium text-[var(--primary-color)]">Employees</span>
+    <span class="font-medium text-[var(--primary-color)]">Employees </span>
 {% endblock %}
 {% block header_actions %}
     <button onclick="openFilterModal()"
@@ -168,8 +168,8 @@
     </div>
     <!-- Table Section -->
     <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] ">
-        <div class="">
-            <table class="w-full">
+        <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+            <table class="w-full min-w-[800px]">
                 <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">HR File No</th>
@@ -226,14 +226,14 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">{{ employee.joining_at|date:"M d, Y" }}</td>
                             <td class="px-6 py-4 text-sm text-center">
-                                <div class="relative inline-block" data-menu-wrap>
+                                <div class="relative inline-block" data-menu-wrap class="relative" style="position: relative; z-index: auto;">
                                     <button type="button"
                                             class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)] transition-colors"
                                             data-menu-btn
                                             aria-haspopup="true"
                                             aria-expanded="false"
                                             aria-label="Employee actions"
-                                            onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                                            >
                                         ⋯
                                     </button>
                                     <div class="hidden absolute right-0 mt-1 w-[180px] z-50 rounded-lg bg-white ring-1 ring-[var(--border-color)] shadow-lg"

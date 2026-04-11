@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 {% block title %}Vehicle Handover List{% endblock %}
 {% block breadcrumb %}
@@ -11,14 +11,14 @@
 {% block content %}
     <div class="container mx-auto px-4 py-8">
         <!-- Header Section -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
             <div>
-                <h1 class="text-3xl font-bold text-[var(--text-color)]">Vehicle Handover</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-[var(--text-color)]">Vehicle Handover</h1>
                 <p class="text-[var(--text-light-color)] mt-1">Manage vehicle handover records</p>
             </div>
-            <div class="flex gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
                 <button onclick="openFilterModal()"
-                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors">
+                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-[var(--text-color)] bg-white border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
                     <i class="fas fa-filter mr-2"></i>Filter
                 </button>
                 <a href="{% url 'vehicle_handover:create' %}"
@@ -105,9 +105,9 @@
             </p>
         </div>
         <!-- Table Section -->
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full">
+        <div class="bg-white rounded-lg shadow-sm ">
+            <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <table class="w-full min-w-[800px]">
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
@@ -128,13 +128,13 @@
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ handover.handover_date|date:"M d, Y" }}</td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center gap-2">
-                                        <div class="inline-block" data-menu-wrap>
+                                        <div class="inline-block" data-menu-wrap class="relative" style="position: relative; z-index: auto;">
                                             <button type="button"
                                                     class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
                                                     data-menu-btn
                                                     aria-haspopup="true"
                                                     aria-expanded="false"
-                                                    onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                                                    >
                                                 ⋯
                                             </button>
                                             <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"

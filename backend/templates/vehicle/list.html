@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% block page_title %}Vehicle Records - {{ site_setting.site_title|default:'' }}{% endblock %}
 {% block meta_description %}Manage employee vehicle information and records{% endblock %}
 {% block title %}Vehicle Records{% endblock %}
@@ -20,9 +20,9 @@
         </p>
     </div>
     <!-- Table Section -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full">
+    <div class="bg-white rounded-lg shadow-sm ">
+        <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+            <table class="w-full min-w-[800px]">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>

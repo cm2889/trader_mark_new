@@ -109,7 +109,7 @@
     </div>
 {% endblock %}
 {% block content %}
-    <section class="text-[var(--text-color)] min-h-screen overflow-x-hidden px-1">
+    <section class="text-[var(--text-color)] min-h-screen px-1">
         <!-- Date range banner (match previous: white bg) -->
         {% comment %} <div class="mt-4 rounded-md ring-1 ring-[var(--border-color)] bg-[var(--white-color)] px-4 py-3 text-sm font-bold">
     {% if request.GET.created_from or request.GET.created_to %}
@@ -118,10 +118,9 @@
     {% endif %}
         </div> {% endcomment %}
         <!-- Table card (match previous: white bg + header var + no extra rounding) -->
-        <div class="relative mt-2 ring-1 ring-[var(--border-color)] bg-[var(--white-color)]">
-            <div class="overflow-x-auto overscroll-x-contain"
-                 style="overflow-y: visible">
-                <table class="w-full min-w-[1000px] text-sm">
+        <div class="relative mt-2 transition-shadow ring-1 ring-[var(--border-color)] bg-[var(--white-color)]">
+            <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <table class="w-full min-w-[900px] text-sm table-auto">
                     <colgroup>
                         <col class="w-[100px]">
                         <col class="w-[180px]">
@@ -180,16 +179,15 @@
                                 </td>
                                 <!-- Action dropdown (match previous: white dropdown + divider) -->
                                 <td class="px-4 py-3 text-right">
-                                    <div class="inline-block" data-menu-wrap>
+                                    <div class="inline-block relative" data-menu-wrap>
                                         <button type="button"
                                                 class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
                                                 data-menu-btn
                                                 aria-haspopup="true"
-                                                aria-expanded="false"
-                                                onclick=" const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');} ">
+                                                aria-expanded="false">
                                             ⋯
                                         </button>
-                                        <div class="hidden absolute right-4 mt-1 w-44 z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                        <div class="hidden absolute right-0 top-full mt-1 w-44 z-[999] rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
                                              data-menu
                                              role="menu">
                                             <a href="{% url 'backend:user_permission' data.id %}"
@@ -269,7 +267,6 @@
                 </div>
             </div>
         </div>
-        <div class="lg:hidden mt-4 h-2 w-2/3 mx-auto rounded-full bg-[var(--bg-color)]"></div>
     </section>
 {% endblock %}
 {% block extra_js %}

@@ -2991,7 +2991,8 @@ class UniformListView(ListView):
 
     def get_queryset(self):
         filters = {
-            'is_active': True, 
+            'is_active': True,
+            'deleted': False,
         }
         
         name = self.request.GET.get('name', '') 
@@ -3002,16 +3003,17 @@ class UniformListView(ListView):
         if uniform_type:
             filters['uniform_type'] = uniform_type
        
-        return Uniform.objects.filter(**filters)
+        return Uniform.objects.filter(**filters).order_by('-created_at')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['uniforms'] = self.get_queryset()
+        context['uniforms_full'] = self.get_queryset()
         context['page_num'] = self.request.GET.get('page', 1)
-        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['uniforms'])
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['uniforms_full'])
+        context['uniforms'] = context['paginator'].object_list
 
         # Add all uniforms for select2 dropdown
-        context['all_uniforms'] = Uniform.objects.filter(is_active=True).order_by('name')
+        context['all_uniforms'] = Uniform.objects.filter(is_active=True, deleted=False).order_by('name')
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:

@@ -58,9 +58,51 @@
               href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <style>
-        html,
+        html {
+            font-family: Inter, system-ui, ui-sans-serif;
+        }
         body {
-            font-family: Inter, system-ui, ui-sans-serif
+            font-family: Inter, system-ui, ui-sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Responsive Breadcrumb and Table fixes */
+        @media (max-width: 640px) {
+            .lg\:pl-72 {
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            nav[aria-label="Breadcrumb"] {
+                font-size: 0.75rem !important; /* text-xs */
+                gap: 0.25rem !important;
+            }
+            nav[aria-label="Breadcrumb"] svg {
+                width: 0.875rem !important;
+                height: 0.875rem !important;
+            }
+            .breadcrumb-last {
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                max-width: 120px;
+            }
+        }
+
+        /* Custom scrollbar for tables */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
         /* Select2 with Tailwind CSS */
@@ -149,18 +191,27 @@
     <body class="antialiased bg-[var(--bg-color)] text-[var(--text-color)]">
         {% block modals %}{% endblock %}
         <!--  for mobile  -->
-        <div id="backdrop" class="fixed inset-0 z-40 hidden bg-black/30 lg:hidden"></div>
+        <div id="backdrop" class="fixed inset-0 z-40 hidden bg-black/50 backdrop-blur-sm lg:hidden"></div>
         <!-- sidebar -->
         <aside id="sidebar"
-               class="fixed md:shadow-[2px_0px_25px_var(--shadow-color)] inset-y-0 left-0 z-45 md:z-45 w-72 translate-x-[-100%] overflow-y-auto border-r transition-transform bg-[var(--bg-color)] border-[var(--border-color)] lg:translate-x-0 flex flex-col">
+               class="fixed md:shadow-[2px_0px_25px_var(--shadow-color)] inset-y-0 left-0 z-50 w-72 translate-x-[-100%] overflow-y-auto border-r transition-transform duration-300 ease-in-out bg-[var(--bg-color)] border-[var(--border-color)] lg:translate-x-0 flex flex-col">
             <!-- Brand -->
-            <a href="{% url 'backend:backend_dashboard' %}"
-               class="flex items-center gap-2 px-4 h-16">
-                <img src="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=logo"
-                     class="h-9 w-9"
-                     alt="">
-                <span class="text-2xl font-semibold">{{ site_setting.site_title|default:'' }}</span>
-            </a>
+            <div class="flex items-center justify-between px-4 h-16 border-b border-[var(--border-color)]">
+                <a href="{% url 'backend:backend_dashboard' %}"
+                   class="flex items-center gap-2">
+                    <img src="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=logo"
+                         class="h-9 w-9"
+                         alt="">
+                    <span class="text-2xl font-semibold">{{ site_setting.site_title|default:'' }}</span>
+                </a>
+                <!-- close btn for mobile -->
+                <button id="btnCloseMobile"
+                        class="lg:hidden p-2 rounded-md hover:bg-gray-100 text-[var(--text-color)]">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
             <!-- Nav -->
             <nav class="px-3 py-4 text-[15px] flex-1">
                 {% for menu in main_menu_list %}
@@ -370,7 +421,7 @@
                     </div>
                 </div>
             {% endif %}
-            <main class="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <main class="md:mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
                 <!-- Page Header -->
                 <div class="mb-6">
                     <!-- Breadcrumb Navigation -->
@@ -393,7 +444,7 @@
                                {% else %}
                                href="#"
                                {% endif %}
-                               class="hover:text-[var(--primary-color)] transition-colors{% if forloop.last %} font-medium text-[var(--primary-color)]{% endif %}">
+                               class="hover:text-[var(--primary-color)] transition-colors{% if forloop.last %} font-medium text-[var(--primary-color)] breadcrumb-last{% endif %}">
                                 {{ breadcrumb.menu_name }}
                             </a>
                         {% endfor %}
@@ -459,10 +510,22 @@
         <script>
         const sidebar = document.getElementById('sidebar');
         const openBtn = document.getElementById('btnOpen');
+        const closeBtnMobile = document.getElementById('btnCloseMobile');
         const backdrop = document.getElementById('backdrop');
-        const open = () => { sidebar.style.transform = 'translateX(0)'; backdrop.classList.remove('hidden'); };
-        const close = () => { sidebar.style.transform = 'translateX(-100%)'; backdrop.classList.add('hidden'); };
+        const open = () => { 
+            sidebar.classList.remove('translate-x-[-100%]'); 
+            sidebar.classList.add('translate-x-0'); 
+            backdrop.classList.remove('hidden'); 
+            document.body.style.overflow = 'hidden'; // Prevent body scroll
+        };
+        const close = () => { 
+            sidebar.classList.add('translate-x-[-100%]'); 
+            sidebar.classList.remove('translate-x-0'); 
+            backdrop.classList.add('hidden'); 
+            document.body.style.overflow = ''; // Restore scroll
+        };
         openBtn?.addEventListener('click', open);
+        closeBtnMobile?.addEventListener('click', close);
         backdrop?.addEventListener('click', close);
         window.addEventListener('keydown', e => e.key === 'Escape' && close());
         </script>
@@ -533,31 +596,51 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
-            // Add a style fix to prevent Tailwind's hidden class from being overriden by direct styles if any
+            // Dropdown menus use position:fixed so they are never clipped by overflow containers
             $(document).ready(function() {
-                $('head').append('<style>[data-menu].hidden { display: none !important; }</style>');
+                $('head').append('<style>[data-menu].hidden { display: none !important; } [data-menu] { position: fixed !important; z-index: 9999 !important; background: white !important; border: 1px solid #e5e7eb !important; border-radius: 0.5rem !important; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15) !important; min-width: 160px; } [data-menu-wrap] { position: relative !important; }</style>');
             });
 
             /**
-             * Global 3-dot menu handler
+             * Global 3-dot menu handler — uses position:fixed to escape overflow:auto clipping
              */
+            function positionMenu($btn, $menu) {
+                const rect = $btn[0].getBoundingClientRect();
+                const viewportH = window.innerHeight;
+
+                // Temporarily reveal off-screen to measure real dimensions
+                $menu.css({ visibility: 'hidden', top: '-9999px', left: '-9999px' });
+                const menuWidth  = $menu.outerWidth()  || 180;
+                const menuHeight = $menu.outerHeight() || 120;
+                $menu.css({ visibility: '' });
+
+                // Align right edge of menu with right edge of button
+                let left = rect.right - menuWidth;
+                let top  = rect.bottom + 4;
+
+                // Keep on screen
+                if (left < 8) left = rect.left;
+                if (top + menuHeight > viewportH - 8) top = rect.top - menuHeight - 4;
+
+                $menu.css({ top: top + 'px', left: left + 'px' });
+            }
+
             $(document).on('click', '[data-menu-btn]', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
-                const $btn = $(this);
+
+                const $btn  = $(this);
                 const $wrap = $btn.closest('[data-menu-wrap]');
                 const $menu = $wrap.find('[data-menu]');
-                
                 const isOpening = $menu.hasClass('hidden');
 
-                // Close ALL other menus
+                // Close ALL other menus first
                 $('[data-menu]').not($menu).addClass('hidden');
                 $('[data-menu-btn]').not($btn).attr('aria-expanded', 'false');
 
-                // Toggle target
                 if (isOpening) {
                     $menu.removeClass('hidden');
+                    positionMenu($btn, $menu);
                     $btn.attr('aria-expanded', 'true');
                 } else {
                     $menu.addClass('hidden');
@@ -565,9 +648,15 @@
                 }
             });
 
-            // Click outside to close
+            // Close menu when a menu item is clicked (works with position:fixed menus)
+            $(document).on('click', '[data-menu] [role="menuitem"], [data-menu] a, [data-menu] button', function() {
+                $('[data-menu]').addClass('hidden');
+                $('[data-menu-btn]').attr('aria-expanded', 'false');
+            });
+
+            // Click outside to close (also handles fixed-position menus)
             $(document).on('click', function(e) {
-                if (!$(e.target).closest('[data-menu-wrap]').length) {
+                if (!$(e.target).closest('[data-menu-wrap]').length && !$(e.target).closest('[data-menu]').length) {
                     $('[data-menu]').addClass('hidden');
                     $('[data-menu-btn]').attr('aria-expanded', 'false');
                 }
@@ -583,5 +672,6 @@
         </script>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
         <script src="{% static 'js/backend_menu_search.js' %}"></script>
+        {% block extra_js %}{% endblock %}
     </body>
 </html>

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 {% block title %}Vehicle Assignments{% endblock %}
 {% block breadcrumb %}
@@ -18,9 +18,9 @@
                 <h1 class="text-2xl font-semibold text-gray-800">Vehicle Assignments</h1>
                 <p class="text-sm text-gray-500 mt-1">Manage vehicle-to-employee assignments</p>
             </div>
-            <div class="flex gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
                 <button onclick="openFilterModal()"
-                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
                     <i class="fas fa-filter mr-2"></i>Filter
                 </button>
                 <a href="{% url 'vehicle_assign:create' %}"
@@ -93,9 +93,9 @@
             assignment{{ paginator.paginator.count|pluralize }}
         </div>
         <!-- Table -->
-        <div class="bg-white border border-gray-100 rounded-xl overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+        <div class="bg-white border border-gray-100 rounded-xl">
+            <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <table class="w-full min-w-[800px] text-sm">
                     <thead class="bg-gray-50 border-b">
                         <tr>
                             <th class="px-6 py-3 text-left font-semibold text-gray-600">#</th>
@@ -127,16 +127,16 @@
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="inline-block" data-menu-wrap>
+                                    <div class="inline-block relative" data-menu-wrap>
                                         <button type="button"
                                                 class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
                                                 data-menu-btn
                                                 aria-haspopup="true"
                                                 aria-expanded="false"
-                                                onclick="const menu=this.nextElementSibling; const willOpen=menu.classList.contains('hidden'); document.querySelectorAll('[data-menu]').forEach(m=>m.classList.add('hidden')); document.querySelectorAll('[data-menu-btn]').forEach(b=>b.setAttribute('aria-expanded','false')); if(willOpen){menu.classList.remove('hidden'); this.setAttribute('aria-expanded','true');}">
+                                                >
                                             ⋯
                                         </button>
-                                        <div class="hidden absolute right-4 mt-1 w-[150px] z-50 rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
+                                        <div class="hidden absolute right-4 mt-1 w-[150px] rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
                                              data-menu
                                              role="menu">
                                             <a href="{% url  'vehicle_assign:update' assign.pk %}"
