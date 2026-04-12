@@ -238,7 +238,7 @@ backend_patterns = ([
     path("api/get-visitor/", views.get_visitor_by_contact, name="get_visitor_by_contact"),
     # Image optimization
     path("image/<str:unique_key>/", views.serve_optimized_image, name="serve_optimized_image"),
-    path('', views.backend_dashboard, name='backend_dashboard'),
+    # path('', views.backend_dashboard, name='backend_dashboard'),
     path('login/', views.backend_login, name='backend_login'),
     path('logout/', views.backend_logout, name='backend_logout'),
     path('<str:menu_slug>-menu/', views.menu_wise_dashboard, name='menu_wise_dashboard'),
@@ -249,6 +249,7 @@ backend_patterns = ([
     path('user/permission/<int:user_id>/', views.user_permission, name='user_permission'),
     
     # Dashboards
+    path('', views.dash_board, name='dash_board'),
     path('dashboard/', views.dash_board, name='dash_board'),
     path('vehicle-management/', views.vehicle_management, name='vehicle_management'),
 

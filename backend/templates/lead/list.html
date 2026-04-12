@@ -378,11 +378,17 @@
             {% endif %}
         </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
     <script>
-        $(document).ready(function () {
-            $('.select2-items').select2();
+        $(function () {
+            $('.select2-items').select2({
+                width: '100%',
+                dropdownParent: $('#filterModal')
+            });
         });
-        
+
         function openFilterModal() {
             document.getElementById('filterModal').classList.remove('hidden');
         }

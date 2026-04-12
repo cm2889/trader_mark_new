@@ -781,17 +781,7 @@ def dash_board(request):
         'recent_uniform_issuances': recent_uniform_issuances,
     }
     
-    # Debug: Log query count and data issues (uncomment for debugging)
-    # from django.db import connection
-    # print(f"Dashboard queries: {len(connection.queries)} total queries")
-    # print(f"Employee data: active={active_employees}, inactive={inactive_employees}")
-    # print(f"Vehicle data: cars={cars}, bikes={bikes}, inactive={inactive_vehicles}")
-    # if total_employment_records == 0 and total_employees > 0:
-    #     print(f"⚠️ WARNING: {total_employees} employees found but 0 Employment records - using fallback")
-    # # Log actual vehicle types in database
-    # vehicle_types = Vehicle.objects.filter(is_active=True, deleted=False).values_list('vehicle_type', flat=True).distinct()
-    # print(f"Vehicle types in database: {list(vehicle_types)}")
-    
+   
     return render(request, 'report/dashboard.html', context )
 
 

@@ -72,14 +72,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'trader_mark',
         'USER': 'root',
-
         'PASSWORD': 'admin', 
         'HOST': 'localhost',
         'PORT': '3306',
         
     }
 }
-
 
 
 AUTH_PASSWORD_VALIDATORS = [

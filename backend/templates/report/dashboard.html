@@ -7,12 +7,7 @@
         <div class="bg-white shadow-sm border-b border-gray-200 mb-8">
             <div class="px-4 sm:px-6 lg:px-8 py-6">
                 <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
-                            Dashboard Overview
-                        </h1>
-                        <p class="mt-1 text-sm text-gray-600">Real-time business analytics and operational insights</p>
-                    </div>
+                    
                     <div class="flex items-center space-x-3  px-4 py-2 rounded-lg border border-gray-200">
                         <i class="far fa-calendar-alt text-gray-500"></i>
                         <span id="currentDate" class="text-sm font-medium text-gray-700"></span>
@@ -503,15 +498,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalEmpStatus = {{ active_employees|default:0 }} + {{ inactive_employees|default:0 }} + {{ on_leave_employees|default:0 }} + {{ terminated_employees|default:0 }};
     
     if (totalEmpCheck > 0 && totalEmpStatus === 0) {
-        console.error('🔴 DATA ISSUE: ' + totalEmpCheck + ' employees found but 0 with employment status!');
-        console.error('🔧 FIX: Check if Employment records exist and have work_status field set');
+        console.error('DATA ISSUE: ' + totalEmpCheck + ' employees found but 0 with employment status!');
+        console.error('FIX: Check if Employment records exist and have work_status field set');
     }
     
     const totalVehCheck = {{ total_vehicles|default:0 }};
     const totalVehTypes = {{ cars|default:0 }} + {{ bikes|default:0 }};
     if (totalVehCheck > totalVehTypes && totalVehCheck > 0) {
-        console.warn('⚠️ Vehicle data mismatch: ' + totalVehCheck + ' total vehicles but only ' + totalVehTypes + ' categorized (Cars: ' + {{ cars|default:0 }} + ', Bikes: ' + {{ bikes|default:0 }} + ')');
-        console.warn('🔧 Check vehicle_type field values in database - they may not match "CAR" or "BIKE" exactly');
+        console.warn('Vehicle data mismatch: ' + totalVehCheck + ' total vehicles but only ' + totalVehTypes + ' categorized (Cars: ' + {{ cars|default:0 }} + ', Bikes: ' + {{ bikes|default:0 }} + ')');
+        console.warn('Check vehicle_type field values in database - they may not match "CAR" or "BIKE" exactly');
     }
     
     // Display current date
