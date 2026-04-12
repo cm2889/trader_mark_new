@@ -6,3 +6,5 @@ mysql -u root -p trader_mark < trader_mark.sql
 python manage.py makemigrations
 python manage.py migrate
 python manage.py loaddata fixtures/fixtures.json 
+
+systemctl restart trader_mark
