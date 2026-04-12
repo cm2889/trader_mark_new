@@ -10,8 +10,8 @@
     <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
         <div class="">
             <!-- Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                <div class="mt-4 sm:mt-0 flex items-center gap-3">
+            <div class="mb-6 flex items-center justify-end gap-3 flex-wrap sm:flex-nowrap">
+                <div class="flex items-center gap-3 whitespace-nowrap">
                     <button onclick="openFilterModal()"
                             class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
                         <i class="fas fa-filter mr-2"></i>Filter
@@ -23,10 +23,10 @@
                 </div>
             </div>
             <!-- Filter Modal -->
-            <div id="filterModal"
-                 class="hidden fixed inset-0 bg-gray-600 bg-opacity-50  h-full w-full z-50"
+              <div id="filterModal"
+                  class="hidden fixed inset-0 z-50 bg-gray-600/50 p-4 sm:p-6 overflow-y-auto"
                  onclick="closeFilterModal(event)">
-                <div class="relative top-20 mx-auto p-0 border w-full max-w-2xl shadow-lg rounded-lg bg-white"
+                 <div class="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-lg border bg-white shadow-lg max-h-[60vh] overflow-y-auto"
                      onclick="event.stopPropagation()">
                     <!-- Header -->
                     <div class="flex items-center justify-between p-4 border-b">
@@ -241,7 +241,6 @@
         const modal = document.getElementById('filterModal');
         if (modal) {
             modal.classList.remove('hidden');
-            modal.classList.add('flex');
         }
     }
 
@@ -249,7 +248,6 @@
         const modal = document.getElementById('filterModal');
         if (modal) {
             modal.classList.add('hidden');
-            modal.classList.remove('flex');
         }
     }
 
