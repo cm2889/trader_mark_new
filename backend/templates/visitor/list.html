@@ -269,6 +269,8 @@
         </div>
     </div>
 {% endblock %}
+
+
 {% block extra_js %}
     <script>
     $(document).ready(function() {
@@ -374,15 +376,15 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Converting...';
         }
         
-        console.log('🚀 Starting conversion for visitor ID:', visitorId);
+        console.log('Starting conversion for visitor ID:', visitorId);
         
         const body = JSON.stringify({
             source: null,
             stage: null
         });
         
-        console.log('📤 Sending request to /visitor/convert-to-lead/' + visitorId + '/');
-        console.log('📝 Body:', body);
+        console.log('ending request to /visitor/convert-to-lead/' + visitorId + '/');
+        console.log('Body:', body);
         
         fetch(`/visitor/convert-to-lead/${visitorId}/`, {
             method: 'POST',
@@ -393,7 +395,7 @@
             body: body
         })
         .then(response => {
-            console.log('✅ Response received, status:', response.status);
+            console.log('Response received, status:', response.status);
             if (!response.ok) {
                 console.log('❌ Response not OK, parsing error...');
                 return response.json().then(data => {
@@ -404,17 +406,17 @@
             return response.json();
         })
         .then(data => {
-            console.log('✅ Data received:', data);
+            console.log('Data received:', data);
             if (data.success) {
-                console.log('🎉 Conversion successful!');
+                console.log('Conversion successful!');
                 if (data.redirect_url) {
-                    console.log('🔀 Redirecting to:', data.redirect_url);
+                    console.log('Redirecting to:', data.redirect_url);
                     window.location.href = data.redirect_url;
                 } else {
                     location.reload();
                 }
             } else {
-                console.log('⚠️ Conversion failed:', data.message);
+                console.log('Conversion failed:', data.message);
                 showErrorMessage(data.message);
                 if (btn) {
                     btn.disabled = false;
@@ -423,7 +425,7 @@
             }
         })
         .catch(error => {
-            console.error('🔥 Catch error:', error);
+            console.error(' Catch error:', error);
             showErrorMessage(error.message || 'An error occurred while converting to lead. Please try again.');
             if (btn) {
                 btn.disabled = false;

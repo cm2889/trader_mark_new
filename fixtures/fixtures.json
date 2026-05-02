@@ -631,6 +631,22 @@
     "model": "backend.backendmenu",
     "pk": 501,
     "fields": {
+      "module_name": "Uniform Category",
+      "menu_name": "Uniform category",
+      "menu_url": "/uniform-category/",
+      "menu_icon": "fa-solid fa-chart-pie",
+      "menu_description": "Uniform category management.",
+      "parent": 18,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 502,
+    "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform List",
       "menu_url": "/uniform/",
@@ -645,7 +661,7 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 502,
+    "pk": 503,
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Stock",
@@ -661,7 +677,7 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 503,
+    "pk": 504,
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Issuance",
@@ -677,7 +693,7 @@
   },
   {
     "model": "backend.backendmenu",
-    "pk": 504,
+    "pk": 505,
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Clearance",
@@ -693,7 +709,7 @@
   }, 
   {
     "model": "backend.backendmenu",
-    "pk": 505,
+    "pk": 506,
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Report",
@@ -709,7 +725,7 @@
   }, 
   {
     "model": "backend.backendmenu",
-    "pk": 506,
+    "pk": 507,
     "fields": {
       "module_name": "Uniform Management",
       "menu_name": "Uniform Transaction Log",
