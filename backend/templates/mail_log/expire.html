@@ -87,7 +87,7 @@
             <div class="sm:w-40">
                 <label class="block text-xs font-medium text-[var(--text-light-color)] mb-1 uppercase tracking-wider">Status</label>
                 <select name="status"
-                        class="w-full px-3 py-2.5 text-sm border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                        class="select2-items w-full px-3 py-2.5 text-sm border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
                     <option value="">All Status</option>
                     <option value="SENT" {% if status_filter == 'SENT' %}selected{% endif %}>Sent</option>
                     <option value="FAILED" {% if status_filter == 'FAILED' %}selected{% endif %}>Failed</option>
@@ -303,6 +303,10 @@
         if (e.key === 'Escape') {
             closeDetailModal();
         }
+    });
+
+    $(document).ready(function () {
+        $('.select2-items').select2();
     });
     </script>
 {% endblock %}

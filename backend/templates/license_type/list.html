@@ -198,5 +198,9 @@
             if (event && event.target !== modal) return;
             modal.classList.add('hidden');
         }
+
+        $(document).ready(function () {
+            $('.select2-filter').select2();
+        });
     </script>
 {% endblock %}

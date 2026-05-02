@@ -343,7 +343,7 @@
     "fields": {
       "module_name": "Employee Management",
       "menu_name": "Employee",
-      "menu_url": "/employee/",
+      "menu_url": "employee",
       "menu_icon": "fa-solid fa-user-plus",
       "menu_description": "new employee.",
       "parent": 2,
