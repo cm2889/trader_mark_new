@@ -125,9 +125,10 @@
         </div>
     {% endif %}
     <!-- Table Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]" >
-        <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
-            <table class="w-full" >
+    <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+        <div class="overflow-x-auto w-full custom-scrollbar"
+             style="-webkit-overflow-scrolling: touch">
+            <table class="w-full">
                 <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
@@ -140,7 +141,9 @@
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
                             Next Follow-up
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase whitespace-nowrap tracking-wider">Created By</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase whitespace-nowrap tracking-wider">
+                            Created By
+                        </th>
                         <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
@@ -205,9 +208,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 {% if followup.next_followup_date %}
-                                    <span class="text-blue-600">
-                                        {{ followup.next_followup_date|date:"M d, Y - g:i A" }}
-                                    </span>
+                                    <span class="text-blue-600">{{ followup.next_followup_date|date:"M d, Y - g:i A" }}</span>
                                 {% else %}
                                     <span class="text-gray-400">-</span>
                                 {% endif %}
@@ -222,11 +223,10 @@
                                                 class="h-8 w-8 rounded-md cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-colors"
                                                 data-menu-btn
                                                 aria-haspopup="true"
-                                                aria-expanded="false"
-                                                >
+                                                aria-expanded="false">
                                             <i class="fas fa-ellipsis-v text-gray-400"></i>
                                         </button>
-                                        <div class="hidden absolute right-0 mt-1 w-[180px] z-[99] rounded-md bg-white ring-1 ring-black ring-opacity-5 shadow-lg" 
+                                        <div class="hidden absolute right-0 mt-1 w-[180px] z-[99] rounded-md bg-white ring-1 ring-black ring-opacity-5 shadow-lg"
                                              data-menu
                                              role="menu">
                                             <div class="py-1">
@@ -337,5 +337,3 @@
         });
     </script>
 {% endblock %}
-
-

@@ -7,7 +7,6 @@
     </svg>
     <span class="font-medium text-[var(--primary-color)]">Import / Export</span>
 {% endblock %}
-
 {% block content %}
     <div class="w-full py-2">
         <div class="grid grid-cols-1 gap-6">
@@ -16,25 +15,35 @@
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="p-2 bg-emerald-50 rounded-lg">
-                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            <svg class="w-5 h-5 text-emerald-600"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4">
+                                </path>
                             </svg>
                         </div>
                         <h2 class="text-lg font-semibold text-gray-800">Export Data</h2>
                     </div>
-                    
-                    <form method="GET" action="{% url 'import_export:export_excel' %}" id="exportForm" class="space-y-4">
+                    <form method="GET"
+                          action="{% url 'import_export:export_excel' %}"
+                          id="exportForm"
+                          class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Select Company</label>
-                            <select name="company_id" id="export_company" class="select2-items w-full border border-gray-300 rounded-lg text-sm" required>
+                            <select name="company_id"
+                                    id="export_company"
+                                    class="select2-items w-full border border-gray-300 rounded-lg text-sm"
+                                    required>
                                 <option value="">-- Choose Company --</option>
-                                {% for company in companies %}
-                                    <option value="{{ company.id }}">{{ company.name }}</option>
-                                {% endfor %}
+                                {% for company in companies %}<option value="{{ company.id }}">{{ company.name }}</option>{% endfor %}
                             </select>
                         </div>
                         <div class="flex justify-end">
-                            <button type="submit" id="exportBtn" disabled class="inline-flex justify-center items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50">
+                            <button type="submit"
+                                    id="exportBtn"
+                                    disabled
+                                    class="inline-flex justify-center items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50">
                                 <i class="fas fa-file-export"></i>
                                 Export to Excel
                             </button>
@@ -42,33 +51,50 @@
                     </form>
                 </div>
             </div>
-
             <!-- Import Section -->
             <div class="bg-white rounded-xl shadow-sm border border-[var(--border-color)] overflow-hidden">
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="p-2 bg-blue-50 rounded-lg">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            <svg class="w-5 h-5 text-blue-600"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                </path>
                             </svg>
                         </div>
                         <h2 class="text-lg font-semibold text-gray-800">Import Data</h2>
                     </div>
-
-                    <form method="POST" enctype="multipart/form-data" id="uploadForm" class="space-y-4">
+                    <form method="POST"
+                          enctype="multipart/form-data"
+                          id="uploadForm"
+                          class="space-y-4">
                         {% csrf_token %}
                         <div class="relative group">
-                            <input type="file" name="excel_file" id="fileInput" accept=".xlsx,.xls,.csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required>
+                            <input type="file"
+                                   name="excel_file"
+                                   id="fileInput"
+                                   accept=".xlsx,.xls,.csv"
+                                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                   required>
                             <div class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center group-hover:border-blue-400 group-hover:bg-blue-50/50 transition-all">
-                                <svg class="mx-auto w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 7.5m0 0L7.5 12m4.5-4.5V16.5"></path>
+                                <svg class="mx-auto w-8 h-8 text-gray-400 mb-2"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 7.5m0 0L7.5 12m4.5-4.5V16.5">
+                                    </path>
                                 </svg>
                                 <p class="text-sm font-medium text-gray-600" id="fileLabel">Click to upload or drag file</p>
                                 <p class="text-xs text-gray-400 mt-1">XLSX, XLS, CSV</p>
                             </div>
                         </div>
                         <div class="flex justify-center">
-                            <button type="submit" id="importBtn" disabled class="inline-flex px-8 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
+                            <button type="submit"
+                                    id="importBtn"
+                                    disabled
+                                    class="inline-flex px-8 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
                                 Upload & Import
                             </button>
                         </div>

@@ -36,7 +36,8 @@ from backend.models import (
     BackendMenu, 
     Visitor, 
     Company, 
-    Nationality, Employee, Employment, Passport, DrivingLicense, 
+    EmploymentCategory, WorkPlace, Transport, 
+    Nationality, Employee, Employment, Passport,LicenseType, DrivingLicense, 
     HealthInsurance, Contact, Address, Vehicle, InsuranceClaim, 
     VehicleHandover, TrafficViolation,ViolationType, TrafficViolationPenalty, 
     VehicleInstallment, VehicleMaintenance, VehicleAccident, VehicleAssign, 
@@ -45,11 +46,13 @@ from backend.models import (
 )
 
 from backend.forms import (
-    CustomUserLoginForm,CompanyForm,  NationalityForm, EmployeeForm, EmploymentForm, VehicleMaintananceTypeForm, 
-    PassportForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
+    CustomUserLoginForm, CompanyForm, LicenseTypeForm,  NationalityForm, EmployeeForm, EmploymentForm, VehicleMaintananceTypeForm, 
+    EmploymentCategoryForm, WorkPlaceForm, TransportForm,
+    PassportForm, DrivingLicenseForm, DrivingLicenseForm, HealthInsuranceForm, ContactForm, 
     AddressForm, UserCreateForm, VehicleForm, VisitorForm, InsuranceClaimForm, 
     VehicleHandoverForm, TrafficViolationForm, ViolationTypeForm, TrafficViolationPenaltyForm, 
     VehicleInstallmentForm, VehicleMaintenanceForm, VehicleAccidentForm, VehicleAssignForm, 
+    UniformCategoryForm, 
     UniformForm, UniformStockForm, UniformIssuanceForm, UniformClearanceForm,
     VehiclePurchaseForm, InstallmentPaymentForm,LeadSourceForm, LeadStageForm,  LeadForm, FollowUpForm, FollowUpReminderForm, QuickLeadConversionForm
 ) 
@@ -1760,6 +1763,93 @@ def reminder_delete(request, pk):
     return redirect('lead:detail', pk=lead_pk)
 
 
+# ========================================================
+# License Types 
+# ========================================================
+@method_decorator(login_required, name='dispatch')
+class LicenseTypeListView(ListView):
+    model = LicenseType
+    template_name = "license_type/list.html"
+    paginate_by = None 
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/license-type/"):
+            messages.error(request, "You do not have permission to view license types.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = LicenseType.objects.filter(is_active=True)
+
+        name_id = self.request.GET.get('name', '')
+
+        if name_id:
+            queryset = queryset.filter(id=name_id)
+        
+        return queryset
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['license_types'] = self.get_queryset()
+        context['all_license_types'] = LicenseType.objects.filter(is_active=True).order_by('name')
+        context['page_num'] = self.request.GET.get('page', 1)
+        context['paginator_list'], context['paginator'], context['last_page_number'] = paginate_data(self.request, context['page_num'], context['license_types'])
+
+        get_param = self.request.GET.copy()
+        if 'page' in get_param:
+            get_param.pop('page')
+        context['get_param'] = get_param.urlencode() 
+        return context
+    
+
+@method_decorator(login_required, name='dispatch')
+class LicenseTypeCreateView(CreateView):
+    model = LicenseType
+    template_name = "license_type/create.html"
+    form_class = LicenseTypeForm
+    success_url = reverse_lazy('license_type:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/license-type/"):
+            messages.error(request, "You do not have permission to add license types.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+@method_decorator(login_required, name='dispatch')
+class LicenseTypeUpdateView(UpdateView):
+    model = LicenseType
+    template_name = "license_type/update.html"
+    form_class = LicenseTypeForm
+    success_url = reverse_lazy('license_type:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/license-type/"):
+            messages.error(request, "You do not have permission to update license types.")
+            return render(request, "403.html", status=403)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        return super().form_valid(form)
+    
+
+@login_required
+def license_type_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/license-type/"):
+        messages.error(request, "You do not have permission to delete license types.")
+        return render(request, "403.html", status=403)
+    
+    license_type = LicenseType.objects.get(pk=pk)
+    license_type.is_active = False
+    license_type.save()
+    return redirect('license_type:list') 
+
+
 @login_required
 def get_visitor_by_contact(request):
 
@@ -1799,13 +1889,13 @@ def get_visitor_by_contact(request):
 
 @login_required
 def employee_create(request):
-
     if not checkUserPermission(request, "can_add", "/employee/"):
         messages.error(request, "You do not have permission to add employees.")
         return render(request, "403.html", status=403)
 
     visitor = None
     lead = None
+
     visitor_id = request.GET.get('visitor_id') or request.POST.get('visitor_id')
     lead_id = request.GET.get('lead_id') or request.POST.get('lead_id')
     
@@ -1858,6 +1948,9 @@ def employee_create(request):
                 
                 # Extract employment data for this index
                 employment_data = {
+                    'category': request.POST.get(f'{employment_prefix}-category'),
+                    'workplace': request.POST.get(f'{employment_prefix}-workplace'),
+                    'transport': request.POST.get(f'{employment_prefix}-transport'), 
                     'joining_date': request.POST.get(f'{employment_prefix}-joining_date'),
                     'work_status': request.POST.get(f'{employment_prefix}-work_status'),
                     'rp_expiry_date': request.POST.get(f'{employment_prefix}-rp_expiry_date'),
@@ -1877,6 +1970,21 @@ def employee_create(request):
                         updated_by=request.user
                     )
                     
+                    if employment_data['category']:
+                        try:
+                            employment.category_id = employment_data['category']
+                        except:
+                            pass
+                    if employment_data['workplace']:
+                        try:
+                            employment.workplace_id = employment_data['workplace']
+                        except:
+                            pass
+                    if employment_data['transport']:
+                        try:
+                            employment.transport_id = employment_data['transport']
+                        except:
+                            pass
                     if employment_data['joining_date']:
                         employment.joining_at = employment_data['joining_date']
                     if employment_data['work_status']:
@@ -1946,6 +2054,7 @@ def employee_create(request):
                 
                 # Extract driving license data for this index
                 license_data = {
+                    'license_type': request.POST.get(f'{license_prefix}-license_type'), 
                     'license_no': request.POST.get(f'{license_prefix}-license_no'),
                     'license_expiry_date': request.POST.get(f'{license_prefix}-license_expiry_date'),
                     'license_renewed': request.POST.get(f'{license_prefix}-license_renewed'),
@@ -1953,7 +2062,7 @@ def employee_create(request):
                 }
                 
                 # Check if any data is provided
-                has_data = any([v for v in license_data.values() if v not in [None, '', []]])
+                has_data = any([v for k, v in license_data.items() if v not in [None, '', []] and k != 'license_type'])
                 
                 if has_data:
                     driving_license = DrivingLicense(
@@ -1962,6 +2071,11 @@ def employee_create(request):
                         updated_by=request.user
                     )
                     
+                    if license_data['license_type']:
+                        try:
+                            driving_license.license_type_id = license_data['license_type']
+                        except:
+                            pass
                     if license_data['license_no']:
                         driving_license.license_no = license_data['license_no']
                     if license_data['license_expiry_date']:
@@ -2043,6 +2157,10 @@ def employee_create(request):
         'contact_form': contact_form,
         'address_form': address_form,
         'nationalities': Nationality.objects.filter(is_active=True),
+        'employment_categories': EmploymentCategory.objects.filter(is_active=True),
+        'workplaces': WorkPlace.objects.filter(is_active=True),
+        'transports': Transport.objects.filter(is_active=True),
+        'license_types': LicenseType.objects.filter(is_active=True),
         'visitor': visitor,
         'lead': lead,
         'from_lead_conversion': visitor is not None,
@@ -2199,14 +2317,15 @@ def employee_update(request, pk):
                     break
                 
                 license_data = {
+                    'license_type': request.POST.get(f'{license_prefix}-license_type'), 
                     'license_no': request.POST.get(f'{license_prefix}-license_no'),
                     'license_expiry_date': request.POST.get(f'{license_prefix}-license_expiry_date'),
                     'license_renewed': request.POST.get(f'{license_prefix}-license_renewed') == 'on',
                     'license_renew_status': request.POST.get(f'{license_prefix}-license_renew_status'),
                 }
                 
-                # Check if any data is provided
-                has_data = any([v for k, v in license_data.items() if v not in [None, '', [], False] and k != 'license_renewed'])
+                # Check if any data is provided (exclude license_type and license_renewed from check since they're not always present)
+                has_data = any([v for k, v in license_data.items() if v not in [None, '', [], False] and k not in ['license_renewed', 'license_type']])
                 
                 if has_data:
                     # Try to find existing license by license_no or create new
@@ -2224,6 +2343,11 @@ def employee_update(request, pk):
                         # Create new
                         license_obj = DrivingLicense(employee=employee, created_by=request.user, updated_by=request.user)
                     
+                    if license_data['license_type']:
+                        try:
+                            license_obj.license_type_id = license_data['license_type']
+                        except:
+                            pass
                     if license_data['license_no']:
                         license_obj.license_no = license_data['license_no']
                     if license_data['license_expiry_date']:
@@ -2300,6 +2424,7 @@ def employee_update(request, pk):
         'contact_form': contact_form,
         'address_form': address_form,
         'nationalities': Nationality.objects.filter(is_active=True),
+        'license_types': LicenseType.objects.filter(is_active=True),
     }
     return render(request, "employee/update.html", context)
 
@@ -2652,6 +2777,278 @@ class EmployeeDetailView(DetailView):
         return context
 
 # =============================================
+# Employment Category Views
+# ============================================= 
+@method_decorator(login_required, name='dispatch')
+class EmployeementCategoryListView(ListView):
+    model = EmploymentCategory
+    template_name = 'employeement_category/list.html'
+    context_object_name = 'categories'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/employment-category/"):
+            messages.error(request, "You do not have permission to view employment categories.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs) 
+    
+    def get_queryset(self):
+        name = self.request.GET.get('name', '')
+
+        filters = {
+            'is_active': True,
+        }
+        if name:
+            filters['name__icontains'] = name
+        
+        return EmploymentCategory.objects.filter(**filters).order_by('name') 
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['name'] = self.request.GET.get('name', '') 
+
+        get_params = self.request.GET.copy()
+        if 'page' in get_params:
+            get_params.pop('page')
+        context['get_params'] = get_params.urlencode()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeementCategoryCreateView(CreateView):
+    model = EmploymentCategory
+    form_class = EmploymentCategoryForm
+    template_name = 'employeement_category/create.html'
+    success_url = reverse_lazy('employment-category:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/employment-category/"):
+            messages.error(request, "You do not have permission to add employment categories.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        employment_category = form.save(commit=False)
+        employment_category.created_by = self.request.user
+        employment_category.save()
+        messages.success(self.request, "Employment category created successfully!")
+        return super().form_valid(form) 
+    
+
+@method_decorator(login_required, name='dispatch')
+class EmployeementCategoryUpdateView(UpdateView):
+    model = EmploymentCategory
+    form_class = EmploymentCategoryForm
+    template_name = 'employeement_category/update.html'
+    success_url = reverse_lazy('employment-category:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/employment-category/"):
+            messages.error(request, "You do not have permission to update employment categories.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        employment_category = form.save(commit=False)
+        employment_category.updated_by = self.request.user
+        employment_category.save()
+        messages.success(self.request, "Employment category updated successfully!")
+        return super().form_valid(form)
+    
+
+@login_required
+def employment_category_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/employment-category/"):
+        messages.error(request, "You do not have permission to delete employment categories.")
+        return render(request, "403.html", status=403) 
+
+    category = EmploymentCategory.objects.get(pk=pk)
+    category.is_active = False
+    category.save()
+    messages.success(request, "Employment category deleted successfully!")
+    return redirect('employment-category:list')
+
+# =============================================
+#  Work place 
+# =============================================
+@method_decorator(login_required, name='dispatch')
+class WorkPlaceListView(ListView):
+    model = WorkPlace
+    template_name = 'work_place/list.html'
+    context_object_name = 'work_places'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/work-place/"):
+            messages.error(request, "You do not have permission to view work places.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs) 
+
+    def get_queryset(self):
+        name = self.request.GET.get('name', '')
+
+        filters = {
+            'is_active': True,
+        }
+        if name:
+            filters['name__icontains'] = name
+        
+        return WorkPlace.objects.filter(**filters).order_by('name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['name'] = self.request.GET.get('name', '') 
+
+        get_params = self.request.GET.copy()
+        if 'page' in get_params:
+            get_params.pop('page')
+        context['get_params'] = get_params.urlencode()
+        return context
+    
+@method_decorator(login_required, name='dispatch')
+class WorkPlaceCreateView(CreateView):
+    model = WorkPlace
+    form_class = WorkPlaceForm
+    template_name = 'work_place/create.html'
+    success_url = reverse_lazy('work-place:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/work-place/"):
+            messages.error(request, "You do not have permission to add work places.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        work_place = form.save(commit=False)
+        work_place.created_by = self.request.user
+        work_place.save()
+        messages.success(self.request, "Work place created successfully!")
+        return super().form_valid(form)
+    
+@method_decorator(login_required, name='dispatch')
+class WorkPlaceUpdateView(UpdateView):
+    model = WorkPlace
+    form_class = WorkPlaceForm
+    template_name = 'work_place/update.html'
+    success_url = reverse_lazy('work-place:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/work-place/"):
+            messages.error(request, "You do not have permission to update work places.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        work_place = form.save(commit=False)
+        work_place.updated_by = self.request.user
+        work_place.save()
+        messages.success(self.request, "Work place updated successfully!")
+        return super().form_valid(form)
+    
+@login_required
+def work_place_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/work-place/"):
+        messages.error(request, "You do not have permission to delete work places.")
+        return render(request, "403.html", status=403) 
+
+    work_place = WorkPlace.objects.get(pk=pk)
+    work_place.is_active = False
+    work_place.save()
+    messages.success(request, "Work place deleted successfully!")
+    return redirect('work-place:list')
+
+
+# =============================================
+# Transport 
+# ============================================= 
+@method_decorator(login_required, name='dispatch')
+class TransportListView(ListView):
+    model = Transport
+    template_name = 'transport/list.html'
+    context_object_name = 'transports'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/transport/"):
+            messages.error(request, "You do not have permission to view transports.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs) 
+
+    def get_queryset(self):
+        name = self.request.GET.get('name', '')
+
+        filters = {
+            'is_active': True,
+        }
+        if name:
+            filters['name__icontains'] = name
+        
+        return Transport.objects.filter(**filters).order_by('name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['name'] = self.request.GET.get('name', '') 
+
+        get_params = self.request.GET.copy()
+        if 'page' in get_params:
+            get_params.pop('page')
+        context['get_params'] = get_params.urlencode()
+        return context
+    
+@method_decorator(login_required, name='dispatch')
+class TransportCreateView(CreateView):
+    model = Transport
+    form_class = TransportForm
+    template_name = 'transport/create.html'
+    success_url = reverse_lazy('transport:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/transport/"):
+            messages.error(request, "You do not have permission to add transports.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        transport = form.save(commit=False)
+        transport.created_by = self.request.user
+        transport.save()
+        messages.success(self.request, "Transport created successfully!")
+        return super().form_valid(form)
+
+@method_decorator(login_required, name='dispatch')
+class TransportUpdateView(UpdateView):
+    model = Transport
+    form_class = TransportForm
+    template_name = 'transport/update.html'
+    success_url = reverse_lazy('transport:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/transport/"):
+            messages.error(request, "You do not have permission to update transports.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        transport = form.save(commit=False)
+        transport.updated_by = self.request.user
+        transport.save()
+        messages.success(self.request, "Transport updated successfully!")
+        return super().form_valid(form)
+    
+@login_required
+def transport_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/transport/"):
+        messages.error(request, "You do not have permission to delete transports.")
+        return render(request, "403.html", status=403) 
+
+    transport = Transport.objects.get(pk=pk)
+    transport.is_active = False
+    transport.save()
+    messages.success(request, "Transport deleted successfully!")
+    return redirect('transport:list')
+
+# =============================================
 # Uniform Report View
 # =============================================
 @login_required
@@ -2897,6 +3294,7 @@ def uniform_report(request):
     return render(request, "uniform/report.html", context)
 
 
+
 @login_required
 def uniform_log(request):
     if not checkUserPermission(request, "can_view", "/uniform/log/"):
@@ -2965,6 +3363,98 @@ def uniform_log(request):
     return render(request, "uniform/log.html", context)
 
 
+# =============================================
+# Uniform Categories 
+# ============================================= 
+from .models import UniformCategory 
+@method_decorator(login_required, name='dispatch')
+class UniformCategoryListView(ListView):
+    model = UniformCategory
+    template_name = 'uniform_category/list.html'
+    context_object_name = 'categories'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_view", "/uniform-category/"):
+            messages.error(request, "You do not have permission to view uniform categories.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs) 
+
+    def get_queryset(self):
+        name = self.request.GET.get('name', '')
+
+        filters = {
+            'is_active': True,
+        }
+        if name:
+            filters['name__icontains'] = name
+        
+        return UniformCategory.objects.filter(**filters).order_by('name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['name'] = self.request.GET.get('name', '') 
+
+        get_params = self.request.GET.copy()
+        if 'page' in get_params:
+            get_params.pop('page')
+        context['get_params'] = get_params.urlencode()
+        return context
+    
+@method_decorator(login_required, name='dispatch')
+class UniformCategoryCreateView(CreateView):
+    model = UniformCategory
+    form_class = UniformCategoryForm
+    template_name = 'uniform_category/create.html'
+    success_url = reverse_lazy('uniform-category:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_add", "/uniform-category/"):
+            messages.error(request, "You do not have permission to add uniform categories.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        category = form.save(commit=False)
+        category.created_by = self.request.user
+        category.save()
+        messages.success(self.request, "Uniform category created successfully!")
+        return super().form_valid(form)
+    
+@method_decorator(login_required, name='dispatch')
+class UniformCategoryUpdateView(UpdateView):
+    model = UniformCategory
+    form_class = UniformCategoryForm
+    template_name = 'uniform_category/update.html'
+    success_url = reverse_lazy('uniform-category:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not checkUserPermission(request, "can_update", "/uniform-category/"):
+            messages.error(request, "You do not have permission to update uniform categories.")
+            return render(request, "403.html", status=403) 
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        category = form.save(commit=False)
+        category.updated_by = self.request.user
+        category.save()
+        messages.success(self.request, "Uniform category updated successfully!")
+        return super().form_valid(form)
+    
+
+@login_required
+def uniform_category_delete(request, pk):
+    if not checkUserPermission(request, "can_delete", "/uniform-category/"):
+        messages.error(request, "You do not have permission to delete uniform categories.")
+        return render(request, "403.html", status=403) 
+
+    category = UniformCategory.objects.get(pk=pk)
+    category.is_active = False
+    category.save()
+    messages.success(request, "Uniform category deleted successfully!")
+    return redirect('uniform-category:list')
+
+
 # ============================================= 
 # Uniform ListView 
 # ============================================= 
@@ -2987,13 +3477,19 @@ class UniformListView(ListView):
         
         name = self.request.GET.get('name', '') 
         uniform_type = self.request.GET.get('uniform_type', '')
+        category = self.request.GET.get('category', '')
+        company = self.request.GET.get('company', '')
         
         if name:
             filters['id'] = name
         if uniform_type:
             filters['uniform_type'] = uniform_type
+        if category:
+            filters['categories__id'] = category
+        if company:
+            filters['company_id'] = company
        
-        return Uniform.objects.filter(**filters).order_by('-created_at')
+        return Uniform.objects.filter(**filters).order_by('-created_at').distinct()
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -3004,6 +3500,12 @@ class UniformListView(ListView):
 
         # Add all uniforms for select2 dropdown
         context['all_uniforms'] = Uniform.objects.filter(is_active=True, deleted=False).order_by('name')
+        
+        # Add all companies for filter dropdown
+        context['all_companies'] = Company.objects.filter(is_active=True).order_by('name')
+        
+        # Add all categories for filter dropdown
+        context['all_categories'] = UniformCategory.objects.filter(is_active=True).order_by('name')
 
         get_param = self.request.GET.copy()
         if 'page' in get_param:
@@ -3680,17 +4182,21 @@ class VehicleDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         vehicle = self.object
         
-        # Get current assignment
-        current_assignment = VehicleAssign.objects.filter(
+        assignment_history = VehicleAssign.objects.filter(
             vehicle=vehicle, 
-            is_active=True, 
             deleted=False
-        ).select_related('employee').first()
-        
-        # Get all assignments history
-        all_assignments = VehicleAssign.objects.filter(
-            vehicle=vehicle
-        ).select_related('employee', 'created_by').order_by('-assigned_date')
+        ).select_related('employee', 'created_by').order_by('-assigned_date', '-created_at')
+        current_assignment = assignment_history.filter(
+            is_active=True,
+            status='ASSIGNED',
+        ).first()
+        all_assignments = assignment_history
+
+        active_assignments = assignment_history.filter(is_active=True, status='ASSIGNED').count()
+        returned_assignments = assignment_history.exclude(status='ASSIGNED').count()
+        total_assignment_kilometers = sum(assignment.assignment_kilometers for assignment in assignment_history)
+        latest_assignment = assignment_history.first()
+        latest_assignment_kilometers = latest_assignment.assignment_kilometers if latest_assignment else 0
         
         # Get handover history
         handovers = VehicleHandover.objects.filter(
@@ -3878,6 +4384,15 @@ class VehicleDetailView(DetailView):
         context.update({
             'current_assignment': current_assignment,
             'all_assignments': all_assignments,
+            'assignment_summary': {
+                'total': assignment_history.count(),
+                'active': active_assignments,
+                'returned': returned_assignments,
+                'total_kilometers': total_assignment_kilometers,
+                'latest_kilometers': latest_assignment_kilometers,
+                'latest_assigned_at': latest_assignment.assigned_date if latest_assignment else None,
+                'latest_unassigned_at': latest_assignment.unassigned_at if latest_assignment else None,
+            },
             'handovers': handovers,
             'violations': violations,
             'violation_penalties': violation_penalties,
@@ -3991,6 +4506,7 @@ def vehicle_assign_quick(request, pk):
     if request.method == 'POST':
         employee_id = request.POST.get('employee_id')
         assigned_date = request.POST.get('assigned_date')
+        kilometers = request.POST.get('kilometers')
         remarks = request.POST.get('remarks', '')
         
         try:
@@ -4025,6 +4541,7 @@ def vehicle_assign_quick(request, pk):
                 employee=employee,
                 status='ASSIGNED',
                 assigned_date=assigned_date,
+                kilometers=kilometers or 0,
                 remarks=remarks,
                 created_by=request.user
             )
@@ -4055,13 +4572,16 @@ def vehicle_unassign(request, pk):
         assignment = VehicleAssign.objects.filter(
             vehicle=vehicle,
             is_active=True,
+            status='ASSIGNED',
+            deleted=False,
         ).first()
         
         if assignment:
             assignment.is_active = False
             assignment.status = 'UNASSIGNED'
             assignment.updated_by = request.user
-            assignment.save()
+            assignment.unassigned_at = timezone.now()
+            assignment.save(update_fields=['is_active', 'status', 'unassigned_at', 'updated_by', 'updated_at'])
             messages.success(request, f"Vehicle {vehicle.plate_no} unassigned from {assignment.employee.full_name} successfully!")
         else:
             messages.warning(request, "Vehicle is not currently assigned to anyone.")
@@ -4087,7 +4607,7 @@ class VehicleAssignListView(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = VehicleAssign.objects.filter(is_active=True).select_related('vehicle', 'employee').order_by('-created_at')
+        queryset = VehicleAssign.objects.filter(deleted=False).select_related('vehicle', 'employee', 'created_by').order_by('-assigned_date', '-created_at')
         
         employee = self.request.GET.get('employee', '')
         vehicle = self.request.GET.get('vehicle', '')
@@ -4158,6 +4678,7 @@ class VehicleAssignCreateView(CreateView):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
 
+
 @method_decorator(login_required, name='dispatch')
 class VehicleAssignUpdateView(UpdateView):
     model = VehicleAssign
@@ -4187,6 +4708,7 @@ def vehicle_assign_delete(request, pk):
     vehicle_assign.save()
     return redirect('vehicle_assign:list') 
 
+
 @login_required
 def vehicle_management(request):
     if not checkUserPermission(request, "can_view", "/vehicle-management/"):
@@ -4215,6 +4737,7 @@ def vehicle_management(request):
         'total_installments': total_installments,
         'unpaid_installments': unpaid_installments,
     }
+
     return render(request, 'vehicle_management/list.html', context)
 
 

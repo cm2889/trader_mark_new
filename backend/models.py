@@ -516,6 +516,28 @@ class Employee(models.Model):
     class Meta:
         ordering = ['-created_at'] 
 
+
+# =========================================================
+# Unifrom Category 
+# =========================================================
+class UniformCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_category_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uniform_category_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False) 
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name'] 
+
+
 # =========================================================
 # Uniform Management
 # ========================================================= 
@@ -530,6 +552,8 @@ class Uniform(models.Model):
     )
 
     name = models.CharField(max_length=100)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='uniforms') 
+    categories = models.ManyToManyField(UniformCategory, related_name='uniforms', blank=True) 
     uniform_type = models.CharField(max_length=20, choices=UNIFORM_TYPE_CHOICES) 
     description = models.TextField(blank=True, null=True)
 
@@ -710,6 +734,61 @@ class UniformStockTransactionLog(models.Model):
         ordering = ['-created_at']
 
 
+
+class EmploymentCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='category_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='category_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        db_table = 'backend_category'
+        ordering = ['name'] 
+
+
+class WorkPlace(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workplace_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workplace_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name'] 
+
+
+class Transport(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transport_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transport_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name'] 
+
 class Employment(models.Model):
 
     YES_NO_CHOICES = (
@@ -731,6 +810,10 @@ class Employment(models.Model):
     )
 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='employments')
+    
+    category = models.ForeignKey(EmploymentCategory, on_delete=models.SET_NULL, related_name='employments', null=True, blank=True)
+    workplace = models.ForeignKey(WorkPlace, on_delete=models.SET_NULL, related_name='employments', null=True, blank=True)
+    transport = models.ForeignKey(Transport, on_delete=models.SET_NULL, related_name='employments', null=True, blank=True) 
 
     joining_at = models.DateTimeField(null=True, blank=True)
     work_status = models.CharField( max_length=20,choices=WORK_STATUS_CHOICES,default='ACTIVE')
@@ -776,12 +859,30 @@ class Passport(models.Model):
         ordering = ['-created_at'] 
 
 
+class LicenseType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='license_type_created_by')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='license_type_updated_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name'] 
+
 class DrivingLicense(models.Model):
     RENEW_STATUS_CHOICES = (
             ('YES', 'Renewed'),
             ('NO', 'Not Renewed'),
         )
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='driving_licenses')
+    license_type = models.ForeignKey(LicenseType, on_delete=models.SET_NULL, related_name='driving_licenses', null=True, blank=True) 
 
     license_no = models.CharField(max_length=50)
     license_expiry_date = models.DateField()
@@ -885,6 +986,14 @@ class Address(models.Model):
     national_address = models.TextField(null=True, blank=True)
     room_address = models.TextField(null=True, blank=True)
 
+    area_name = models.CharField(max_length=255, blank=True, null=True) 
+    zone = models.CharField(max_length=255, blank=True, null=True) 
+    build_zero = models.CharField(max_length=255, blank=True, null=True) 
+    flat_no = models.CharField(max_length=255, blank=True, null=True) 
+    floor_name = models.CharField(max_length=255, blank=True, null=True) 
+    room_name = models.CharField(max_length=255, blank=True, null=True) 
+
+
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='address_created_by')
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='address_updated_by', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -932,6 +1041,7 @@ class Vehicle(models.Model):
         ('INACTIVE', 'Inactive'),
     )
 
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='vehicles') 
     vehicle_type = models.CharField(max_length=10, choices=VEHICLE_TYPE_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='ACTIVE') 
 
@@ -1068,17 +1178,28 @@ class VehicleInstallment(models.Model):
 class VehicleAssign(models.Model):
     STATUS_CHOICES = (
         ('ASSIGNED', 'Assigned'),
+        ('UNASSIGNED', 'Unassigned'),
         ('RETURNED', 'Returned'),
     ) 
+
+    TRAFIC_STATUS = (
+        ("penalty", "penalty"),
+        ("without_penalty", "Without penalty"),
+    )
+
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='vehicle_assignments')
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_assignments') 
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ASSIGNED')
-    assigned_date = models.DateField()
+    trafic_status = models.CharField(max_length=255, choices=TRAFIC_STATUS, blank=True, null=True) 
+    kilometers = models.PositiveIntegerField(null=True, blank=True, default=0)  
+    assigned_date = models.DateTimeField() 
+    unassigned_at = models.DateTimeField(blank=True, null=True)
     remarks = models.TextField(blank=True, null=True) 
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_assign_created_by')
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='vehicle_assign_updated_by', null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -1086,6 +1207,15 @@ class VehicleAssign(models.Model):
 
     def __str__(self):
         return f"{self.vehicle.plate_no} assigned to {self.employee.full_name}"
+
+    @property
+    def assignment_duration(self):
+        end_time = self.unassigned_at or timezone.now()
+        return end_time - self.assigned_date
+
+    @property
+    def assignment_kilometers(self):
+        return self.kilometers or 0
     
     class Meta:
         ordering = ['-assigned_date', '-created_at'] 

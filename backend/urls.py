@@ -84,6 +84,38 @@ employee_patterns = ([
 ], 'employee')
 
 
+employment_category_patterns = ([
+    path('', views.EmployeementCategoryListView.as_view(), name='list'),
+    path('create/', views.EmployeementCategoryCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.EmployeementCategoryUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.employment_category_delete, name='delete'),
+], 'employment-category')
+
+
+work_place_patterns = ([
+    path('', views.WorkPlaceListView.as_view(), name='list'),
+    path('create/', views.WorkPlaceCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.WorkPlaceUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.work_place_delete, name='delete'),
+], 'work-place')
+
+
+transport_management_patterns = ([
+    path('', views.TransportListView.as_view(), name='list'),
+    path('create/', views.TransportCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.TransportUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.transport_delete, name='delete'),
+], 'transport')
+
+
+license_type_patterns = ([
+    path('', views.LicenseTypeListView.as_view(), name='list'),
+    path('create/', views.LicenseTypeCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.LicenseTypeUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.license_type_delete, name='delete'),
+], 'license_type')
+
+
 vehicle_assign_patterns = ([
     path('', views.VehicleAssignListView.as_view(), name='list'),
     path('create/', views.VehicleAssignCreateView.as_view(), name='create'),
@@ -191,6 +223,14 @@ vehicle_maintanance_type_patterns = ([
 ], 'vehicle_maintanance_type')
 
 
+uniform_category_patterns = ([
+    path('', views.UniformCategoryListView.as_view(), name='list'),
+    path('create/', views.UniformCategoryCreateView.as_view(), name='create'),
+    path('update/<int:pk>/', views.UniformCategoryUpdateView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.uniform_category_delete, name='delete'),
+], 'uniform-category')
+
+
 uniform_patterns = ([
     path('', views.UniformListView.as_view(), name='list'),
     path('create/', views.UniformCreateView.as_view(), name='create'),
@@ -267,6 +307,10 @@ urlpatterns = [
     path('followup/', include(followup_patterns)),
     path('reminder/', include(reminder_patterns)),
     path('employee/', include(employee_patterns)),
+    path('employment-category/', include(employment_category_patterns)),
+    path('work-place/', include(work_place_patterns)),
+    path('transport/', include(transport_management_patterns)),
+    path('license-type/', include(license_type_patterns)),
     path('vehicle-info/', include(vehicle_patterns)),
     path('vehicle-assign/', include(vehicle_assign_patterns)), 
     path('vehicle-handover/', include(vehicle_handover_patterns)),
@@ -279,6 +323,7 @@ urlpatterns = [
     path('vehicle-accident/', include(vehicle_accident_patterns)),
     path('vehicle-purchase/', include(vehicle_purchase_patterns)),
     path('vehicle-installment/', include(vehicle_installment_patterns)),
+    path('uniform-category/', include(uniform_category_patterns)),
     path('uniform/', include(uniform_patterns)),
     path('uniform-stock/', include(uniform_stock_patterns)),
     path('uniform-issuance/', include(uniform_issuance_patterns)),

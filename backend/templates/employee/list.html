@@ -12,7 +12,7 @@
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
     </svg>
-    <span class="font-medium text-[var(--primary-color)]">Employees </span>
+    <span class="font-medium text-[var(--primary-color)]">Employees</span>
 {% endblock %}
 {% block header_actions %}
     <button onclick="openFilterModal()"
@@ -168,7 +168,8 @@
     </div>
     <!-- Table Section -->
     <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] ">
-        <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+        <div class="overflow-x-auto w-full custom-scrollbar"
+             style="-webkit-overflow-scrolling: touch">
             <table class="w-full min-w-[800px]">
                 <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                     <tr>
@@ -226,16 +227,17 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-color)]">{{ employee.joining_at|date:"M d, Y" }}</td>
                             <td class="px-6 py-4 text-sm text-center">
-                                <div class="relative inline-block" data-menu-wrap class="relative" style="position: relative; z-index: auto;">
+                                <div class="relative inline-block"
+                                     data-menu-wrap
+                                     class="relative"
+                                     style="position: relative;
+                                            z-index: auto">
                                     <button type="button"
                                             class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)] transition-colors"
                                             data-menu-btn
                                             aria-haspopup="true"
                                             aria-expanded="false"
-                                            aria-label="Employee actions"
-                                            >
-                                        ⋯
-                                    </button>
+                                            aria-label="Employee actions">⋯</button>
                                     <div class="hidden absolute right-0 mt-1 w-[180px] z-50 rounded-lg bg-white ring-1 ring-[var(--border-color)] shadow-lg"
                                          data-menu
                                          role="menu">

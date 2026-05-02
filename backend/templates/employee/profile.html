@@ -613,7 +613,8 @@
             {% if address %}
                 <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] p-6 mb-6">
                     <h3 class="text-xl font-semibold text-[var(--text-color)] mb-6 border-b pb-3">Address Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Present and Permanent Address -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div class="space-y-2">
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Present Address</p>
                             <p class="text-base text-[var(--text-color)]">{{ address.present_address|default:"Not Provided" }}</p>
@@ -622,6 +623,53 @@
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Permanent Address</p>
                             <p class="text-base text-[var(--text-color)]">{{ address.permanent_address|default:"Not Provided" }}</p>
                         </div>
+                    </div>
+                    <!-- Qatar Address Details -->
+                    {% if address.area_name or address.zone or address.build_zero or address.flat_no or address.floor_name or address.room_name %}
+                        <div class="border-t border-[var(--border-color)] pt-6 mb-6">
+                            <h4 class="text-lg font-semibold text-[var(--text-color)] mb-4">Qatar Address Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {% if address.area_name %}
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Area Name</p>
+                                        <p class="text-base text-[var(--text-color)]">{{ address.area_name }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if address.zone %}
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Zone</p>
+                                        <p class="text-base text-[var(--text-color)]">{{ address.zone }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if address.build_zero %}
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Build Zero</p>
+                                        <p class="text-base text-[var(--text-color)]">{{ address.build_zero }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if address.flat_no %}
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Flat No</p>
+                                        <p class="text-base text-[var(--text-color)]">{{ address.flat_no }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if address.floor_name %}
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Floor Name</p>
+                                        <p class="text-base text-[var(--text-color)]">{{ address.floor_name }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if address.room_name %}
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">Room Name</p>
+                                        <p class="text-base text-[var(--text-color)]">{{ address.room_name }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <!-- National and Room Address -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider">National Address</p>
                             <p class="text-base text-[var(--text-color)]">{{ address.national_address|default:"Not Provided" }}</p>

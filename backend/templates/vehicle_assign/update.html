@@ -80,6 +80,22 @@
                         {% endif %}
                         <p class="mt-1 text-xs text-gray-500">Date when the vehicle was assigned</p>
                     </div>
+                    <div>
+                        <label for="id_kilometers"
+                               class="block text-sm font-medium text-gray-700 mb-2">Kilometers</label>
+                        {{ form.kilometers }}
+                        {% if form.kilometers.errors %}<p class="mt-1 text-sm text-red-600">{{ form.kilometers.errors.0 }}</p>{% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Enter the current kilometers of the vehicle (optional)</p>
+                    </div>
+                    <div>
+                        <label for="id_trafic_status"
+                               class="block text-sm font-medium text-gray-700 mb-2">Trafic Status</label>
+                        {{ form.trafic_status }}
+                        {% if form.trafic_status.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.trafic_status.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Select the trafic status of the vehicle (optional)</p>
+                    </div>
                 </div>
                 <!-- Remarks -->
                 <div>
@@ -103,4 +119,11 @@
             </form>
         </div>
     </div>
+{% endblock %}
+{% block extra_js %}
+    <script>
+        $(document).ready(function () {
+    $('.select2-items').select2();
+  });
+    </script>
 {% endblock %}

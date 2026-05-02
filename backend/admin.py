@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import (
     WebImages, PasswordResetCode, LoginLog, BackendMenu, UserMenuPermission,
     SiteSettings, SiteDesignSettings, EmailConfiguration, SMSConfiguration, SMSLog,
-    Company, 
+    Company, LicenseType, 
+    EmploymentCategory, WorkPlace, Transport, 
     Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance,
     Contact, Address, Vehicle, VehicleAssign, VehicleHandover, TrafficViolation,
     VehicleInstallment, VehicleMaintenance, VehicleAccident, ViolationType,
@@ -10,6 +11,30 @@ from .models import (
     UniformIssuance, UniformClearance, VehicleMaintananceType, VehiclePurchase, UniformStockTransactionLog,
     LeadSource, LeadStage, Lead, FollowUp, FollowUpReminder, MailLog, 
 )
+
+class LicenseTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active')
+    search_fields = ('name',)
+    list_filter = ('is_active',) 
+
+@admin.register(EmploymentCategory)
+class EmploymentCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active')
+    search_fields = ('name',)
+    list_filter = ('is_active',) 
+
+@admin.register(WorkPlace)
+class WorkPlaceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active')
+    search_fields = ('name',)
+    list_filter = ('is_active',) 
+
+
+@admin.register(Transport)
+class TransportAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active')
+    search_fields = ('name',)
+    list_filter = ('is_active',) 
 
 @admin.register(WebImages)
 class WebImagesAdmin(admin.ModelAdmin):
@@ -173,9 +198,9 @@ class VehicleHandoverAdmin(admin.ModelAdmin):
 
 @admin.register(VehicleAssign)
 class VehicleAssignAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'employee', 'assigned_date', 'is_active')
+    list_display = ('vehicle', 'employee', 'assigned_date', 'unassigned_at', 'kilometers', 'status', 'is_active')
     search_fields = ('vehicle__plate_no', 'employee__first_name', 'employee__last_name')
-    list_filter = ('assigned_date', 'is_active')
+    list_filter = ('assigned_date', 'unassigned_at', 'status', 'is_active')
 
 @admin.register(ViolationType)
 class ViolationTypeAdmin(admin.ModelAdmin):

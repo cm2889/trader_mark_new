@@ -29,7 +29,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
             </path>
         </svg>
-        <span>Edit Employee </span>
+        <span>Edit Employee</span>
     </a>
     <a href="{% url 'employee:list' %}"
        class="inline-flex items-center gap-2 px-4 h-11 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
@@ -243,7 +243,8 @@
                     <h3 class="text-base font-medium text-[var(--text-color)]">Address</h3>
                 </div>
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Present and Permanent Address -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Present Address</p>
                             <p class="text-sm text-[var(--text-color)]">{{ employee.address.present_address|default:"Not Available" }}</p>
@@ -252,6 +253,53 @@
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Permanent Address</p>
                             <p class="text-sm text-[var(--text-color)]">{{ employee.address.permanent_address|default:"Not Available" }}</p>
                         </div>
+                    </div>
+                    <!-- Qatar Address Details -->
+                    {% if employee.address.area_name or employee.address.zone or employee.address.build_zero or employee.address.flat_no or employee.address.floor_name or employee.address.room_name %}
+                        <div class="border-t border-[var(--border-color)] pt-4 mb-6">
+                            <h4 class="text-sm font-semibold text-[var(--text-color)] mb-4">Qatar Address Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {% if employee.address.area_name %}
+                                    <div>
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Area Name</p>
+                                        <p class="text-sm text-[var(--text-color)]">{{ employee.address.area_name }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if employee.address.zone %}
+                                    <div>
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Zone</p>
+                                        <p class="text-sm text-[var(--text-color)]">{{ employee.address.zone }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if employee.address.build_zero %}
+                                    <div>
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Build Zero</p>
+                                        <p class="text-sm text-[var(--text-color)]">{{ employee.address.build_zero }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if employee.address.flat_no %}
+                                    <div>
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Flat No</p>
+                                        <p class="text-sm text-[var(--text-color)]">{{ employee.address.flat_no }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if employee.address.floor_name %}
+                                    <div>
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Floor Name</p>
+                                        <p class="text-sm text-[var(--text-color)]">{{ employee.address.floor_name }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if employee.address.room_name %}
+                                    <div>
+                                        <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">Room Name</p>
+                                        <p class="text-sm text-[var(--text-color)]">{{ employee.address.room_name }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <!-- National and Room Address -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <p class="text-xs font-medium text-[var(--text-light-color)] uppercase tracking-wider mb-1">National Address</p>
                             <p class="text-sm text-[var(--text-color)]">{{ employee.address.national_address|default:"Not Available" }}</p>

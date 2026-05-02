@@ -18,7 +18,7 @@
                 <div class="mt-4 sm:mt-0 flex items-center gap-3">
                     <button onclick="openFilterModal()"
                             class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
-                        <i class="fas fa-filter mr-2"></i>Filter 
+                        <i class="fas fa-filter mr-2"></i>Filter
                     </button>
                     <a href="{% url 'company:create' %}"
                        class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
@@ -114,7 +114,8 @@
             </div>
             <!-- Companies Table -->
             <div class="bg-white shadow-sm rounded-lg border border-gray-200">
-                <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <div class="overflow-x-auto w-full custom-scrollbar"
+                     style="-webkit-overflow-scrolling: touch">
                     <table class="min-w-[800px] w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -136,7 +137,11 @@
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ company.address|truncatewords:10|default:"-" }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                         <div class="flex justify-center gap-2">
-                                            <div class="relative inline-block" data-menu-wrap class="relative" style="position: relative; z-index: auto;">
+                                            <div class="relative inline-block"
+                                                 data-menu-wrap
+                                                 class="relative"
+                                                 style="position: relative;
+                                                        z-index: auto">
                                                 <button type="button"
                                                         class="h-10 w-10 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-colors border-0 bg-transparent"
                                                         data-menu-btn
@@ -184,18 +189,17 @@
                         </tbody>
                     </table>
                 </div>
-                </div>
             </div>
-            <!-- Results summary -->
-            {% if object_list %}
-                <div class="mt-4 text-sm text-gray-600">
-                    Showing {{ object_list|length }} compan{{ object_list|length|pluralize:"y,ies" }}
-                </div>
-            {% endif %}
         </div>
+        <!-- Results summary -->
+        {% if object_list %}
+            <div class="mt-4 text-sm text-gray-600">
+                Showing {{ object_list|length }} compan{{ object_list|length|pluralize:"y,ies" }}
+            </div>
+        {% endif %}
     </div>
+</div>
 {% endblock %}
-
 {% block extra_js %}
     <script>
     $(document).ready(function() {

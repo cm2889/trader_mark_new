@@ -23,10 +23,10 @@
                 </div>
             </div>
             <!-- Filter Modal -->
-              <div id="filterModal"
-                  class="hidden fixed inset-0 z-50 bg-gray-600/50 p-4 sm:p-6 overflow-y-auto"
+            <div id="filterModal"
+                 class="hidden fixed inset-0 z-50 bg-gray-600/50 p-4 sm:p-6 overflow-y-auto"
                  onclick="closeFilterModal(event)">
-                 <div class="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-lg border bg-white shadow-lg max-h-[60vh] overflow-y-auto"
+                <div class="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-lg border bg-white shadow-lg max-h-[60vh] overflow-y-auto"
                      onclick="event.stopPropagation()">
                     <!-- Header -->
                     <div class="flex items-center justify-between p-4 border-b">
@@ -84,7 +84,8 @@
             </div>
             <!-- Table Section -->
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
-                <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <div class="overflow-x-auto w-full custom-scrollbar"
+                     style="-webkit-overflow-scrolling: touch">
                     <table class="w-full min-w-[700px]">
                         <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                             <tr>
@@ -107,7 +108,11 @@
                                     </td>
                                     <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ nationality.created_at|date:"M d, Y H:i" }}</td>
                                     <td class="px-6 py-4 text-sm text-center">
-                                        <div class="inline-block relative" data-menu-wrap class="relative" style="position: relative; z-index: auto;">
+                                        <div class="inline-block relative"
+                                             data-menu-wrap
+                                             class="relative"
+                                             style="position: relative;
+                                                    z-index: auto">
                                             <button type="button"
                                                     class="h-10 w-10 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-colors border-0 bg-transparent"
                                                     data-menu-btn

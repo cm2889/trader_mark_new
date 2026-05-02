@@ -486,28 +486,84 @@
                     </button>
                     <div id="address-info"
                          class="px-6 pb-6 border-t border-[var(--border-color)] hidden">
-                        <div>
+                        <!-- Present and Permanent Address -->
+                        <div class="space-y-4 mb-6">
                             <div>
-                                <label class="block text-sm font-medium text-[var(--text-color)] mb-1">
-                                    Present
-                                    Address
-                                </label>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Present Address</label>
                                 <textarea name="address-present_address"
                                           rows="3"
                                           placeholder="Enter Present Address"
                                           class="w-full px-3 py-2 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none resize-none">{{ address_form.present_address.value|default:'' }}</textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-[var(--text-color)] mb-1">
-                                    Permanent
-                                    Address
-                                </label>
+                                <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Permanent Address</label>
                                 <textarea name="address-permanent_address"
                                           rows="3"
                                           placeholder="Enter Permanent Address"
                                           class="w-full px-3 py-2 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none resize-none">{{ address_form.permanent_address.value|default:'' }}</textarea>
                             </div>
                         </div>
+                        <!-- Qatar Address Details -->
+                        <div class="border-t border-[var(--border-color)] pt-4 pb-4">
+                            <h3 class="text-sm font-semibold text-[var(--text-color)] mb-4">Qatar Address Details</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <!-- Area Name -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Area Name</label>
+                                    <input type="text"
+                                           name="address-area_name"
+                                           value="{{ address_form.area_name.value|default:'' }}"
+                                           placeholder="Enter area name"
+                                           class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <!-- Zone -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Zone</label>
+                                    <input type="text"
+                                           name="address-zone"
+                                           value="{{ address_form.zone.value|default:'' }}"
+                                           placeholder="Enter zone"
+                                           class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <!-- Build Zero -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Build Zero</label>
+                                    <input type="text"
+                                           name="address-build_zero"
+                                           value="{{ address_form.build_zero.value|default:'' }}"
+                                           placeholder="Enter build zero"
+                                           class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <!-- Flat No -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Flat No</label>
+                                    <input type="text"
+                                           name="address-flat_no"
+                                           value="{{ address_form.flat_no.value|default:'' }}"
+                                           placeholder="Enter flat number"
+                                           class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <!-- Floor Name -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Floor Name</label>
+                                    <input type="text"
+                                           name="address-floor_name"
+                                           value="{{ address_form.floor_name.value|default:'' }}"
+                                           placeholder="Enter floor name"
+                                           class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                                <!-- Room Name -->
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Room Name</label>
+                                    <input type="text"
+                                           name="address-room_name"
+                                           value="{{ address_form.room_name.value|default:'' }}"
+                                           placeholder="Enter room name"
+                                           class="w-full h-11 px-3 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- National and Room Address -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
                             <!-- National Address -->
                             <div>
@@ -683,6 +739,19 @@
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                                         <div>
+                                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Type</label>
+                                            <select name="driving_license-{{ forloop.counter0 }}-license_type"
+                                                    class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                                <option value="">Select License Type</option>
+                                                {% for lt in license_types %}
+                                                    <option value="{{ lt.id }}"
+                                                            {% if license.license_type.id == lt.id %}selected{% endif %}>
+                                                        {{ lt.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div>
                                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
                                             <input type="text"
                                                    name="driving_license-{{ forloop.counter0 }}-license_no"
@@ -737,6 +806,14 @@
                                         </button>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Type</label>
+                                            <select name="driving_license-0-license_type"
+                                                    class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                                                <option value="">Select License Type</option>
+                                                {% for lt in license_types %}<option value="{{ lt.id }}">{{ lt.name }}</option>{% endfor %}
+                                            </select>
+                                        </div>
                                         <div>
                                             <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>
                                             <input type="text"
@@ -1308,6 +1385,17 @@
                     </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <!-- License Type -->
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License Type</label>
+                        <select name="driving_license-${newIndex}-license_type" class="w-full h-11 px-3 pr-10 text-sm bg-white border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none">
+                            <option value="">Select License Type</option>
+                            {% for lt in license_types %}
+                                <option value="{{ lt.id }}">{{ lt.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
                     <!-- License No -->
                     <div>
                         <label class="block text-sm font-medium text-[var(--text-color)] mb-1">License No</label>

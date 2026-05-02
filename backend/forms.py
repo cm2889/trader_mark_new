@@ -2,9 +2,10 @@ from django import forms
 from django.contrib.auth.models import User
 from django import forms 
 from backend.models import (
-    Visitor, TrafficViolationPenalty, 
+    UniformCategory, Visitor, TrafficViolationPenalty, 
     Company, 
-    Nationality, Employee, Employment, Passport, DrivingLicense, HealthInsurance, Contact, Address,
+    EmploymentCategory, WorkPlace, Transport, 
+    Nationality, Employee, Employment, Passport, LicenseType,  DrivingLicense, HealthInsurance, Contact, Address,
     Vehicle, VehicleHandover, TrafficViolation, VehicleInstallment, VehiclePurchase,
     VehicleMaintenance, VehicleAccident, VehicleAssign, ViolationType, InsuranceClaim, VehicleMaintananceType, 
     Uniform, UniformStock, UniformIssuance, UniformClearance, 
@@ -34,6 +35,46 @@ GENDER_CHOICES = (
     ("female", "Female"),
     ("other", "Other"),
 )
+
+
+class LicenseTypeForm(forms.ModelForm):
+    class Meta:
+        model = LicenseType
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter license type name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+        } 
+
+
+class EmploymentCategoryForm(forms.ModelForm):
+    class Meta:
+        model = EmploymentCategory
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter category name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+        }
+
+class WorkPlaceForm(forms.ModelForm):
+    class Meta:
+        model = WorkPlace
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter workplace name'}),
+            'location': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter location'}),
+        }
+
+
+class TransportForm(forms.ModelForm):
+    class Meta:
+        model = Transport
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter transport name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+        } 
+
 
 class CustomUserLoginForm(forms.Form):
     """
@@ -219,17 +260,40 @@ class EmployeeForm(forms.ModelForm):
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 
+
+class UniformCategoryForm(forms.ModelForm):
+    class Meta:
+        model = UniformCategory
+        exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter category name'}),
+            'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+        }
+
 class UniformForm(forms.ModelForm):
     uniform_type = forms.ChoiceField(
         choices=[('', 'Select Uniform Type'), ('SHIRT', 'Shirt'), ('PANT', 'Pant'), ('JACKET', 'Jacket'), ('SHOES', 'Shoes'), ('CAP', 'Cap'), ('OTHER', 'Other'),],
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
-    ) 
+    )
+    company = forms.ModelChoiceField(
+        queryset=Company.objects.filter(is_active=True),
+        empty_label="Select Company",
+        required=True,
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+    categories = forms.ModelMultipleChoiceField(
+        queryset=UniformCategory.objects.filter(is_active=True),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-checkbox'})
+    )
     class Meta:
         model = Uniform
         exclude = ['created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter uniform name'}),
             'description': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter description'}),
+            'company': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'categories': forms.CheckboxSelectMultiple(),
         }
 
 class UniformStockForm(forms.ModelForm):
@@ -352,7 +416,11 @@ class EmploymentForm(forms.ModelForm):
     class Meta:
         model = Employment
         exclude = ['employee', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+
         widgets = {
+            'category': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'workplace': forms.Select(attrs={'class': TAILWIND_SELECT}),
+            'transport': forms.Select(attrs={'class': TAILWIND_SELECT}), 
             'joining_at': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'rp_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'work_permit_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter work permit number'}),
@@ -370,6 +438,12 @@ class PassportForm(forms.ModelForm):
         }
 
 class DrivingLicenseForm(forms.ModelForm):
+    license_type = forms.ModelChoiceField(
+        queryset=LicenseType.objects.filter(is_active=True),
+        required=False,
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT}),
+        empty_label="Select License Type"
+    )
     license_renew_status = forms.ChoiceField(
         choices=[('', 'Select Status'), ('YES', 'Renewed'), ('NO', 'Not Renewed')],
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
@@ -382,6 +456,7 @@ class DrivingLicenseForm(forms.ModelForm):
             'license_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter license number'}),
             'license_expiry_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
             'license_renewed': forms.CheckboxInput(attrs={'class': 'h-4 w-4 rounded text-blue-600'}),
+            'license_type': forms.Select(attrs={'class': TAILWIND_SELECT}),
         }
 
 class HealthInsuranceForm(forms.ModelForm):
@@ -420,17 +495,31 @@ class AddressForm(forms.ModelForm):
         model = Address
         exclude = ['employee', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
+            'area_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter area name'}),
+            'zone': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter zone'}),
+            'build_zero': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter build zero'}),
+            'flat_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter flat number'}),
+            'floor_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter floor name'}),
+            'room_name': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter room name'}),  
             'present_address': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter present address'}),
             'permanent_address': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter permanent address'}),
             'national_address': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter national address'}),
             'room_address': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter room address'}),
         }
 
+
 class VehicleForm(forms.ModelForm):
+    company = forms.ModelChoiceField(
+        queryset=Company.objects.filter(is_active=True, deleted=False),
+        empty_label="Select Company",
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT})
+    )
+
     vehicle_type = forms.ChoiceField(
         choices=[('', 'Select Vehicle Type'), ('BIKE', 'Bike'), ('CAR', 'Car')],
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
     )
+    
     ownership = forms.ChoiceField(
         choices=[('', 'Select Ownership'), ('COMPANY', 'Company'), ('DRIVER', 'Driver')],
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
@@ -440,6 +529,7 @@ class VehicleForm(forms.ModelForm):
         model = Vehicle
         exclude = ['status', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
+            'company': forms.Select(attrs={'class': TAILWIND_SELECT}),
             'plate_no': forms.TextInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter plate number'}),
             'chassee_no': forms.TextInput(attrs={'class': TAILWIND_TEXT}),
             'engine_no': forms.TextInput(attrs={'class': TAILWIND_TEXT}), 
@@ -450,21 +540,26 @@ class VehicleForm(forms.ModelForm):
 
 
 class VehicleAssignForm(forms.ModelForm):
+    
     vehicle = forms.ModelChoiceField(
         queryset=Vehicle.objects.filter(is_active=True),
         empty_label="Select Vehicle",
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
     ) 
+
     employee = forms.ModelChoiceField(
         queryset=Employee.objects.filter(is_active=True),
         empty_label="Select Employee",
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
     ) 
+
     class Meta:
         model = VehicleAssign
-        exclude = ['status','created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
+        exclude = ['status', 'unassigned_at', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_active', 'deleted']
         widgets = {
             'assign_date': forms.DateInput(attrs={'class': TAILWIND_TEXT, 'type': 'date'}),
+            'kilometers': forms.NumberInput(attrs={'class': TAILWIND_TEXT, 'placeholder': 'Enter kilometers'}), 
+            'trafic_status': forms.Select(attrs={'class': TAILWIND_SELECT}),  
             'remarks': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA, 'rows': 3, 'placeholder': 'Enter remarks'}),
         }
 

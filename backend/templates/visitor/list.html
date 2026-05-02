@@ -110,7 +110,8 @@
             </div>
             <!-- Table Section -->
             <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)] ">
-                <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                <div class="overflow-x-auto w-full custom-scrollbar"
+                     style="-webkit-overflow-scrolling: touch">
                     <table class="w-full min-w-[800px]">
                         <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
                             <tr>
@@ -133,7 +134,11 @@
                                     <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ visitor.phone_number|default:'N/A' }}</td>
                                     <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ visitor.created_at|date:"M d, Y H:i" }}</td>
                                     <td class="px-6 py-4 text-sm text-center">
-                                        <div class="inline-block relative" data-menu-wrap class="relative" style="position: relative; z-index: auto;">
+                                        <div class="inline-block relative"
+                                             data-menu-wrap
+                                             class="relative"
+                                             style="position: relative;
+                                                    z-index: auto">
                                             <button type="button"
                                                     class="h-8 w-8 rounded-md cursor-pointer hover:bg-gray-200 flex items-center justify-center transition-colors action-menu-btn"
                                                     data-menu-btn

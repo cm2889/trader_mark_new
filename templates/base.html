@@ -191,14 +191,14 @@
     <body class="antialiased bg-[var(--bg-color)] text-[var(--text-color)]">
         {% block modals %}{% endblock %}
         <!--  for mobile  -->
-        <div id="backdrop" class="fixed inset-0 z-40 hidden bg-black/50 backdrop-blur-sm lg:hidden"></div>
+        <div id="backdrop"
+             class="fixed inset-0 z-40 hidden bg-black/50 backdrop-blur-sm lg:hidden"></div>
         <!-- sidebar -->
         <aside id="sidebar"
                class="fixed md:shadow-[2px_0px_25px_var(--shadow-color)] inset-y-0 left-0 z-50 w-72 translate-x-[-100%] overflow-y-auto border-r transition-transform duration-300 ease-in-out bg-[var(--bg-color)] border-[var(--border-color)] lg:translate-x-0 flex flex-col">
             <!-- Brand -->
             <div class="flex items-center justify-between px-4 h-16 border-b border-[var(--border-color)]">
-                <a href="{% url 'backend:dash_board' %}"
-                   class="flex items-center gap-2">
+                <a href="{% url 'backend:dash_board' %}" class="flex items-center gap-2">
                     <img src="{% url 'backend:serve_optimized_image' 'no_image' %}?width=300&quality=100&image_path=logo"
                          class="h-9 w-9"
                          alt="">
@@ -672,6 +672,7 @@
         </script>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
         <script src="{% static 'js/backend_menu_search.js' %}"></script>
-        {% block extra_js %}{% endblock %}
+        {% block extra_js %}
+        {% endblock %}
     </body>
 </html>

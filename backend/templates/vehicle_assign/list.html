@@ -94,7 +94,8 @@
         </div>
         <!-- Table -->
         <div class="bg-white border border-gray-100 rounded-xl">
-            <div class="overflow-x-auto w-full custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+            <div class="overflow-x-auto w-full custom-scrollbar"
+                 style="-webkit-overflow-scrolling: touch">
                 <table class="w-full min-w-[800px] text-sm">
                     <thead class="bg-gray-50 border-b">
                         <tr>
@@ -102,6 +103,8 @@
                             <th class="px-6 py-3 text-left font-semibold text-gray-600">Vehicle</th>
                             <th class="px-6 py-3 text-left font-semibold text-gray-600">Employee</th>
                             <th class="px-6 py-3 text-left font-semibold text-gray-600">Assigned Date</th>
+                            <th class="px-6 py-3 text-left font-semibold text-gray-600">Kilometers</th>
+                            <th class="px-6 py-3 text-left font-semibold text-gray-600">Unassigned At</th>
                             <th class="px-6 py-3 text-left font-semibold text-gray-600">Status</th>
                             <th class="px-6 py-3 text-right font-semibold text-gray-600">Actions</th>
                         </tr>
@@ -119,11 +122,15 @@
                                     <div class="text-xs text-gray-500">{{ assign.employee.hr_file_no }}</div>
                                 </td>
                                 <td class="px-6 py-4 text-gray-600">{{ assign.assigned_date|date:"M d, Y" }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ assign.assignment_kilometers }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ assign.unassigned_at|date:"M d, Y, h:i A"|default:"-" }}</td>
                                 <td class="px-6 py-4">
-                                    {% if assign.is_active %}
+                                    {% if assign.is_active and assign.status == 'ASSIGNED' %}
                                         <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">Active</span>
+                                    {% elif assign.status == 'UNASSIGNED' %}
+                                        <span class="px-3 py-1 text-xs rounded-full bg-amber-100 text-amber-700 font-medium">Unassigned</span>
                                     {% else %}
-                                        <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium">Inactive</span>
+                                        <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium">{{ assign.get_status_display }}</span>
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 text-right">
@@ -132,10 +139,7 @@
                                                 class="h-8 w-8 rounded-md cursor-pointer hover:bg-[var(--bg-color)]"
                                                 data-menu-btn
                                                 aria-haspopup="true"
-                                                aria-expanded="false"
-                                                >
-                                            ⋯
-                                        </button>
+                                                aria-expanded="false">⋯</button>
                                         <div class="hidden absolute right-4 mt-1 w-[150px] rounded-md bg-[var(--white-color)] ring-1 ring-[var(--border-color)] shadow-lg"
                                              data-menu
                                              role="menu">
@@ -172,7 +176,7 @@
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="6" class="px-6 py-16 text-center text-gray-500">No assignments found</td>
+                                <td colspan="8" class="px-6 py-16 text-center text-gray-500">No assignments found</td>
                             </tr>
                         {% endfor %}
                     </tbody>

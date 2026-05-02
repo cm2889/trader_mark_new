@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}License Type List{% endblock %}
+{% block breadcrumb %}
+    <a href="{% url 'license_type:list' %}">License Type</a>
+    <span class="mx-1">›</span>
+    <span>License Type List</span>
+{% endblock %}
+{% block content %}
+    <div class="min-h-screen bg-[var(--bg-color)] py-8 px-4 sm:px-6 lg:px-8">
+        <div class="">
+            <div class="mb-6 flex items-center justify-end gap-3 flex-wrap sm:flex-nowrap">
+                <div class="flex items-center gap-3 whitespace-nowrap">
+                    <button onclick="openFilterModal()"
+                            class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                    <a href="{% url 'license_type:create' %}"
+                       class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90 transition-opacity">
+                        <i class="fas fa-plus mr-2"></i>Add License Type
+                    </a>
+                </div>
+            </div>
+            <div id="filterModal"
+                 class="hidden fixed inset-0 z-50 bg-gray-600/50 p-4 sm:p-6 overflow-y-auto"
+                 onclick="closeFilterModal(event)">
+                <div class="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-lg border bg-white shadow-lg max-h-[60vh] overflow-y-auto"
+                     onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-between p-4 border-b">
+                        <h3 class="text-lg font-semibold">Filter License Types</h3>
+                        <button onclick="closeFilterModal()"
+                                class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <form method="get">
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-[var(--text-color)] mb-1">Name</label>
+                                    <select name="name" class="select2-filter w-full">
+                                        <option value="">All License Types</option>
+                                        {% for license_type in all_license_types %}
+                                            <option value="{{ license_type.id }}"
+                                                    {% if request.GET.name == license_type.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ license_type.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
+                            <a href="{% url 'license_type:list' %}"
+                               class="px-4 py-2 text-sm font-medium bg-white border rounded-lg hover:bg-gray-50">Reset</a>
+                            <button type="submit"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg hover:opacity-90">
+                                Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-[var(--border-color)]">
+                <div class="overflow-x-auto w-full custom-scrollbar"
+                     style="-webkit-overflow-scrolling: touch">
+                    <table class="w-full min-w-[700px]">
+                        <thead class="bg-[var(--table-header)] border-b border-[var(--border-color)]">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">
+                                    Description
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Created By</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Created At</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-[var(--text-color)] uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--border-color)]">
+                            {% for license_type in license_types %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 text-sm text-[var(--text-color)]">{{ forloop.counter }}</td>
+                                    <td class="px-6 py-4 text-sm font-medium text-[var(--text-color)]">{{ license_type.name }}</td>
+                                    <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">
+                                        {{ license_type.description|default:"-"|truncatewords:12 }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">
+                                        {{ license_type.created_by.get_full_name|default:license_type.created_by.username|default:'N/A' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-[var(--text-light-color)]">{{ license_type.created_at|date:"M d, Y H:i" }}</td>
+                                    <td class="px-6 py-4 text-sm text-center">
+                                        <div class="inline-block relative"
+                                             data-menu-wrap
+                                             style="position: relative;
+                                                    z-index: auto">
+                                            <button type="button"
+                                                    class="h-10 w-10 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-colors border-0 bg-transparent"
+                                                    data-menu-btn
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis-vertical text-gray-500"></i>
+                                            </button>
+                                            <div class="hidden absolute right-0 top-full mt-2 w-48 z-[9999] rounded-lg bg-white ring-1 ring-black ring-opacity-5 shadow-2xl divide-y divide-gray-100 focus:outline-none origin-top-right whitespace-normal"
+                                                 data-menu
+                                                 role="menu"
+                                                 aria-orientation="vertical">
+                                                <div class="py-1">
+                                                    <a href="{% url 'license_type:update' license_type.pk %}"
+                                                       class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[var(--primary-color)] transition-colors"
+                                                       role="menuitem">
+                                                        <i class="fas fa-edit mr-3 text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                                        Edit
+                                                    </a>
+                                                </div>
+                                                <div class="py-1">
+                                                    <a href="{% url 'license_type:delete' license_type.pk %}"
+                                                       class="group flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                                       role="menuitem"
+                                                       onclick="return confirm('Are you sure you want to delete this license type?');">
+                                                        <i class="fas fa-trash mr-3 text-red-400 group-hover:text-red-600"></i>
+                                                        Delete
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center justify-center text-gray-500">
+                                            <i class="fas fa-id-card text-5xl mb-4 text-gray-400"></i>
+                                            <p class="text-lg font-medium text-[var(--text-color)]">No license types found</p>
+                                            <p class="text-sm mt-1 text-[var(--text-light-color)]">Try adjusting your filter or create a new license type</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if paginator.has_other_pages %}
+                <div class="mt-6 flex justify-center">
+                    <nav class="flex items-center gap-2">
+                        {% if paginator.has_previous %}
+                            <a href="?page=1{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                            <a href="?page={{ paginator.previous_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        {% else %}
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed"><i class="fas fa-angle-double-left"></i></span>
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed"><i class="fas fa-angle-left"></i></span>
+                        {% endif %}
+                        {% for page_num in paginator_list %}
+                            {% if page_num == paginator.number %}
+                                <span class="px-4 py-2 bg-[var(--primary-color)] text-white border border-[var(--primary-color)] rounded-lg font-medium">{{ page_num }}</span>
+                            {% else %}
+                                <a href="?page={{ page_num }}{% if get_param %}&{{ get_param }}{% endif %}"
+                                   class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">{{ page_num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if paginator.has_next %}
+                            <a href="?page={{ paginator.next_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                            <a href="?page={{ last_page_number }}{% if get_param %}&{{ get_param }}{% endif %}"
+                               class="px-4 py-2 bg-white border border-[var(--border-color)] rounded-lg text-[var(--text-color)] hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        {% else %}
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed"><i class="fas fa-angle-right"></i></span>
+                            <span class="px-4 py-2 bg-gray-100 border border-[var(--border-color)] rounded-lg text-gray-400 cursor-not-allowed"><i class="fas fa-angle-double-right"></i></span>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block extra_js %}
+    <script>
+        function openFilterModal() {
+            const modal = document.getElementById('filterModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+        function closeFilterModal(event) {
+            const modal = document.getElementById('filterModal');
+            if (!modal) return;
+            if (event && event.target !== modal) return;
+            modal.classList.add('hidden');
+        }
+    </script>
+{% endblock %}

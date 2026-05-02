@@ -273,7 +273,70 @@
       "is_active": true
     }
   },
-
+  {
+    "model": "backend.backendmenu",
+    "pk": 160,
+    "fields": {
+      "module_name": "Employeement Setup",
+      "menu_name": "Employeement Setup",
+      "menu_url": "employment-setup",
+      "menu_icon": "fa-solid fa-chart-bar",
+      "menu_description": "View employment setup options.",
+      "parent": 2,
+      "is_main_menu": false,
+      "is_sub_menu": true,
+      "is_sub_child_menu": false,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 161,
+    "fields": {
+      "module_name": "Employeement Setup",
+      "menu_name": "Employee Category",
+      "menu_url": "/employment-category/",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "Manage employee categories.",
+      "parent": 160,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 162,
+    "fields": {
+      "module_name": "Employeement Setup",
+      "menu_name": "Work Place",
+      "menu_url": "/work-place/",
+      "menu_icon": "fa-solid fa-list",
+      "menu_description": "Manage work places.",
+      "parent": 160,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
+  {
+    "model": "backend.backendmenu",
+    "pk": 163,
+    "fields": {
+      "module_name": "Employeement Setup",
+      "menu_name": "Transport",
+      "menu_url": "/transport/",
+      "menu_icon": "fa-solid fa-bus",
+      "menu_description": "Manage transport options.",
+      "parent": 160,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  }, 
   {
     "model": "backend.backendmenu",
     "pk": 10,
@@ -323,6 +386,7 @@
       "is_active": true
     }
   },
+  
   {
     "model": "backend.backendmenu",
     "pk": 301,
@@ -387,9 +451,25 @@
       "is_active": true
     }
   },
-  {
+   {
     "model": "backend.backendmenu",
     "pk": 305,
+    "fields": {
+      "module_name": "Licence Type Management",
+      "menu_name": "License Type",
+      "menu_url": "/license-type/",
+      "menu_icon": "fa-solid fa-id-card",
+      "menu_description": "View license type management dashboard.",
+      "parent": 12,
+      "is_main_menu": false,
+      "is_sub_menu": false,
+      "is_sub_child_menu": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "backend.backendmenu",
+    "pk": 306,
     "fields": {
       "module_name": "Vehicle Management",
       "menu_name": "Vehicle Maintenance Type",
@@ -403,7 +483,6 @@
       "is_active": true
     } 
   }, 
-
   {
     "model": "backend.backendmenu",
     "pk": 17,
